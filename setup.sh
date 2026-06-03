@@ -5,6 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
+EVAL_REPO="${EVAL_REPO:-$SCRIPT_DIR/lightspeed-evaluation}"
 
 echo "=== OLS Troubleshooting Eval Setup ==="
 
@@ -27,10 +28,16 @@ echo "Installing OLS dependencies..."
 cd "$OLS_DIR"
 uv sync
 
-# 4. Install lightspeed-eval into the same venv
-if ! uv run lightspeed-eval --help &>/dev/null; then
-    echo "Installing lightspeed-eval..."
-    uv pip install lightspeed-evaluation
+# 4. Clone and install lightspeed-evaluation
+if [ ! -d "$EVAL_REPO" ]; then
+    echo "Cloning lightspeed-evaluation..."
+    git clone https://github.com/lightspeed-core/lightspeed-evaluation.git "$EVAL_REPO"
+else
+    echo "lightspeed-evaluation already present at $EVAL_REPO"
+fi
+if ! uv run lightspeed-eval --help &>/dev/null 2>&1; then
+    echo "Installing lightspeed-eval into OLS venv..."
+    uv pip install -e "$EVAL_REPO"
 fi
 echo "lightspeed-eval: $(uv run lightspeed-eval --version 2>/dev/null || echo 'installed')"
 
