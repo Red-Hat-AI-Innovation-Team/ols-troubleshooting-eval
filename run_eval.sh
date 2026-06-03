@@ -7,7 +7,8 @@ set -euo pipefail
 #   ./run_eval.sh <model_label> <model_url> <model_name> [iterations]
 #
 # Args:
-#   model_label    Short name for results dir (e.g. qwen35_base, nemotron_sft)
+#   run_name       Unique name for this eval run. Results go to eval_scenarios/results/traced_<run_name>/
+#                  Use descriptive names to distinguish runs (e.g. gpt5mini_gpt5judge, nemotron_sft_3iter)
 #   model_url      OpenAI-compatible API base URL (e.g. http://localhost:8234/v1)
 #   model_name     Model name to send in API requests (e.g. openshift-expert, gpt-5-mini)
 #   iterations     Number of eval iterations (default: 3)
@@ -25,9 +26,9 @@ set -euo pipefail
 #   TRACING=on ./run_eval.sh nemotron http://localhost:8250/v1 nemotron-gpt55-sft 5
 #   JUDGE_MODEL=gpt-4.1 ./run_eval.sh gpt5mini https://api.openai.com/v1 gpt-5-mini
 
-MODEL_LABEL="${1:?Usage: $0 <model_label> <model_url> <model_name> [iterations]}"
-MODEL_URL="${2:?Usage: $0 <model_label> <model_url> <model_name> [iterations]}"
-MODEL_NAME="${3:?Usage: $0 <model_label> <model_url> <model_name> [iterations]}"
+MODEL_LABEL="${1:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
+MODEL_URL="${2:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
+MODEL_NAME="${3:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
 ITERATIONS="${4:-${ITERATIONS:-3}}"
 
 ITER_OFFSET="${ITER_OFFSET:-0}"
