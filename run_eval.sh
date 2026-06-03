@@ -40,7 +40,7 @@ EVAL_CLI="${EVAL_CLI:-$(cd "$OLS_DIR" && uv run which lightspeed-eval 2>/dev/nul
 WORK_DIR="$SCRIPT_DIR/.work/$MODEL_LABEL"
 
 if [ ! -d "$OLS_DIR" ]; then echo "ERROR: lightspeed-service not found at $OLS_DIR. Run: bash setup.sh"; exit 1; fi
-if [ -z "$EVAL_CLI" ]; then echo "ERROR: lightspeed-eval not found. Run: pip install lightspeed-evaluation"; exit 1; fi
+if [ -z "$EVAL_CLI" ]; then echo "ERROR: lightspeed-eval not found. Run: bash setup.sh"; exit 1; fi
 if ! oc whoami &>/dev/null; then echo "ERROR: not logged into cluster. Run: oc login ..."; exit 1; fi
 
 if [ -f "$SCRIPT_DIR/.env" ]; then set -a && source "$SCRIPT_DIR/.env" && set +a; fi
