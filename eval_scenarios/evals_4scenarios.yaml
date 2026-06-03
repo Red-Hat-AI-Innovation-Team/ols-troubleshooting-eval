@@ -1,0 +1,99 @@
+# 4-scenario subset for focused evaluation
+
+# --- periodic_failure_window ---
+- conversation_group_id: periodic_failure_window
+  tag: periodic_failure_window
+  description: "Periodic batch failures during a specific time window"
+
+  turns:
+    - turn_id: periodic_failure
+      query: "The batch-processor is processing historical records. Some pod ERROR logs reported issues. Tell me when"
+      contexts:
+        - "Answer MUST include the time window of the issue (03:00-03:05)"
+      expected_response: "Batch processor pod reported issues between 03:00-03:05 when it could not connect to an external API possibly due to a maintenance window."
+      turn_metrics:
+        - custom:answer_correctness
+
+  setup_script: scenarios/periodic_failure_window/setup.sh
+  cleanup_script: scenarios/periodic_failure_window/cleanup.sh
+
+# --- scheduled_outage_detection ---
+- conversation_group_id: scheduled_outage_detection
+  tag: scheduled_outage_detection
+  description: "Detect scheduled outage from pod logs in a specific time window"
+
+  turns:
+    - turn_id: scheduled_outage
+      query: "The report-generator is processing historical records. Analyze the provided logs for the report-generator pod to identify any issues that occurred between 03:00 and 04:00"
+      expected_response: "The report-generator pod experienced a temporary inability to connect to an external API (likely due to a maintenance window) between 03:00 and 04:00."
+      turn_metrics:
+        - custom:answer_correctness
+
+  setup_script: scenarios/scheduled_outage_detection/setup.sh
+  cleanup_script: scenarios/scheduled_outage_detection/cleanup.sh
+
+# --- config_drift_analysis (setup once, no per-iter setup/cleanup) ---
+- conversation_group_id: config_drift_analysis
+  tag: config_drift_analysis
+  description: "Log context analysis - connection refused errors caused by config change"
+
+  turns:
+    - turn_id: config_drift
+      query: "What is causing connection refused errors in gateway-proxy in namespace ingress-layer?"
+      expected_response: "The first Connection refused errors started after a config reload that loaded staging database settings in production"
+      turn_metrics:
+        - custom:answer_correctness
+
+  # setup_script and cleanup_script intentionally omitted
+  # config_drift setup is done once before all iterations
+
+# --- wrong_networkpolicy ---
+- conversation_group_id: Network Policy Issue
+  tag: wrong_networkpolicy
+  description: "Multi-turn troubleshooting of a network policy misconfiguration"
+
+  turns:
+    - turn_id: Investigate the status of frontend application
+      query: What is the status of the frontend application
+      contexts:
+        - "Frontend pod logs show repeated 'ERROR: Connection timeout to backend-service!' and wget timeouts."
+        - "TCP checks to backend pod IP and backend service IP both time out"
+      expected_response: |
+        Frontend application is up and running, logs show errors about reaching the backend-service.
+      turn_metrics:
+        - custom:answer_correctness
+        - geval:generic_troubleshooting_experience
+
+    - turn_id: Why frontend is failing
+      query: Can you spot the root cause?
+      contexts:
+        - "backend-service Endpoints and EndpointSlice are correct and point to the backend pod."
+        - "backend pod is running and healthy, no errors in logs."
+        - "NetworkPolicy backend-network-policy only allows ingress to backend pods from other pods with label tier=backend, but frontend has tier=frontend."
+      expected_response: |
+        The backend-network-policy block ingress from pods with tier=frontend or app=frontend
+      turn_metrics:
+        - custom:answer_correctness
+        - geval:generic_troubleshooting_experience
+
+    - turn_id: Propose a fix for NetworkPolicy
+      query: "How can I modify the network policy to allow the frontend to communicate with the backend?"
+      contexts:
+        - "The current NetworkPolicy 'backend-network-policy' uses a podSelector with matchLabels: tier: backend."
+        - "The ingress rule currently only allows 'from' pods with label 'tier: backend'."
+        - "The frontend pods are confirmed to have the label 'tier: frontend'."
+      expected_response: |
+        You need to update the 'backend-network-policy' ingress rules.
+        Add a new item to the 'from' selector to include pods with the label 'tier: frontend'.
+      turn_metrics:
+        - custom:answer_correctness
+        - geval:generic_troubleshooting_experience
+
+  conversation_metrics:
+    - geval:troubleshooting_continuity
+    - deepeval:conversation_completeness
+    - deepeval:conversation_relevancy
+    - deepeval:knowledge_retention
+
+  setup_script: scenarios/wrong_networkpolicy/setup.sh
+  cleanup_script: scenarios/wrong_networkpolicy/cleanup.sh

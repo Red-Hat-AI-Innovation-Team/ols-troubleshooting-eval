@@ -5,8 +5,7 @@ set -euo pipefail
 # Run this BEFORE starting eval. Clean up with cleanup_config_drift.sh AFTER.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-OLS_DIR="${OLS_DIR:-$(cd "$SCRIPT_DIR/../lightspeed-service" 2>/dev/null && pwd)}"
-SCENARIO_DIR="$OLS_DIR/eval/troubleshooting/scenarios/config_drift_analysis"
+SCENARIO_DIR="$SCRIPT_DIR/eval_scenarios/scenarios/config_drift_analysis"
 
 oc delete ns ingress-layer --ignore-not-found 2>/dev/null; sleep 5
 oc create namespace ingress-layer

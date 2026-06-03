@@ -65,7 +65,7 @@ if [ -n "${OPENAI_API_KEY:-}" ] && [ ! -f "$SCRIPT_DIR/.openai_key" ]; then
 fi
 
 # 8. Patch evals.yaml to comment out config_drift setup/cleanup
-EVALS_YAML="$OLS_DIR/eval/troubleshooting/evals.yaml"
+EVALS_YAML="$SCRIPT_DIR/eval_scenarios/evals.yaml"
 if grep -q "^  setup_script: scenarios/config_drift_analysis" "$EVALS_YAML" 2>/dev/null; then
     sed -i.bak 's|^  setup_script: scenarios/config_drift_analysis|  # setup_script: scenarios/config_drift_analysis|' "$EVALS_YAML"
     sed -i.bak 's|^  cleanup_script: scenarios/config_drift_analysis|  # cleanup_script: scenarios/config_drift_analysis|' "$EVALS_YAML"

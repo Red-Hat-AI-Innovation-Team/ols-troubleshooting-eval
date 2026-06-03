@@ -1,0 +1,330 @@
+- conversation_group_id: v4s_00
+  tag: v4s_00
+  description: Payments UI stuck “Loading” due to missing backend endpoints (hard, multi_resource_dependency)
+  turns:
+  - turn_id: v4s_00
+    query: |-
+      Users report the `payments-ui` web app loads and the pod stays Running/Ready, but the UI never shows data and API calls time out. The `payments-api` Service exists in the namespace and looks normal at a glance, yet the UI can’t successfully reach the backend.
+    expected_response: |-
+      The `payments-api` Service selector is wrong. Specifically, the Service is configured with `spec.selector: { app: payments-ap1 }` (typo: “ap1” instead of “api”), while the `payments-api` Deployment’s pods are labeled `app: payments-api`. As a result the `payments-api` Service has **zero endpoints**, so `payments-ui` resolves DNS for `payments-api` but connections hang/fail because traffic is sent to no backends.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_01
+  tag: v4s_01
+  description: Invoice API returns 500 on /api/v1/invoices (medium, http_500_app_error)
+  turns:
+  - turn_id: v4s_01
+    query: |-
+      Users report that the “invoice” service is reachable and health checks look good, but every call to `GET /api/v1/invoices` returns HTTP 500. The pod shows Running/Ready and the Service routes traffic correctly, yet the API endpoint consistently fails while `/healthz` succeeds.
+    expected_response: |-
+      The Deployment `invoice-api` runs a small Python HTTP server (started via `python3 /opt/app/server.py`) that imports `yaml` to parse an on-disk config at request time. The image is built from `quay.io/centos/centos:stream9` and only installs `python3` (via `dnf install -y python3`), but does NOT install the required dependency `python3-pyyaml`; as a result, requests to `/api/v1/invoices` trigger an `ImportError: No module named 'yaml'` and return HTTP 500, while `/healthz` does not touch that code path and stays 200, keeping the pod Ready.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_02
+  tag: v4s_02
+  description: Catalog API Service Has No Endpoints (medium, service_selector_mismatch)
+  turns:
+  - turn_id: v4s_02
+    query: |-
+      Requests to the internal `catalog-api` service from other pods in the namespace consistently time out, even though the `catalog-api` application pods appear to be running and ready. Operators also notice that `oc get endpoints catalog-api` shows no backing addresses, so the service never routes traffic anywhere.
+    expected_response: |-
+      The `Service/catalog-api` selector is misconfigured: it uses `app: catalog-api`, but the `Deployment/catalog-api` pod template labels are `app: catalogapi` (missing hyphen). Because no pods match the service selector, Kubernetes creates `Endpoints/catalog-api` with zero addresses, causing traffic to the service ClusterIP to hang/fail.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_03
+  tag: v4s_03
+  description: Payments Worker Won’t Start (easy, missing_configmap_reference)
+  turns:
+  - turn_id: v4s_03
+    query: |-
+      A small “payments-worker” Deployment was rolled out, but the Pod never becomes Ready and the rollout stays stuck. Operators see the Pod stuck in a configuration-related startup failure (CreateContainerConfigError), and no application logs are available because the container never starts.
+    expected_response: |-
+      The Deployment `payments-worker` in namespace `scenario-payments-worker` defines a volume that mounts a ConfigMap named `payments-worker-config`, but that ConfigMap does not exist in the namespace. The kubelet cannot construct the container spec due to the missing ConfigMap volume source, so the Pod remains in `CreateContainerConfigError`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_04
+  tag: v4s_04
+  description: Quota-Limited Report Worker (easy, pending_resource_request)
+  turns:
+  - turn_id: v4s_04
+    query: |-
+      A new “report-worker” Deployment was rolled out, but none of its pods ever start. The pods stay in Pending for several minutes with no application logs available, and the rollout never completes.
+    expected_response: |-
+      A ResourceQuota in namespace <code>scenario-quota-reporting</code> sets <code>requests.cpu: "500m"</code> and <code>requests.memory: "512Mi"</code>. The <code>report-worker</code> Deployment requests <code>cpu: "300m"</code> and <code>memory: "256Mi"</code> per pod with <code>replicas: 3</code>, totaling <code>900m</code> CPU and <code>768Mi</code> memory in requests, which exceeds the quota. The scheduler blocks the pods and they remain Pending with “exceeded quota” events.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_05
+  tag: v4s_05
+  description: Invoice Worker Won’t Start (Image Pull Backoff) (easy, image_pull_backoff)
+  turns:
+  - turn_id: v4s_05
+    query: |-
+      A new “invoice-worker” Deployment was rolled out, but no pods ever become Ready. The operator sees the pod stuck in a pending state and the rollout never progresses, even though the node has capacity and no application logs are available.
+    expected_response: |-
+      Deployment `invoice-worker` in namespace `scenario-invoice-worker` references a non-existent image tag: `registry.access.redhat.com/ubi9/python-311:latset` (typo; should be `latest`). The kubelet cannot pull the image, so the pod enters `ImagePullBackOff` with events showing “manifest for ... not found”.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_06
+  tag: v4s_06
+  description: Pending Reports Worker Due to ResourceQuota Exhaustion (easy, pending_resource_request)
+  turns:
+  - turn_id: v4s_06
+    query: |-
+      A new “reports-worker” Deployment was rolled out, but the pod never starts and remains stuck in Pending. The operator sees no container logs because the container is never created, and the rollout does not progress.
+    expected_response: |-
+      A ResourceQuota in namespace `scenario-reports-quota` limits total CPU requests to `500m`. The `reports-worker` Deployment requests `300m` CPU per pod and is scaled to 2 replicas (total `600m` requested), which exceeds the quota, so the scheduler cannot admit the pod(s) and they stay Pending with quota-related scheduling/admission events.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_07
+  tag: v4s_07
+  description: Stuck Reports Worker Deployment (easy, missing_pvc)
+  turns:
+  - turn_id: v4s_07
+    query: |-
+      A small “reports-worker” Deployment was rolled out, but its Pod never starts and remains in Pending. The operator sees no container logs because the container is never created, and the rollout appears hung with 0/1 available replicas. No other workloads in the namespace appear impacted.
+    expected_response: |-
+      The Deployment `reports-worker` in namespace `scenario-stuck-reports-worker` mounts a volume `reports-data` referencing `persistentVolumeClaim.claimName: reports-data-pvc`, but no PVC named `reports-data-pvc` exists in the namespace (the only PVC created is `report-data-pvc`—missing the “s”). The scheduler cannot bind the volume, so the Pod stays Pending with events indicating `persistentvolumeclaim "reports-data-pvc" not found`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_08
+  tag: v4s_08
+  description: Orders Worker Stuck Pending (Missing PVC) (easy, missing_pvc)
+  turns:
+  - turn_id: v4s_08
+    query: |-
+      The `orders-worker` Deployment never becomes ready in the `scenario-orders-pvc` project. Operators see the pod stuck in `Pending` with no container logs available. The rollout appears stalled even though the image is valid.
+    expected_response: |-
+      The Deployment `orders-worker` mounts a volume referencing a PersistentVolumeClaim named `orders-data`, but no PVC with that name exists in the namespace. The pod cannot be scheduled because Kubernetes cannot satisfy the volume mount, resulting in `FailedScheduling` events like `persistentvolumeclaim "orders-data" not found`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_09
+  tag: v4s_09
+  description: Payments Worker Crashing on Startup (medium, wrong_env_var)
+  turns:
+  - turn_id: v4s_09
+    query: |-
+      A new “payments-worker” deployment rolls out successfully, but the pods keep restarting and never become ready. Operators see repeated startup failures in the container logs indicating the app cannot reach its Redis backend, even though Redis is expected to be reachable via an in-cluster Service. The rollout appears “stuck” with unavailable replicas.
+    expected_response: |-
+      The Deployment `payments-worker` reads its configuration from ConfigMap `payments-worker-config`. In that ConfigMap, the environment variable `REDIS_PORT` is set to `6380`, but the Redis Service `redis` is actually listening on the default port `6379`. The Python worker starts, attempts to connect to `redis:6380`, fails with connection refused/timeouts, and exits, causing a CrashLoopBackOff.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_10
+  tag: v4s_10
+  description: Stuck Web Pod Not Ready (Wrong Readiness Port) (medium, readiness_probe_misconfiguration)
+  turns:
+  - turn_id: v4s_10
+    query: |-
+      A small internal web Service was just deployed, and the Pod stays in `Running` state but never becomes `Ready` (shows `0/1 Ready`). The Service has no usable backends, so in-cluster clients time out when trying to reach it. Operators notice the Service exists but doesn’t appear to route traffic anywhere.
+    expected_response: |-
+      The Pod’s `readinessProbe` is misconfigured to check `httpGet` on port `8080` and path `/healthz`, but the container image `registry.access.redhat.com/ubi9/httpd-24:latest` is only listening on port `8080`? No: it actually listens on `8080` only if explicitly configured—by default in this scenario it listens on `8081` due to a custom `args`/config, while the probe still targets `8080`. Result: readiness checks fail, the Pod remains `Running` but `NotReady`, and the Service’s Endpoints object stays empty because only Ready pods are added.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_11
+  tag: v4s_11
+  description: Apache Config Injection Fails (easy, missing_configmap_reference)
+  turns:
+  - turn_id: v4s_11
+    query: |-
+      A small internal web server Deployment was rolled out in a new project, but the pod never becomes Ready. `oc get pods` shows it stuck with `CreateContainerConfigError`, and there are no application logs because the container never starts. Operators report the rollout “hangs” even though the image pulls fine.
+    expected_response: |-
+      The Deployment `apache-web` in namespace `scenario-apache-missing-cm` mounts a volume from a ConfigMap named `httpd-site-config` at `/etc/httpd/conf.d/`, but that ConfigMap was never created in the namespace (typo/omission during rollout). Kubernetes cannot construct the container config due to the missing ConfigMap reference, so the pod remains in `CreateContainerConfigError`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_12
+  tag: v4s_12
+  description: Payments UI stuck loading due to missing Kafka backend (hard, multi_resource_dependency)
+  turns:
+  - turn_id: v4s_12
+    query: |-
+      The “payments-ui” pod is Running and its Service responds on port 8080, but the UI never shows transaction status and API calls time out. Pod logs show repeated retries to publish events to an internal message broker, and operators report that “everything looks up” at a glance because the UI pod is healthy.
+    expected_response: |-
+      A required backend dependency is unavailable due to a cross-resource misconfiguration: the Service `kafka` selects the wrong label (`app: kafkka` typo), so it has **0 endpoints** even though the Kafka broker pod is Running with label `app: kafka`. The frontend `payments-ui` connects to `kafka:9092` (resolves via Service DNS) but gets connection timeouts because the Service has no backing endpoints.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_13
+  tag: v4s_13
+  description: Payments API Service Blackhole (medium, wrong_service_port)
+  turns:
+  - turn_id: v4s_13
+    query: |-
+      Requests to the internal `payments-api` Service are failing from other pods with immediate connection errors, even though the `payments-api` pods show as Running and Ready. Pod logs indicate the application started successfully and is listening, but clients cannot reach it via the Service DNS name.
+    expected_response: |-
+      The `Service/payments-api` in namespace `scenario-payments-wrong-port` has `spec.ports[0].targetPort: 8443`, but the `Deployment/payments-api` container only listens on port `8080` (and exposes `containerPort: 8080`). Endpoints resolve to the correct pods, but kube-proxy forwards to port 8443 on the pod IP where nothing is listening, causing connection refused/timeouts.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_14
+  tag: v4s_14
+  description: Broken Entrypoint in UBI Minimal Deployment (easy, crashloop_bad_entrypoint)
+  turns:
+  - turn_id: v4s_14
+    query: |-
+      A newly rolled out “reporting” workload in a dedicated namespace never becomes Ready, and the single replica keeps restarting. Operators see the pod stuck in CrashLoopBackOff and no application logs beyond a quick startup failure message.
+    expected_response: |-
+      The Deployment `reporting-api` sets `spec.template.spec.containers[0].command` to `["/usr/local/bin/start.sh"]`, but the image `registry.access.redhat.com/ubi9/ubi-minimal:latest` does not contain that script/binary path. Container runtime fails immediately with “no such file or directory”, causing repeated restarts and CrashLoopBackOff.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_15
+  tag: v4s_15
+  description: Inventory API Deployment stuck pulling image (easy, image_pull_backoff)
+  turns:
+  - turn_id: v4s_15
+    query: |-
+      A new “inventory-api” rollout was applied, but the pods never become Ready and the deployment stays at 0/1 available. Operators see the pod stuck in a pending state with repeated restarts of the image pull attempts.
+    expected_response: |-
+      The Deployment `inventory-api` in namespace `scenario-inventory-pullfail` references a non-existent image tag: `registry.access.redhat.com/ubi9/ubi-minimal:latset` (typo: `latset` instead of `latest`). Because the tag does not exist in the registry, kubelet fails to pull the image and the pod remains in `ImagePullBackOff`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_16
+  tag: v4s_16
+  description: Inventory API keeps restarting (aggressive liveness probe) (medium, liveness_probe_misconfiguration)
+  turns:
+  - turn_id: v4s_16
+    query: |-
+      An operator reports that the `inventory-api` Deployment never becomes ready and the Pod keeps restarting every ~10–20 seconds. `oc get pods` shows `CrashLoopBackOff`/high restart counts, but the container logs show the application is “starting up” and never reaches its “listening” message before it is killed.
+    expected_response: |-
+      The `Deployment/inventory-api` has a misconfigured HTTP liveness probe: it checks `GET /healthz` on port `8080` with `initialDelaySeconds: 5`, `timeoutSeconds: 1`, `periodSeconds: 5`, and `failureThreshold: 1`, but the app intentionally performs a ~25–35s initialization step before binding to `8080` and serving `/healthz`. As a result, the kubelet marks the container unhealthy almost immediately and restarts it repeatedly before startup completes.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_17
+  tag: v4s_17
+  description: Orders API returns 500 on /api due to runtime dependency failure (medium, http_500_app_error)
+  turns:
+  - turn_id: v4s_17
+    query: |-
+      Users report the “orders” service is reachable and passes readiness, but requests to `/api/orders` consistently return HTTP 500 while `/healthz` returns 200. The pod shows as Running/Ready and the Service endpoint looks normal, yet application errors occur only on API routes.
+    expected_response: |-
+      The Deployment `orders-api` runs a Python HTTP server that serves `/healthz` without issues, but the `/api/*` handler imports `cryptography` to generate signed order IDs. The container image is built from `registry.access.redhat.com/ubi9/ubi-minimal:latest` and installs only `python3`, but the Deployment’s startup script forgets to install the `python3-cryptography` (or pip `cryptography`) dependency. As a result, requests to `/api/orders` trigger a `ModuleNotFoundError: No module named 'cryptography'` in pod logs, causing HTTP 500 responses while the pod remains Ready.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_18
+  tag: v4s_18
+  description: Broken Entrypoint for “report-worker” Deployment (easy, crashloop_bad_entrypoint)
+  turns:
+  - turn_id: v4s_18
+    query: |-
+      A new “report-worker” workload was rolled out, but the pod never becomes Ready and continuously restarts with CrashLoopBackOff. The operator reports that no application logs appear beyond a brief startup error, and the Deployment never reaches availability.
+    expected_response: |-
+      The Deployment `report-worker` in namespace `scenario-report-worker` overrides the container command with `["python3", "/opt/app/worker.py"]`, but the image `registry.access.redhat.com/ubi9/python-311:latest` does not contain `/opt/app/worker.py`. The container exits immediately with a non-zero code due to “can’t open file … No such file or directory”, causing CrashLoopBackOff.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_19
+  tag: v4s_19
+  description: Catalog UI Stuck on Init Check (medium, init_container_failure)
+  turns:
+  - turn_id: v4s_19
+    query: |-
+      The `catalog-ui` Deployment in a new namespace never becomes Ready. Pods remain stuck in `Init:CrashLoopBackOff` and the main httpd container never starts, so the Service has no usable endpoints and the app appears down.
+    expected_response: |-
+      The `catalog-ui` Deployment has an init container (`wait-for-backend`) that runs `curl http://catalog-backend:8080/healthz` in a loop with a timeout and exits non-zero if it can’t reach the backend. The `catalog-backend` Service exists but is misconfigured: its selector is `app=catalog-backend` while the backend Pod labels are `app=catalog-backend-v1`, so the Service has zero endpoints. As a result, DNS resolves but connections fail and the init container repeatedly exits with an error, keeping the Pod in init failure and preventing the main container from starting.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_21
+  tag: v4s_21
+  description: Invoice Worker Stuck on Startup (easy, missing_secret_reference)
+  turns:
+  - turn_id: v4s_21
+    query: |-
+      A new “invoice-worker” Deployment was rolled out, but the pod never starts and sits in a config-related error state. The operator sees zero ready replicas and the pod doesn’t produce any application logs because the container is never created.
+    expected_response: |-
+      In namespace `scenario-invoice-worker`, the Deployment `invoice-worker` references a Secret named `invoice-db-credentials` via `envFrom.secretRef.name`, but the only Secret that exists is named `invoices-db-credentials` (extra “s”). This causes the pod to remain in `CreateContainerConfigError` with events indicating the referenced Secret was not found.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_22
+  tag: v4s_22
+  description: Broken Entrypoint for HTTPD Deployment (easy, crashloop_bad_entrypoint)
+  turns:
+  - turn_id: v4s_22
+    query: |-
+      A small internal “static site” Deployment was rolled out, but the pod never becomes Ready and keeps restarting. Operators see the pod in CrashLoopBackOff and no logs are being served on the expected port. The rollout is stuck with 0 available replicas.
+    expected_response: |-
+      The Deployment `static-site` overrides the container command with `command: ["/usr/sbin/httpd-foreground"]`, but the image `registry.access.redhat.com/ubi9/httpd-24:latest` does not include that binary/path (it’s common in some Docker Hub httpd images, not this one). The container immediately exits with “no such file or directory”, causing repeated restarts and CrashLoopBackOff.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_23
+  tag: v4s_23
+  description: Orders API Service Has No Endpoints (medium, service_selector_mismatch)
+  turns:
+  - turn_id: v4s_23
+    query: |-
+      Internal clients calling `http://orders-api` in the namespace see timeouts or “connection refused” even though the `orders-api` pods look healthy and are Ready. The Deployment appears fully rolled out, but the Service never successfully routes traffic to the pods. Curling the Service ClusterIP from a debug pod fails consistently.
+    expected_response: |-
+      The `Service/orders-api` selector is misconfigured: it selects `app: orders-api`, but the `Deployment/orders-api` pod template labels are `app: ordersapi` (missing hyphen). Because no pods match the Service selector, the generated `Endpoints` (or EndpointSlice) has zero addresses, so traffic to the Service has no backend targets.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_24
+  tag: v4s_24
+  description: Payments API Pod Won’t Start (Missing Secret) (easy, missing_secret_reference)
+  turns:
+  - turn_id: v4s_24
+    query: |-
+      A new “payments-api” Deployment was rolled out, but its Pod never becomes Ready. Operators see the Pod stuck and the application never starts, with no useful container logs available because the container doesn’t launch.
+    expected_response: |-
+      The Deployment `payments-api` in namespace `scenario-payments-missing-secret` references a Secret named `payments-db-credentials` via `envFrom.secretRef.name`, but the only Secret present is named `payment-db-credentials` (missing the “s”). Because the referenced Secret does not exist, the kubelet cannot render the container environment and the Pod remains in `CreateContainerConfigError`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_25
+  tag: v4s_25
+  description: Inventory Worker Won’t Start (Image Pull Failure) (easy, image_pull_backoff)
+  turns:
+  - turn_id: v4s_25
+    query: |-
+      A small “inventory-worker” Deployment was rolled out in a new project, but no pods ever become Ready. The operator sees the pod stuck in a pending state with repeated retries, and the rollout never progresses beyond 0/1 available replicas.
+    expected_response: |-
+      The Deployment `inventory-worker` in namespace `scenario-inventory-worker` references a non-existent image tag: `quay.io/centos/centos:stream99` (typo; valid base image tag is `quay.io/centos/centos:stream9`). The kubelet cannot pull the image, so the Pod remains in `ImagePullBackOff`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_26
+  tag: v4s_26
+  description: Payment API returns 500 on charge endpoint (medium, http_500_app_error)
+  turns:
+  - turn_id: v4s_26
+    query: |-
+      A “payment-api” service is deployed and its pod shows Running/Ready, but users report that POST requests to `/api/v1/charge` consistently return HTTP 500 while `/healthz` returns 200. The service endpoints look normal and the deployment appears healthy, yet the application fails only on that specific path.
+    expected_response: |-
+      The Deployment `payment-api` sets an environment variable `PRICING_RULES_PATH=/opt/app/config/pricing_rules.json`, but the container image (built from `registry.access.redhat.com/ubi9/ubi-minimal:latest`) does not include that file and there is no volume mounting it. The app starts successfully and marks Ready because `/healthz` doesn’t load pricing rules; however, the `/api/v1/charge` handler attempts to read the JSON file on each request and throws a “file not found” exception, resulting in HTTP 500 responses (visible in pod logs).
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_27
+  tag: v4s_27
+  description: Inventory Web Service Returns Connection Refused (medium, wrong_service_port)
+  turns:
+  - turn_id: v4s_27
+    query: |-
+      Users report that the internal “inventory” web endpoint times out or returns “connection refused” when accessed via the Service cluster DNS name. The pods appear Running and Ready, and restarting them doesn’t help. Direct pod health looks fine, but traffic through the Service consistently fails.
+    expected_response: |-
+      The Service `inventory-svc` in namespace `scenario-inventory-wrong-port` has `spec.ports[0].targetPort: 8443`, but the `inventory-web` Deployment’s container only listens on port 8080 (httpd configured to Listen 8080). The Service selects the correct pods, but kube-proxy forwards to port 8443 on the pod IP where nothing is listening, resulting in connection refused/timeouts.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_28
+  tag: v4s_28
+  description: Inventory API Pods Not Starting (easy, missing_secret_reference)
+  turns:
+  - turn_id: v4s_28
+    query: |-
+      The operator reports the `inventory-api` Deployment never becomes ready and shows 0/1 available replicas. The Pod stays stuck in `CreateContainerConfigError`, and no application logs are available because the container never starts. Other workloads in the cluster appear healthy.
+    expected_response: |-
+      The `Deployment/inventory-api` in namespace `scenario-inventory-secret-miss` references a Secret named `inventory-db-credentials` via `envFrom.secretRef.name`, but the actual Secret created is named `inventory-db-credential` (missing the trailing “s”). Because the referenced Secret does not exist, the kubelet cannot build the container environment and the Pod remains in `CreateContainerConfigError`.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_29
+  tag: v4s_29
+  description: Aggressive Liveness Probe on Internal Status Path (medium, liveness_probe_misconfiguration)
+  turns:
+  - turn_id: v4s_29
+    query: |-
+      A small internal “status” web component was deployed, but the pod never becomes stable: it cycles between Running and CrashLoopBackOff and never reaches Ready. Operators report that the container logs look normal and the httpd process appears to start, but it keeps getting restarted every ~10–20 seconds.
+    expected_response: |-
+      The Deployment `status-web` has a misconfigured liveness probe: it performs an HTTP GET on path `/status` with `initialDelaySeconds: 2`, `timeoutSeconds: 1`, and `failureThreshold: 1`. The container is based on `registry.access.redhat.com/ubi9/httpd-24:latest` and only serves `/` (no `/status` route), so the liveness probe returns 404 immediately and kubelet kills the container repeatedly before it can remain up. The readiness probe checks `/` and would succeed, but the liveness probe restarts the pod first.
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: v4s_30
+  tag: v4s_30
+  description: ConfigMap Missing for Apache Static Site (easy, missing_configmap_reference)
+  turns:
+  - turn_id: v4s_30
+    query: |-
+      A new “marketing site” rollout was applied, but the pod never becomes Ready and the Deployment shows 0 available replicas. The pod sits in a configuration-related error state and no application logs are produced because the container never starts.
+    expected_response: |-
+      The Deployment `marketing-site` in namespace `scenario-missing-cm-site` mounts a volume from ConfigMap `site-content` at `/var/www/html`, but the ConfigMap `site-content` was never created in that namespace. Kubelet cannot resolve the referenced ConfigMap during container config generation, so the pod stays in `CreateContainerConfigError`.
+    turn_metrics:
+    - custom:answer_correctness

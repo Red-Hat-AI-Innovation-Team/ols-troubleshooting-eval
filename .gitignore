@@ -4,4 +4,6 @@
 *.log
 __pycache__/
 *.pyc
-results/
+eval_scenarios/results/
+lightspeed-service/
+lightspeed-evaluation/

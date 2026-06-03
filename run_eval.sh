@@ -35,7 +35,7 @@ TRACING="${TRACING:-off}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
-EVAL_DIR="$OLS_DIR/eval/troubleshooting"
+EVAL_DIR="$SCRIPT_DIR/eval_scenarios"
 EVAL_CLI="${EVAL_CLI:-$(cd "$OLS_DIR" && uv run which lightspeed-eval 2>/dev/null || command -v lightspeed-eval 2>/dev/null || echo "")}"
 WORK_DIR="$SCRIPT_DIR/.work/$MODEL_LABEL"
 
