@@ -4,15 +4,15 @@ set -euo pipefail
 # Evaluate a model on the OLS troubleshooting benchmark.
 #
 # Usage:
-#   ./run_eval.sh <model_label> <model_url> <model_name> [options via env vars]
+#   ./run_eval.sh <model_label> <model_url> <model_name> [iterations]
 #
-# Required args:
+# Args:
 #   model_label    Short name for results dir (e.g. qwen35_base, nemotron_sft)
 #   model_url      OpenAI-compatible API base URL (e.g. http://localhost:8234/v1)
 #   model_name     Model name to send in API requests (e.g. openshift-expert, gpt-5-mini)
+#   iterations     Number of eval iterations (default: 3)
 #
 # Options (env vars):
-#   ITERATIONS     Number of eval iterations (default: 3)
 #   ITER_OFFSET    Starting iteration offset (default: 0)
 #   JUDGE_MODEL    Judge LLM for scoring (default: gpt-5-mini)
 #   TRACING        Enable Langfuse tracing: "on" or "off" (default: off)
@@ -20,15 +20,16 @@ set -euo pipefail
 #   EVAL_CLI       Path to lightspeed-eval binary (auto-detected)
 #
 # Examples:
-#   ./run_eval.sh qwen35_base http://localhost:8234/v1 openshift-expert
-#   ITERATIONS=5 TRACING=on ./run_eval.sh nemotron http://localhost:8250/v1 nemotron-gpt55-sft
+#   ./run_eval.sh qwen35_base http://localhost:8234/v1 openshift-expert 3
+#   ./run_eval.sh gpt5mini https://api.openai.com/v1 gpt-5-mini 1
+#   TRACING=on ./run_eval.sh nemotron http://localhost:8250/v1 nemotron-gpt55-sft 5
 #   JUDGE_MODEL=gpt-4.1 ./run_eval.sh gpt5mini https://api.openai.com/v1 gpt-5-mini
 
-MODEL_LABEL="${1:?Usage: $0 <model_label> <model_url> <model_name>}"
-MODEL_URL="${2:?Usage: $0 <model_label> <model_url> <model_name>}"
-MODEL_NAME="${3:?Usage: $0 <model_label> <model_url> <model_name>}"
+MODEL_LABEL="${1:?Usage: $0 <model_label> <model_url> <model_name> [iterations]}"
+MODEL_URL="${2:?Usage: $0 <model_label> <model_url> <model_name> [iterations]}"
+MODEL_NAME="${3:?Usage: $0 <model_label> <model_url> <model_name> [iterations]}"
+ITERATIONS="${4:-${ITERATIONS:-3}}"
 
-ITERATIONS="${ITERATIONS:-3}"
 ITER_OFFSET="${ITER_OFFSET:-0}"
 JUDGE_MODEL="${JUDGE_MODEL:-gpt-5-mini}"
 TRACING="${TRACING:-off}"
