@@ -36,7 +36,7 @@ TRACING="${TRACING:-off}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
 EVAL_DIR="$OLS_DIR/eval/troubleshooting"
-EVAL_CLI="${EVAL_CLI:-$(command -v lightspeed-eval 2>/dev/null || echo "")}"
+EVAL_CLI="${EVAL_CLI:-$(cd "$OLS_DIR" && uv run which lightspeed-eval 2>/dev/null || command -v lightspeed-eval 2>/dev/null || echo "")}"
 WORK_DIR="$SCRIPT_DIR/.work/$MODEL_LABEL"
 
 if [ ! -d "$OLS_DIR" ]; then echo "ERROR: lightspeed-service not found at $OLS_DIR. Run: bash setup.sh"; exit 1; fi
@@ -173,7 +173,8 @@ for iter in $(seq 1 $ITERATIONS); do
         ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/$tag"
         mkdir -p "$ITER_DIR"
 
-        API_KEY=$(oc whoami -t) $EVAL_CLI \
+        cd "$OLS_DIR"
+        API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
             --system-config "$WORK_DIR/system.yaml" \
             --eval-data "$EVAL_DIR/evals.yaml" \
             --output-dir "$ITER_DIR" \
