@@ -23,6 +23,8 @@ set -euo pipefail
 # Examples:
 #   ./run_eval.sh gpt5mini_run1 https://api.openai.com/v1 gpt-5-mini 1
 #   ./run_eval.sh nemotron_base http://localhost:8234/v1 openshift-expert 3
+#   TRACING=on ./run_eval.sh nemotron_sft http://localhost:8250/v1 nemotron-gpt55-sft 5
+#   JUDGE_MODEL=gpt-4.1 ./run_eval.sh gpt5mini_41judge https://api.openai.com/v1 gpt-5-mini 3
 
 MODEL_LABEL="${1:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
 MODEL_URL="${2:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
