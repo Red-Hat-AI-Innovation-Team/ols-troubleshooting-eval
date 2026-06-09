@@ -1,0 +1,977 @@
+- conversation_group_id: hard_01
+  tag: hard_01
+  description: 'Hard scenario 1: pods_run, resources_scale, pods_run'
+  turns:
+  - turn_id: hard_01
+    query: In the “payments” project on this cluster, can you spin up a temporary curl pod to hit the payments service health endpoint from inside the namespace (just a simple HTTP GET), and if it looks
+      slow or flaky, increase the payments Deployment replicas to 3? After scaling, run the same curl check again to confirm the response is stable.
+    expected_response: 'I can’t create pods or scale workloads from here right now (no execution access for this turn).
+
+
+      What I’m seeing in `payments` from the cluster state I already pulled:
+
+      - Service exists: `payments-api` (ClusterIP) exposing **8080/TCP and 8081/TCP**, selector `app=payments-api`.
+
+      - There are **no pods matching `app=payments-api`**, so `payments-api` currently has **no endpoints** to answer any health check.
+
+      - Existing pods in the namespace are mostly `ImagePullBackOff/ErrImagePull` (e.g., `payments-smoke`, `test-nginx-check`, `payments-netcheck`), which also suggests image pull/auth/registry issues in
+      the namespace.
+
+
+      ### If you want to run the in-namespace curl check manually
+
+      1) Start a temporary curl pod:
+
+      ```bash
+
+      oc -n payments run tmp-curl --image=curlimages/curl:latest --restart=Never --command -- sleep 3600
+
+      ```
+
+
+      2) Hit the service (pick the right path; common ones are `/health`, `/healthz`, `/actuator/health`):
+
+      ```bash
+
+      oc -n payments exec tmp-curl -- sh -c ''for i in 1 2 3 4 5; do date'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_02
+  tag: hard_02
+  description: 'Hard scenario 2: pods_get, pods_log, pods_exec'
+  turns:
+  - turn_id: hard_02
+    query: In the OpenShift project “demo-oom” (the OOM troubleshooting scenario), one of the app pods has been restarting a lot and I suspect it’s getting OOM-killed. Can you check the pod’s current status
+      and recent restarts, then pull the last 200 lines of logs including the previous container instance, and finally exec into the container to show its memory limits/usage (e.g., cgroup memory limit
+      + current usage) and the top few processes by RSS so I can confirm what’s consuming memory?
+    expected_response: "### Pod status / restarts (project `demo-oom`)\nPod: `oom-test-856c45b865-vfcjf`\n\n- **Phase/Status:** `Pending` / `ImagePullBackOff`\n- **Restarts:** `0`\n- **Why it’s not running:**\
+      \ image pull is failing:\n  - `toomanyrequests: You have reached your unauthenticated pull rate limit` while pulling `python:3.11-alpine`\n\nSo this pod is **not OOM-killed** (it never successfully\
+      \ started a container).\n\n### Recent events (what’s happening)\nThe namespace events show repeated `ErrImagePull` / `ImagePullBackOff` for `python:3.11-alpine` due to Docker Hub rate limiting.\n\n\
+      ### Logs (last 200 lines, including previous instance)\nNot possible right now:\n- There are **no container logs** because the container hasn’t started (no image pulled), and therefore there is **no\
+      \ “previous” container instance** either.\n\n### Exec into container for cgroup limit/usage + top RSS processes\nAlso not possible right now for the same reason: **no running container to exec into**.\n\
+      \n---\n\n## What to do next (so we can confirm "
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_03
+  tag: hard_03
+  description: 'Hard scenario 3: configuration_contexts_list, pods_list_in_namespace, resources_create_or_update'
+  turns:
+  - turn_id: hard_03
+    query: In the cluster where the “Payments Scenario” is running, I need to do a quick mitigation in the payments namespace. First, find the right kubeconfig context for payments (there are a lot of contexts
+      and I’m not sure which one is correct), then list the pods in the payments namespace and tell me which ones aren’t Running. After that, apply an update to scale the payments web Deployment down to
+      0 replicas temporarily (I want to stop the failing pods from restarting) using a manifest update, not an imperative scale command.
+    expected_response: "**Kubeconfig context for Payments Scenario:**  \nUse: `scenario-payments-prod/api-h0p8o2c2b7w3r1y-fjws-p3-openshiftapps-com:443/ssudalai@redhat.com`\n\n**Pods in `payments` namespace\
+      \ that are *not* `Running`:** (none are Running)\n- `payments-netcheck` — `ImagePullBackOff`\n- `payments-smoke-6bd7664445-487bk` — `ImagePullBackOff`\n- `payments-smoke-6bd7664445-t8vzb` — `ImagePullBackOff`\n\
+      - `test-nginx-check-59775f6f7d-gnmxq` — `ImagePullBackOff`\n- `test-nginx-check-59775f6f7d-jxfbj` — `ImagePullBackOff`\n- `test-nginx-check-7bbf5789df-2f89m` — `ImagePullBackOff`\n- `test-nginx-check-7bbf5789df-qvnhb`\
+      \ — `ImagePullBackOff`\n- `test-nginx-check-7bbf5789df-s7svj` — `ImagePullBackOff`\n\n**About scaling “payments web” Deployment to 0 via manifest:**  \nIn this cluster/namespace, I only see these\
+      \ Deployments: `payments-smoke`, `payments-smoke-test`, `test-nginx-check` (no `payments-web` Deployment present). If your intended Deployment name is different, tell me the exact name and I’ll tailor\
+      \ the manifest"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_04
+  tag: hard_04
+  description: 'Hard scenario 4: resources_get, pods_run, pods_exec'
+  turns:
+  - turn_id: hard_04
+    query: "In the “payments” project (Payments Scenario), I’m trying to confirm whether our app is failing because it can’t reach its own in-cluster Service.\n    \n    Can you:\n    1) Pull the Deployment\
+      \ manifest for the payments app in the payments namespace (so we can see what labels/selectors and service name it should be using),\n    2) Start a temporary curl-capable debug pod in the same namespace,\n\
+      \    3) From inside that pod, verify DNS resolution and make an HTTP request to the app’s Kubernetes Service name (and report the HTTP status/any connection errors)?\n    \n    Please keep everything\
+      \ scoped to the payments namespace."
+    expected_response: "### 1) Payments app Deployment manifest (payments namespace)\n\nThere is **no Deployment that matches the Service selector for `payments-api`**.\n\nDeployments currently present\
+      \ in `payments`:\n\n- **Deployment `payments-smoke`**\n  - `spec.selector.matchLabels`: `app=payments-smoke`\n  - Pod template labels: `app=payments-smoke`\n  - Container: `nginx:1.25`, exposes `containerPort:\
+      \ 8080` (`name: http`)\n  - Status shows **0 available** / pods unavailable.\n\n- **Deployment `payments-smoke-test`**\n  - `spec.selector.matchLabels`: `app=payments-smoke-test`\n  - Pod template\
+      \ labels: `app=payments-smoke-test`\n  - Status shows **FailedCreate** due to SCC `runAsUser` range violation (so pods aren’t being created).\n\nService in `payments`:\n\n- **Service `payments-api`**\n\
+      \  - Service name to use in-cluster: `payments-api` (and `payments-api.payments.svc`)\n  - Ports: `8080` (http), `8081` (metrics)\n  - **Selector:** `app=payments-api`\n\n**Implication:** Unless there\
+      \ is some other workload in `payments` creatin"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_05
+  tag: hard_05
+  description: 'Hard scenario 5: namespaces_list, resources_list, resources_list'
+  turns:
+  - turn_id: hard_05
+    query: "In the cluster project/namespace called “demo-oom”, we’re seeing intermittent restarts and I suspect an OOM-related crash plus possible node pressure. Can you:\n    \n    1) Confirm “demo-oom”\
+      \ exists as an active namespace, then list the pods there and identify which ones are restarting.\n    2) For the most frequently restarting pod, pull the last crash logs (the previous container logs,\
+      \ not just the current stream) and summarize the likely cause.\n    3) If the logs point to node issues, figure out which node that pod is/was running on and fetch the last 200 lines of kubelet logs\
+      \ from that node.\n    4) Finally, create/update a minimal NetworkPolicy in “demo-oom” that only allows ingress to pods labeled app=demo-oom from within the same namespace (deny all other ingress),\
+      \ so we can isolate noisy traffic while we troubleshoot."
+    expected_response: "### 1) Namespace + pods + restarts\n- **Namespace `demo-oom`: Active**.\n- Current pods in `demo-oom`:\n  - `oom-test-856c45b865-vfcjf` — **RESTARTS: 0**, **STATUS: ImagePullBackOff**\
+      \ (Pod is Pending; container has not started).\n\nSo, **no currently-running pod in `demo-oom` is restarting** based on pod status right now.\n\n### 2) “Most frequently restarting pod” + previous\
+      \ crash logs + likely cause\n- In the current pod list, there isn’t a restarting pod to target.\n- For `oom-test-856c45b865-vfcjf`, **previous container logs aren’t available** because the container\
+      \ **never successfully started** (image pull is failing), so there’s no “last crash” log stream to retrieve.\n\n**Likely cause of the failure (from pod status/events):**\n- **Image pulls from Docker\
+      \ Hub are being rate-limited** (unauthenticated pull limit), leading to `ErrImagePull` → `ImagePullBackOff`.\n- This is **not an OOMKill signal**; it’s an **image registry pull throttling** issue.\n\
+      \nSeparately, namespace events show a pod named"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_06
+  tag: hard_06
+  description: 'Hard scenario 6: configuration_contexts_list, pods_list, nodes_log'
+  turns:
+  - turn_id: hard_06
+    query: "In the cluster, I’m trying to troubleshoot the “OOM Troubleshooting Scenario” project (namespace demo-oom), but I have a lot of kube contexts and I’m not sure I’m pointed at the right one. Can\
+      \ you first confirm which available context corresponds to the demo-oom scenario, switch to using that context for the rest of the checks, then:\n    \n    1) list the pods in demo-oom that aren’t\
+      \ Running (please keep the output focused so it doesn’t get truncated),\n    2) identify which node the worst pod is landing on and pull the last ~200 lines of kubelet logs from that node around the\
+      \ time of the failures,\n    3) and finally delete the failing pod so it gets recreated?\n    \n    Please include the exact pod name and node name you acted on."
+    expected_response: "**Context for the demo-oom scenario:**  \nUse the kube context named **`demo-oom/api-h0p8o2c2b7w3r1y-fjws-p3-openshiftapps-com:443/ssudalai@redhat.com`** (it explicitly matches the\
+      \ `demo-oom` project/namespace).\n\n### 1) Pods in `demo-oom` that aren’t Running (focused)\n- **Pod:** `oom-test-856c45b865-vfcjf`  \n  **Status:** `ImagePullBackOff` (Pod phase `Pending`)  \n  **Node:**\
+      \ `ip-10-0-1-135.us-east-2.compute.internal`  \n  **Reason (from pod status):** unauthenticated pull rate limit while pulling `python:3.11-alpine` from Docker Hub (`toomanyrequests`)\n\n### 2) “Worst”\
+      \ pod node + kubelet logs (~200 lines)\n- **Worst pod acted on:** `oom-test-856c45b865-vfcjf`\n- **Node:** `ip-10-0-1-135.us-east-2.compute.internal`\n\nI attempted to pull the last ~200 lines of\
+      \ kubelet logs from that node, but access to node proxy/log retrieval is **forbidden** for the current user (RBAC). So I can’t provide kubelet logs from here.\n\nWhat I *can* confirm from namespace\
+      \ events around the failures:\n- Repeated **`"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_07
+  tag: hard_07
+  description: 'Hard scenario 7: projects_list, resources_list, resources_get'
+  turns:
+  - turn_id: hard_07
+    query: "In the “Payments Scenario” OpenShift project (payments), one of our services is intermittently failing. Can you:\n    1) confirm the payments project exists,\n    2) list the Deployments in\
+      \ that project and pick the one that looks like the API/service backend,\n    3) inspect that Deployment to find its pod label selector,\n    4) list the pods matching that selector,\n    and then\
+      \ 5) exec into one of the running pods and curl its local health endpoint (try http://127.0.0.1:8080/healthz and http://127.0.0.1:8080/actuator/health) and tell me which one responds and what status/code\
+      \ you get?"
+    expected_response: '1) **Confirm project exists:** Yes — the **`payments`** project (“Payments Scenario”) exists and is **Active**.
+
+
+      2) **Deployments in `payments` + likely backend:**
+
+      - `payments-smoke`
+
+      - `payments-smoke-test`
+
+      - `test-nginx-check`
+
+
+      None of these look like a real API/service backend (they look like smoke/check workloads). If I must pick the “API/service-like” one by name, it’d be **`payments-smoke-test`**, but its container command
+      is just an infinite loop printing a message (not an HTTP service).
+
+
+      3) **Deployment pod label selector (for `payments-smoke-test`):**
+
+      - `spec.selector.matchLabels: app=payments-smoke-test`
+
+
+      4) **Pods matching that selector:**
+
+      - **None** (0 pods)
+
+
+      Reason: the Deployment is failing to create pods due to an OpenShift SCC/UID constraint error (`runAsUser: 1001` not in the namespace’s allowed UID range), so no pods ever come up.
+
+
+      5) **Exec + curl health endpoint from a running pod:**
+
+      - Not possible right now because there are **no Running pods** for `app=payments-smo'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_08
+  tag: hard_08
+  description: 'Hard scenario 8: configuration_contexts_list, pods_list, events_list'
+  turns:
+  - turn_id: hard_08
+    query: "In the “Payments Scenario” project (namespace: payments), users are reporting intermittent 5xx errors. I’m not sure I’m even pointed at the right cluster context because I have a lot of them\
+      \ (including one that starts with “payments/…” and others like “demo-netpol/…”).\n    \n    Can you:\n    1) confirm which context I should be using for the payments project,\n    2) list the pods\
+      \ in the payments namespace and identify any that look unhealthy or restarting,\n    3) check recent warning/error events in that namespace to see what’s driving the failures,\n    and 4) for the\
+      \ most suspicious pod, run a couple in-container checks (like DNS resolution and a quick curl to a dependency) to help pinpoint whether this is an app crash, a probe issue, or a networking/DNS problem?"
+    expected_response: '1) **Correct context for the `payments` project**
+
+      - Use: **`payments/api-h0p8o2c2b7w3r1y-fjws-p3-openshiftapps-com:443/ssudalai@redhat.com`**
+
+      - In that context, the **`payments`** namespace exists and is **Active**.
+
+
+      2) **Pods in `payments` + unhealthy/restarting**
+
+      Pods currently in `payments` (all unhealthy):
+
+      - `payments-debug-curl` → **ImagePullBackOff**
+
+      - `payments-netcheck` → **ImagePullBackOff**
+
+      - `payments-smoke-6bd7664445-5rxkx` → **ImagePullBackOff**
+
+      - `payments-smoke-6bd7664445-fr8pj` → **ImagePullBackOff**
+
+      - `test-nginx-check-59775f6f7d-jxfbj` → **ImagePullBackOff**
+
+      - `test-nginx-check-7bbf5789df-s7svj` → **ImagePullBackOff**
+
+
+      No meaningful “restarting” signal here yet—the containers mostly **aren’t starting at all** due to image pulls failing.
+
+
+      3) **Recent warning/error events in `payments`**
+
+      I attempted to pull namespace events, but the output was too large/truncated in this interface. Given *every* pod is **ImagePullBackOff**, the events are almost certainly dominated by:
+
+      '
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_09
+  tag: hard_09
+  description: 'Hard scenario 9: projects_list, resources_list, resources_create_or_update'
+  turns:
+  - turn_id: hard_09
+    query: In the “OOM Troubleshooting Scenario” project (I think the namespace is called demo-oom), can you first confirm the exact project name, then list the Deployments running there, and finally update
+      the main Deployment so it’s less likely to get OOM-killed by setting a reasonable memory request/limit (e.g., request 256Mi, limit 512Mi) on its container(s)? After the update, please tell me which
+      Deployment you changed and what the new resource settings are.
+    expected_response: "**Confirmed project/namespace:** `demo-oom` (display name: *OOM Troubleshooting Scenario*)\n\n**Deployments in `demo-oom`:**\n- `oom-test` (1 container: `oom-test`, image `python:3.11-alpine`)\n\
+      \n**Update status:** I was **not able to apply** the resource change from here—the update attempt was rejected because the submitted manifest didn’t include required Deployment fields (`spec.selector`\
+      \ + matching pod template labels).\n\n### Apply the requested memory request/limit (recommended)\nRun one of these in your terminal:\n\n**Option A (simplest):**\n```bash\noc -n demo-oom set resources\
+      \ deployment/oom-test \\\n  --containers='*' \\\n  --requests=memory=256Mi \\\n  --limits=memory=512Mi\n```\n\n**Option B (JSON patch):**\n```bash\noc -n demo-oom patch deployment/oom-test --type='json'\
+      \ -p='[\n  {\"op\":\"add\",\"path\":\"/spec/template/spec/containers/0/resources\",\"value\":{\n    \"requests\":{\"memory\":\"256Mi\"},\n    \"limits\":{\"memory\":\"512Mi\"}\n  }}\n]'\n```\n\n###\
+      \ What will change\n- **Deployment:** `oom-test`\n- **New container"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_10
+  tag: hard_10
+  description: 'Hard scenario 10: resources_list, resources_list, pods_exec'
+  turns:
+  - turn_id: hard_10
+    query: "In the “OOM Troubleshooting Scenario” project (namespace demo-oom), can you help me figure out which pod is getting OOM-killed and why? \n    Please:\n    1) list the pods currently in demo-oom\
+      \ and identify any that look unhealthy (CrashLoopBackOff / frequent restarts),\n    2) check the recent events in demo-oom for OOMKilled signals and note which pod they reference,\n    3) exec into\
+      \ the suspected pod’s main container and run commands to show its memory limit and current memory usage (for example, check /sys/fs/cgroup/* memory limit files and run something like `free -m`), then\
+      \ summarize what you found."
+    expected_response: 'I can’t complete (1) and (3) directly from here right now (I’m unable to query the live pod list / exec into a container in your cluster at the moment), but I *can* interpret what
+      I do see from the **recent events** in `demo-oom`, and it does **not** indicate any OOMKills.
+
+
+      ## 1) Pods in `demo-oom` + unhealthy candidates
+
+      I can’t pull the current pod list from the cluster right now. Based on the namespace events, these pods have existed recently:
+
+
+      - `oom-debug` — **unhealthy**: event shows **“Back-off restarting failed container”** (CrashLoopBackOff behavior).
+
+      - Multiple `oom-test-856c45b865-*` pods — **unhealthy**: **ErrImagePull / ImagePullBackOff** due to registry rate limiting.
+
+      - `tmp-netcheck` — **unhealthy**: **ErrImagePull / ImagePullBackOff** due to registry rate limiting.
+
+
+      So the main “unhealthy” pod from a restart perspective is **`oom-debug`**. The others are failing before they even start (image pulls), so they won’t be OOM-killed.
+
+
+      ## 2) Events: OOMKilled signals
+
+      In the eve'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_11
+  tag: hard_11
+  description: 'Hard scenario 11: pods_list, resources_get, resources_get'
+  turns:
+  - turn_id: hard_11
+    query: "In the demo-oom namespace, I’m seeing signs that something is repeatedly crashing due to memory pressure. Can you:\n    1) identify which pod(s) in that namespace are not healthy (e.g., not\
+      \ Running or showing frequent restarts),\n    2) pick the worst offender and tell me what its current status/reason is and which workload owns it,\n    3) then pull up the owning Deployment and summarize\
+      \ whether it looks like a rollout/replica issue (desired vs available replicas, and any obvious conditions)?\n    \n    Please base this only on what the cluster reports (pod details + the owning\
+      \ Deployment), not on Secrets or RBAC info."
+    expected_response: '### 1) Pods in `demo-oom` that are not healthy
+
+      From the current pod list in `demo-oom`, **none look unhealthy** (no CrashLoopBackOff, no restarts observed):
+
+
+      - `mem-hog-66b77c59bf-pqk5f`: **Running**, **restarts: 0**
+
+      - `oom-check`: **Succeeded/Completed** (one-shot pod), **restarts: 0**
+
+
+      ### 2) “Worst offender”: current status/reason + owning workload
+
+      Given the above, the only continuously-running candidate is:
+
+
+      - **Pod:** `mem-hog-66b77c59bf-pqk5f`
+
+      - **Current status:** `Running` (container state: `running`, **restartCount: 0**, no termination reason)
+
+      - **Immediate owner:** **ReplicaSet** `mem-hog-66b77c59bf`
+
+      - **Workload owner (controller):** **Deployment** `mem-hog` (the ReplicaSet is controlled by Deployment `mem-hog`)
+
+
+      ### 3) Owning Deployment rollout/replica health summary
+
+      I can’t retrieve the Deployment object details in this response, so I can’t truthfully report its **desired vs available replicas** or **Deployment conditions** from cluster data here.
+
+
+      What I *can* confirm fro'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_12
+  tag: hard_12
+  description: 'Hard scenario 12: namespaces_list, pods_log, pods_exec'
+  turns:
+  - turn_id: hard_12
+    query: In the cluster where the “payments” project exists, I’m troubleshooting a payment API pod that’s been restarting. First, confirm that the “payments” namespace is present, then pull the last 100
+      lines of logs from the crashing pod (including the previous terminated container logs so we can see why it exited). After that, exec into the running container to run a quick DNS/connectivity check
+      (for example, resolve a hostname and curl a local health endpoint). If it still looks stuck after verifying, delete that pod to force a restart and tell me whether the replacement comes up clean based
+      on its fresh logs.
+    expected_response: '- Confirmed: the **`payments`** namespace/project **is present** (Active).
+
+
+      I can’t pull logs/exec/delete from here right now because I don’t currently have sufficient access to run further live cluster actions in this session.
+
+
+      If you run the following from your CLI, it will do exactly what you asked (and you can paste results back here):
+
+
+      ## 1) Identify the restarting “payment API” pod
+
+      ```bash
+
+      oc -n payments get pods -o wide
+
+      # If you know the app label, even better:
+
+      # oc -n payments get pods -l app=payment-api
+
+      ```
+
+
+      ## 2) Last 100 lines of logs, including previous container
+
+      ```bash
+
+      POD=<crashing-pod-name>
+
+      CONTAINER=<container-name-if-needed>
+
+
+      # current
+
+      oc -n payments logs "$POD" -c "$CONTAINER" --tail=100
+
+
+      # previous (terminated instance) — most important for exit reason
+
+      oc -n payments logs "$POD" -c "$CONTAINER" --previous --tail=100
+
+      ```
+
+
+      ## 3) Exec DNS + local health check
+
+      ```bash
+
+      oc -n payments rsh "$POD" -c "$CONTAINER" sh -c ''
+
+      set -e
+
+      echo "== DNS ==";
+
+      getent hosts kubernetes.defa'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_13
+  tag: hard_13
+  description: 'Hard scenario 13: pods_list, pods_exec, resources_get'
+  turns:
+  - turn_id: hard_13
+    query: "In the “demo-oom” namespace (the OOM troubleshooting scenario), I think one of the app pods is repeatedly restarting due to memory pressure. Can you:\n    1) list the pods in that namespace\
+      \ and identify which pod has the highest restart count (or looks unhealthy),\n    2) run a command inside that pod to show current memory usage (something like checking /proc/meminfo and the top memory-hungry\
+      \ processes),\n    3) then fetch the full Pod definition/status so I can see its resource requests/limits and the node it’s running on?"
+    expected_response: '### 1) Pods in `demo-oom` + “most unhealthy” / highest restarts
+
+      Current pods:
+
+
+      - `dns-debug` — `ImagePullBackOff`, restarts **0**
+
+      - `memcheck` — `ImagePullBackOff`, restarts **0**
+
+      - `oom-test` — `ImagePullBackOff`, restarts **0**
+
+      - `oom-test-856c45b865-fk8tt` — `ImagePullBackOff`, restarts **0**
+
+
+      There isn’t a pod “repeatedly restarting due to memory pressure” right now—**all restart counts are 0**. The unhealthy signal is **image pull failures** (not OOMKills).
+
+
+      Most relevant “app” pod to inspect: **`oom-test-856c45b865-fk8tt`** (from the `oom-test` Deployment/ReplicaSet).
+
+
+      ---
+
+
+      ### 2) Exec into that pod to check memory usage
+
+      I attempted to run memory inspection commands (`/proc/meminfo`, top RSS processes), but **exec isn’t possible because the container hasn’t started** (it’s stuck in `ImagePullBackOff`, so there’s no
+      running container to exec into).
+
+
+      What’s blocking start (from pod status/events): **Docker Hub unauthenticated pull rate limit** while pulling `python:3.11-alpine` (`t'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_14
+  tag: hard_14
+  description: 'Hard scenario 14: resources_list, resources_get, pods_log'
+  turns:
+  - turn_id: hard_14
+    query: In the “demo-oom” project (OOM Troubleshooting Scenario), I suspect one of the workload pods is getting killed for running out of memory. Can you list the pods in that namespace, identify which
+      one has recent restarts/termination indicating OOMKilled, then show me the key status details (last termination reason/exit code) and the last ~200 lines of logs from the affected container so I can
+      see what it was doing before it died?
+    expected_response: '### Pods in `demo-oom`
+
+      From the namespace listing, there are 3 pods and **none show restarts**:
+
+
+      - `dns-debug` — `STATUS: ImagePullBackOff`, `RESTARTS: 0`
+
+      - `memcheck` — `STATUS: ImagePullBackOff`, `RESTARTS: 0`
+
+      - `oom-test` — `STATUS: ImagePullBackOff`, `RESTARTS: 0`
+
+
+      ### Any indication of `OOMKilled` / recent termination?
+
+      No. I checked the detailed `containerStatuses` for all three pods:
+
+
+      - **All have** `restartCount: 0`
+
+      - **All have** `lastState: {}` (no prior termination recorded)
+
+      - **All are currently** `state: waiting` with `reason: ImagePullBackOff`
+
+
+      So there isn’t a workload pod currently being killed for OOM in this namespace—none of these containers have even started.
+
+
+      ### Key status details (what’s actually failing)
+
+      **`oom-test` / container `busybox`:**
+
+      - Current state: `waiting`
+
+      - Reason: `ImagePullBackOff`
+
+      - Message (key part): Docker Hub unauthenticated pull rate limit (`toomanyrequests`)
+
+
+      **`memcheck` / container `memcheck`:**
+
+      - Current state: `waiting`
+
+      - Reason: `ImageP'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_15
+  tag: hard_15
+  description: 'Hard scenario 15: projects_list, pods_list, pods_run'
+  turns:
+  - turn_id: hard_15
+    query: In this cluster, I’m looking for the OpenShift project whose display name is “Payments Scenario” (I think the namespace is “payments”, but please confirm). Once you find it, list the pods currently
+      running in that project and tell me if any aren’t in Running phase. After that, start a temporary debug pod in the same namespace using the ubi9/ubi-minimal image (give it a readable name like “payments-debug”)
+      so I can use it for quick connectivity checks.
+    expected_response: '**Project found:** `payments` (display name **“Payments Scenario”**) — your guess was correct.
+
+
+      ### Pods currently in `payments` and their phase/status
+
+      None are in **Running** right now.
+
+
+      - `api-reachability-check` — **ContainerCreating** (not Running)
+
+      - `dns-https-debug` — **ImagePullBackOff** (not Running)
+
+      - `payments-debug-curl` — **ImagePullBackOff** (not Running)
+
+      - `payments-netcheck` — **ImagePullBackOff** (not Running)
+
+      - `payments-smoke-6bd7664445-p5vck` — **ImagePullBackOff** (not Running)
+
+      - `test-nginx-check-59775f6f7d-gjpbr` — **ImagePullBackOff** (not Running)
+
+      - `test-nginx-check-59775f6f7d-jxfbj` — **ImagePullBackOff** (not Running)
+
+      - `test-nginx-check-59775f6f7d-l89fv` — **ImagePullBackOff** (not Running)
+
+      - `test-nginx-check-7bbf5789df-s7svj` — **ImagePullBackOff** (not Running)
+
+      - `test-nginx-check-7bbf5789df-ttg4n` — **ImagePullBackOff** (not Running)
+
+      - `tmp-netcheck` — **ImagePullBackOff** (not Running)
+
+
+      ### Temporary debug pod
+
+      I created a debug pod named **`payments-deb'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_16
+  tag: hard_16
+  description: 'Hard scenario 16: configuration_contexts_list, events_list, pods_get'
+  turns:
+  - turn_id: hard_16
+    query: In the “OOM Troubleshooting Scenario” project (the demo-oom environment), something is restarting and users report intermittent 500s. Can you switch to the demo-oom cluster context, pull the
+      recent Warning events for that namespace, and then inspect the pod that’s showing OOMKilled (or eviction) to confirm its current phase/last termination reason and any relevant conditions?
+    expected_response: "Using **cluster context `demo-oom/...`** and namespace **`demo-oom`**:\n\n## Recent *Warning* events (demo-oom)\nThe warnings are **not OOMKilled/eviction**. They’re dominated by\
+      \ **image pull failures**:\n\n- `oom-test-*` pods:\n  - `Failed` / `ErrImagePull` / `ImagePullBackOff`\n  - Root message: **Docker Hub unauthenticated pull rate limit** (`toomanyrequests: You have\
+      \ reached your unauthenticated pull rate limit`) while pulling **`python:3.11-alpine`**\n- `tmp-netcheck` pod:\n  - Same pattern pulling **`curlimages/curl`** (rate-limited)\n- `oom-debug` pod:\n\
+      \  - `Warning BackOff`: **“Back-off restarting failed container”** (container is restarting), but the event stream shown did **not** indicate OOMKilled.\n\n## Pods currently in the namespace\nCurrently\
+      \ listed pods are **all `ImagePullBackOff`** (not running):\n- `oom-test-856c45b865-c9vmv`\n- `oom-test-856c45b865-ws5qn`\n- `oom-test-856c45b865-xkjn8`\n\n## About the “OOMKilled (or eviction)” ask\n\
+      In the event output captured, I **do not see any `OOMK"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_17
+  tag: hard_17
+  description: 'Hard scenario 17: pods_list, resources_get, resources_get'
+  turns:
+  - turn_id: hard_17
+    query: "In the demo-oom namespace, we’re seeing intermittent outages. Can you:\n    1) find which pod(s) are restarting (not in a healthy Running state),\n    2) pick the worst offender and show me\
+      \ what it’s owned by (Deployment or StatefulSet) from its metadata,\n    3) then increase that owning workload’s replica count by 1 to reduce load,\n    and 4) confirm what the replica count is after\
+      \ the change?"
+    expected_response: '1) **Pods not healthy / restarting in `demo-oom`:**
+
+      - `dns-troubleshoot` — **ImagePullBackOff**, restarts **0**
+
+      - `oom-debug` — **CrashLoopBackOff**, restarts **14**
+
+      - `oom-demo-68bf47bc4d-524x6` — **Running but unhealthy (OOMKilled)**, restarts **15**
+
+      - `oom-demo-68bf47bc4d-cv266` — **OOMKilled**, restarts **8**
+
+      - `oom-demo-68bf47bc4d-fnhx8` — **CrashLoopBackOff**, restarts **14**
+
+
+      2) **Worst offender + what it’s owned by (from metadata):**
+
+      - Worst offender: **`oom-demo-68bf47bc4d-524x6`** (restartCount **15**)
+
+      - Pod `ownerReferences`: **ReplicaSet `oom-demo-68bf47bc4d`**
+
+      - That ReplicaSet `ownerReferences`: **Deployment `oom-demo`**
+
+
+      3) **Increase owning workload replicas by 1**
+
+      I can’t perform the scaling action from this interface right now, but you can run:
+
+
+      ```bash
+
+      oc -n demo-oom scale deployment/oom-demo --replicas=4
+
+      ```
+
+
+      (Deployment is currently at **3** replicas.)
+
+
+      4) **Confirm replicas after change**
+
+      ```bash
+
+      oc -n demo-oom get deploy/oom-demo -o jsonpath=''{.spec.replicas}{"\n'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_18
+  tag: hard_18
+  description: 'Hard scenario 18: namespaces_list, nodes_top, pods_delete'
+  turns:
+  - turn_id: hard_18
+    query: I’m troubleshooting the “OOM Troubleshooting Scenario” project (I think the namespace is something like demo-oom, but please confirm what it’s actually called in this cluster). Can you check
+      which worker node is currently the most memory pressured, and then restart the worst-behaving pod in that demo-oom namespace by deleting it so it gets recreated? Please tell me which node you picked
+      (with its current CPU/memory from the metrics view) and the exact pod name you deleted.
+    expected_response: 'Namespace/project name in this cluster: **`demo-oom`**.
+
+
+      Most memory-pressured worker node (from the metrics view):
+
+      - **Node:** `ip-10-0-1-135.us-east-2.compute.internal`
+
+      - **CPU:** `680m` (**4%**)
+
+      - **Memory:** `58853Mi` (**46%**)
+
+
+      Pods currently in `demo-oom`:
+
+      - `dns-troubleshoot` (**ImagePullBackOff**)
+
+      - `hello-nginx-6d78c8d968-m2r2s` (**ImagePullBackOff**)
+
+
+      I can’t perform the pod deletion/restart action from this interface right now (no ability to execute cluster changes), so **I did not delete any pod**.
+
+
+      If you want to restart the “worst-behaving” one anyway, I’d delete:
+
+      - **Pod to delete:** `hello-nginx-6d78c8d968-m2r2s` (it will be recreated by its ReplicaSet/Deployment)
+
+
+      If you paste the output of your delete attempt (or the event describing the image pull failure), I can help pinpoint why this “OOM scenario” namespace is currently stuck on image pulls instead of
+      OOM behavior.'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_19
+  tag: hard_19
+  description: 'Hard scenario 19: pods_top, pods_get, nodes_stats_summary'
+  turns:
+  - turn_id: hard_19
+    query: In the “demo-oom” project, can you identify which pod is currently using the most memory, then pull the full pod details for that pod (so I can see restarts, node it’s on, and any resource limits/requests),
+      and finally check the kubelet summary stats for the node hosting it to confirm whether the node is under memory pressure?
+    expected_response: 'I can see the `demo-oom` namespace exists, but I can’t directly retrieve the live “top”/kubelet summary data from here right now. You can pull exactly what you asked for with the
+      following OpenShift CLI commands:
+
+
+      ## 1) Identify the pod using the most memory (in `demo-oom`)
+
+      ```bash
+
+      oc adm top pod -n demo-oom --sort-by=memory
+
+      ```
+
+      Pick the first pod in the list (highest `MEMORY`).
+
+
+      If you get “metrics not available”, the cluster’s resource metrics pipeline isn’t providing `top` data; tell me the exact error and we can use an alternate method.
+
+
+      ## 2) Pull full pod details (restarts, node, requests/limits)
+
+      Replace `$POD` with the name from step 1:
+
+      ```bash
+
+      POD=<pod-name>
+
+
+      # Human-friendly (includes restarts, node, events)
+
+      oc describe pod -n demo-oom "$POD"
+
+
+      # Full object (includes requests/limits in spec)
+
+      oc get pod -n demo-oom "$POD" -o yaml
+
+
+      # Quick extraction of node + restarts
+
+      oc get pod -n demo-oom "$POD" -o wide
+
+      oc get pod -n demo-oom "$POD" -o jsonpath=''{range .status.containerStatus'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_20
+  tag: hard_20
+  description: 'Hard scenario 20: configuration_contexts_list, projects_list, pods_exec'
+  turns:
+  - turn_id: hard_20
+    query: "In my kubeconfig I have a lot of “scenario-*” contexts and I’m not sure which one I’m currently using. Can you (1) confirm what contexts are available and help me pick the one that targets the\
+      \ Payments cluster, (2) find the OpenShift project whose display name is “Payments Scenario” (I think the project is called “payments”), and then (3) exec into one of the running app pods in that\
+      \ project to run:\n    \n    /bin/sh -c \"printenv | egrep '^(ENV|APP_ENV|SPRING_PROFILES_ACTIVE)=' && date\"\n    \n    Please include which context you used, the exact pod you ran it on, and the\
+      \ command output."
+    expected_response: '### (1) Contexts available + which one targets Payments
+
+      Your kubeconfig has many `scenario-*` contexts; the ones relevant to Payments include:
+
+
+      - `payments/api-h0p8o2c2b7w3r1y-fjws-p3-openshiftapps-com:443/ssudalai@redhat.com`
+
+      - `scenario-payments-prod/api-h0p8o2c2b7w3r1y-fjws-p3-openshiftapps-com:443/ssudalai@redhat.com`
+
+      - `scenario-payments-worker/...`
+
+      - `scenario-payments-netpol/...`
+
+      - `scenario-payments-misconfig/...`
+
+      - (and several other `scenario-payments-*`)
+
+
+      To target the Payments cluster directly (not a specific scenario), the best pick is:
+
+      - **Context used:** `payments/api-h0p8o2c2b7w3r1y-fjws-p3-openshiftapps-com:443/ssudalai@redhat.com`
+
+
+      ### (2) Project with display name “Payments Scenario”
+
+      In that context, the OpenShift Project:
+
+      - **name:** `payments`
+
+      - **display name annotation:** `openshift.io/display-name: Payments Scenario`
+
+
+      ### (3) Exec into a running app pod and run the command
+
+      I can identify a running pod in `payments`, but I **can’t run an interactive exec command '
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_21
+  tag: hard_21
+  description: 'Hard scenario 21: projects_list, pods_list, pods_delete'
+  turns:
+  - turn_id: hard_21
+    query: In the cluster where the “Payments Scenario” project exists, can you find the actual namespace name for that project, then list the running pods in that namespace, and delete the pod that looks
+      most likely to be misbehaving (e.g., the one with the highest restart count or clearly unhealthy status) so it gets recreated?
+    expected_response: "- **“Payments Scenario” project actual namespace:** `payments`\n\n- **Pods currently in `payments` (pod phase = Running):**\n  - `payments-debug-curl` — `CrashLoopBackOff`, restarts\
+      \ **76**\n  - `ubi9-smoke` — `CrashLoopBackOff`, restarts **87**\n\n- **Action taken (most likely misbehaving = highest restarts):**\n  - Deleted pod: `ubi9-smoke` (namespace `payments`) so it can\
+      \ be recreated."
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_22
+  tag: hard_22
+  description: 'Hard scenario 22: projects_list, pods_top, pods_delete'
+  turns:
+  - turn_id: hard_22
+    query: In the cluster, can you find the OpenShift project that shows up as “OOM Troubleshooting Scenario” (I think the project name is demo-oom), then check which pod in that project is currently using
+      the most memory, and restart just that one by deleting the pod so it gets recreated?
+    expected_response: 'Found the project **demo-oom** with display name **“OOM Troubleshooting Scenario”**.
+
+
+      In that project there was only **one pod** at the moment:
+
+      - `oom-demo-68bf47bc4d-zd4tl` (was `CrashLoopBackOff`)
+
+
+      Since it was the only pod, it’s also the one using the most memory by default. I **restarted just that pod** by **deleting** `oom-demo-68bf47bc4d-zd4tl` so the controller can recreate it.
+
+
+      If you want to confirm the restart, check that a **new `oom-demo-...` pod name** appears and is progressing through `Pending` → `Running` (or back to crash if the underlying OOM condition persists).'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_23
+  tag: hard_23
+  description: 'Hard scenario 23: pods_list, resources_get, pods_log'
+  turns:
+  - turn_id: hard_23
+    query: "In the payments project (the “Payments Scenario”), we’re getting intermittent HTTP 500s. Can you:\n    1) find any pods in that namespace that are restarting or not Running,\n    2) identify\
+      \ which Deployment they belong to,\n    3) pull both the current logs and the previous-container logs (so we can see the crash reason) for the worst offender,\n    and 4) if it looks like a bad rollout,\
+      \ scale the Deployment down to 0 temporarily and then confirm the pods stop coming back?"
+    expected_response: "### 1) Pods in `payments` that are **not Running** / restarting\nFrom what I can see in `payments`, **none of the workload pods are healthy** right now:\n\n- **CrashLoopBackOff (restarting)**\n\
+      \  - `tmp-curl-check` — **CrashLoopBackOff**, **13 restarts** (worst offender)\n\n- **ImagePullBackOff / ErrImagePull (not running)**\n  - `payments-smoke-6bd7664445-zhbr4`\n  - `test-nginx-check-59775f6f7d-7v72k`\n\
+      \  - `test-nginx-check-7bbf5789df-ttg4n`\n  - plus several debug/smoke/helper pods: `api-reachability-check`, `curl-smoke`, `debug-shell`, `dns-https-debug`, `payments-debug-curl`, `payments-netcheck`,\
+      \ `tmp-netcheck`, etc.\n\n### 2) Which Deployment they belong to\n- `payments-smoke-6bd7664445-zhbr4` → **Deployment `payments-smoke`**  \n  (Pod owner is ReplicaSet `payments-smoke-6bd7664445`)\n\
+      \n- `test-nginx-check-59775f6f7d-7v72k` and `test-nginx-check-7bbf5789df-ttg4n` → **Deployment `test-nginx-check`**  \n  (by naming/labels; these are ReplicaSet-managed pods for that Deployment)\n\
+      \n- `tmp-curl-check` "
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_24
+  tag: hard_24
+  description: 'Hard scenario 24: pods_list_in_namespace, resources_get, resources_get'
+  turns:
+  - turn_id: hard_24
+    query: "In the “demo-oom” (OOM Troubleshooting Scenario) namespace, I think one of the app pods is getting OOMKilled and restarting a lot. Can you:\n    1) list the pods there and identify which one\
+      \ is restarting the most,\n    2) inspect that pod to confirm the container name and whether the last termination reason looks like OOMKilled,\n    3) find which Deployment owns it and update the\
+      \ Deployment to increase the container memory limit to 512Mi (and request to 256Mi),\n    4) then re-check the namespace to confirm new pods come up and the restart count stops increasing?"
+    expected_response: '### 1) Pods in `demo-oom` + who’s restarting most
+
+      Current pods in `demo-oom`:
+
+
+      - `dns-debug` — **RESTARTS: 0** — `ImagePullBackOff`
+
+      - `memcheck` — **RESTARTS: 0** — `ImagePullBackOff`
+
+      - `oom-test` — **RESTARTS: 0** — `ImagePullBackOff`
+
+
+      So **none are restarting** right now (all restart counts are 0). They’re not getting far enough to OOM—they’re failing to pull images.
+
+
+      ### 2) Inspect suspected pod: container name + last termination reason
+
+      I inspected pod `oom-test`:
+
+
+      - **Container name:** `busybox`
+
+      - **State:** `waiting` (`ImagePullBackOff`)
+
+      - **Last termination:** none (it has **not started**, so there’s no `lastState.terminated.reason` like `OOMKilled` to confirm)
+
+      - The pull failure is due to an unauthenticated registry rate limit (Docker Hub), not OOM.
+
+
+      ### 3) Find owning Deployment + update memory request/limit
+
+      There *is* a Deployment named **`oom-test`** in the namespace, but note:
+
+
+      - The **Deployment is scaled to `replicas: 0`** currently.
+
+      - The pod you pointed at (`Pod/oom-test'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_25
+  tag: hard_25
+  description: 'Hard scenario 25: pods_log, pods_log, pods_delete'
+  turns:
+  - turn_id: hard_25
+    query: In the demo-oom namespace, one of the app pods has been restarting and users are reporting intermittent errors. Can you pull the current logs for the restarting pod, then also pull the previous
+      container logs so we can see what happened right before it restarted? If the logs clearly show it’s stuck in a bad state, go ahead and delete that pod to force a fresh restart and then grab the new
+      pod’s logs again (last ~100 lines) to confirm it comes up cleanly.
+    expected_response: 'In `demo-oom`, the restarting pod is:
+
+
+      - `oom-demo-68bf47bc4d-wtwr4` (CrashLoopBackOff, restart count increasing)
+
+
+      ### Current + previous container logs
+
+      Both the **current** and **previous** logs for its container are **empty** (no stdout/stderr emitted before it dies).
+
+
+      ### What happened right before the restart (from pod status)
+
+      The container is being killed by the kernel due to memory exhaustion:
+
+
+      - `lastState.terminated.reason: OOMKilled`
+
+      - `lastState.terminated.exitCode: 137`
+
+
+      And the container command shown in the pod spec is an infinite loop allocating memory repeatedly, with a very small memory limit:
+
+
+      - memory limit: **32Mi**
+
+      - behavior: allocates ~1Mi chunks repeatedly until it exceeds the limit
+
+
+      So it’s not “stuck” in a transient bad state; it’s deterministically OOM-killing and will continue to crash-loop even if you delete it.
+
+
+      ### Recommendation (instead of deleting)
+
+      To stop the intermittent errors, you need one of:
+
+      - **Fix the app** to not unbounded-allocate memory, or
+
+      -'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_26
+  tag: hard_26
+  description: 'Hard scenario 26: resources_list, pods_delete, resources_list'
+  turns:
+  - turn_id: hard_26
+    query: In the “payments” project (Payments Scenario), I want to bounce just one workload instance without touching the whole deployment. Can you list the pods currently running in the payments namespace,
+      pick the one that has the most recent start time, delete only that pod to force a restart, and then re-list the pods to confirm a replacement pod came up?
+    expected_response: "Pods currently in `payments`:\n\n- `payments-debug-curl` — `ImagePullBackOff` — age ~29m  \n- `payments-netcheck` — `ImagePullBackOff` — age ~35m  \n- `payments-smoke-6bd7664445-fr8pj`\
+      \ — (was) age ~23m  \n- `test-nginx-check-59775f6f7d-jxfbj` — `ImagePullBackOff` — age ~36m  \n- `test-nginx-check-7bbf5789df-s7svj` — `ImagePullBackOff` — age ~36m  \n\nMost recent start time was:\n\
+      - `payments-smoke-6bd7664445-fr8pj` (startTime `2026-04-12T07:19:54Z`)\n\nAction taken (single-instance bounce):\n- Deleted **only** `payments-smoke-6bd7664445-fr8pj`\n\nRe-list confirmation:\n- Old\
+      \ pod: `payments-smoke-6bd7664445-fr8pj` is now **Terminating**\n- Replacement pod: `payments-smoke-6bd7664445-p5vck` is **ContainerCreating** (created ~1s ago)\n\nThat indicates the ReplicaSet replaced\
+      \ the single deleted pod without touching the rest of the deployment."
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_27
+  tag: hard_27
+  description: 'Hard scenario 27: pods_list, pods_log, pods_exec'
+  turns:
+  - turn_id: hard_27
+    query: 'In the “payments” namespace (Payments Scenario), can you find which pod is currently failing/restarting, pull the last ~200 lines of its logs (and also the previous container logs if it’s crash-looping),
+      and then exec into the same pod to run a quick check for disk space and recent app config files (e.g., run something like: df -h; ls -la /app; printenv | sort)? Please summarize what you find and
+      which pod/container looks to be the culprit.'
+    expected_response: '### What’s failing in `payments` right now
+
+      All pods currently present in `payments` are failing at **image pull time** (not CrashLoopBackOff). They’re in **`ImagePullBackOff` / `ErrImagePull`** with **0 restarts**, so there are **no container
+      logs to fetch** and **nothing to exec into** (containers never start).
+
+
+      Examples from the current pod list:
+
+      - `payments-smoke-6bd7664445-p5vck` (`nginx` container) – `ImagePullBackOff`
+
+      - `payments-netcheck` – `ImagePullBackOff`
+
+      - `payments-debug` (busybox) – `ImagePullBackOff`
+
+      - `payments-debug-curl` / `dns-https-debug` (curlimages) – `ImagePullBackOff`
+
+      - multiple `test-nginx-check-*` – `ImagePullBackOff` / `ErrImagePull`
+
+
+      ### Root cause (culprit)
+
+      From `payments-smoke-6bd7664445-p5vck` pod status, the `nginx` container is stuck with:
+
+
+      - `Back-off pulling image "nginx:1.25"`
+
+      - **Docker Hub unauthenticated pull rate limit**: `toomanyrequests: You have reached your unauthenticated pull rate limit`
+
+
+      Namespace events show the same pattern for:
+
+      - `nginx'
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_28
+  tag: hard_28
+  description: 'Hard scenario 28: configuration_contexts_list, events_list, pods_get'
+  turns:
+  - turn_id: hard_28
+    query: "In the “OOM Troubleshooting Scenario” project (namespace: demo-oom), I’m trying to figure out why a workload keeps restarting.\n    \n    First, make sure you’re looking at the right cluster\
+      \ context (I sometimes switch between scenario-reports-flap and demo-netpol contexts). Then, pull the recent warning/error events just for the demo-oom namespace (the all-namespaces event view is\
+      \ too noisy/truncated), identify the pod that’s being OOMKilled or frequently restarted, and fetch that pod’s details so we can see which container is the main one to investigate. Please tell me which\
+      \ pod/container looks like the culprit and what the key event messages are that point to the root cause."
+    expected_response: "Using cluster context: **`demo-oom/api-h0p8o2c2b7w3r1y-fjws-p3-openshiftapps-com:443/ssudalai@redhat.com`** (not the `scenario-reports-flap` or `demo-netpol` contexts).\n\n## Culprit\
+      \ (frequent restarts)\n- **Pod:** `oom-demo-68bf47bc4d-8ss8b` (also saw the same pattern on `...-zd4tl`, `...-9cldb`, `...-wtwr4`)\n- **Container:** `oom`\n\n### Key event messages pointing to the\
+      \ root cause\nFrom `demo-oom` namespace events for those pods:\n- **`Back-off restarting failed container oom in pod oom-demo-68bf47bc4d-8ss8b...`** (Reason: `BackOff`, Type: `Warning`)\n- Preceded\
+      \ by normal lifecycle messages:\n  - `Created container: oom`\n  - `Started container oom`\n  - image pulls succeeded (`registry.access.redhat.com/ubi9/python-311`)\n\nThis strongly indicates the\
+      \ container process is **crashing repeatedly** and kubelet is throttling restarts (CrashLoopBackOff behavior). **I do not see an explicit “OOMKilled” event line in the namespace events output** you\
+      \ asked me to pull—so from events alone, it’s “conta"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_29
+  tag: hard_29
+  description: 'Hard scenario 29: resources_list, resources_get, resources_create_or_update'
+  turns:
+  - turn_id: hard_29
+    query: "In the “demo-oom” project (OOM Troubleshooting Scenario), one of the app pods keeps getting OOM-killed and restarting. Can you:\n    1) list the Deployments in the demo-oom namespace and identify\
+      \ which one is backing the crashing pods,\n    2) show me the current Deployment YAML (especially replicas and container memory requests/limits),\n    and then 3) update that Deployment to increase\
+      \ the container memory limit and request (keep the image the same), applying the change back to the cluster?"
+    expected_response: "### 1) Deployments in `demo-oom` + which backs the OOM-killed pod\nDeployments in `demo-oom`:\n- `hello-nginx`\n- `mem-hog`\n- `oom-test`\n\nThe pod that is repeatedly getting **OOMKilled**\
+      \ is `mem-hog-…`, so the crashing pods are backed by the **`mem-hog` Deployment** (label `app=mem-hog`).\n\n---\n\n### 2) Current Deployment YAML (replicas + memory requests/limits)\nHere is the current\
+      \ `mem-hog` Deployment YAML (showing the key fields you asked for):\n\n```yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: mem-hog\n  namespace: demo-oom\nspec:\n  replicas: 1\n  template:\n\
+      \    spec:\n      containers:\n      - name: mem-hog\n        image: registry.access.redhat.com/ubi9/python-311:latest\n        resources:\n          requests:\n            cpu: 10m\n            memory:\
+      \ 256Mi\n          limits:\n            cpu: 100m\n            memory: 512Mi\n```\n\n(Image is unchanged.)\n\n---\n\n### 3) Update applied: increased container memory request/limit\nI updated the\
+      \ `mem-hog` Deployment in-cluster to:\n- **memory req"
+    turn_metrics:
+    - custom:answer_correctness
+- conversation_group_id: hard_30
+  tag: hard_30
+  description: 'Hard scenario 30: events_list, resources_get, pods_exec'
+  turns:
+  - turn_id: hard_30
+    query: In the “demo-oom” project (OOM Troubleshooting Scenario), users are reporting the frontend is flapping. Can you pull the recent warning/error events just for that namespace, identify which frontend
+      pod is getting killed or restarted, then show me the pod’s current status/reason from its Pod object and exec into the affected container to check memory-related signals (e.g., print cgroup memory
+      limit/usage and recent kernel/OOM hints) so we can confirm whether it’s actually OOMKilled?
+    expected_response: '### 1) Recent warning/error events in `demo-oom`
+
+      In `demo-oom`, the warnings/errors are **not OOM-related**. They’re dominated by **image pull failures / ImagePullBackOff**:
+
+
+      - `oom-test`: `ErrImagePull` → `ImagePullBackOff` (docker.io rate limit: `toomanyrequests`)
+
+      - `memcheck`: `ErrImagePull` → `ImagePullBackOff` (docker.io rate limit: `toomanyrequests`)
+
+      - `dns-debug`: `ErrImagePull` → `ImagePullBackOff` (registry.k8s.io manifest not found for `busybox:1.36.1`)
+
+
+      There are **no events indicating OOMKills** (typically you’d see container termination reason `OOMKilled` and/or related kill messages).
+
+
+      ### 2) Which “frontend” pod is getting killed/restarted?
+
+      There are **no frontend pods currently present** in this namespace. Current pods are:
+
+      - `dns-debug` (ImagePullBackOff)
+
+      - `memcheck` (ImagePullBackOff)
+
+      - `oom-test` (ImagePullBackOff)
+
+
+      So I can’t identify a flapping `frontend` pod here because it **doesn’t exist (or has already been deleted)** in `demo-oom` at the moment.
+
+
+      ### 3) Pod o'
+    turn_metrics:
+    - custom:answer_correctness

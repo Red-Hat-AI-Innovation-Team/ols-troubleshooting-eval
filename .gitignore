@@ -1,0 +1,9 @@
+.env
+.openai_key
+.work/
+*.log
+__pycache__/
+*.pyc
+eval_scenarios/results/
+lightspeed-service/
+lightspeed-evaluation/

@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: order-processing
+---
+# Secret with correct key names the app expects
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  namespace: order-processing
+type: Opaque
+stringData:
+  # App expects DB_HOST but we provide DATABASE_HOST (mismatch!)
+  DATABASE_HOST: "postgres.order-processing.svc"
+  DATABASE_PORT: "5432"
+  DATABASE_USER: "app_user"
+  DATABASE_PASSWORD: "s3cret_pw"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-processor
+  namespace: order-processing
+  labels:
+    app: order-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-processor
+  template:
+    metadata:
+      labels:
+        app: order-processor
+    spec:
+      containers:
+      - name: processor
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          echo "Starting order-processor v1.4.2"
+          echo "Reading database configuration from secret db-credentials..."
+          # Check for required env vars
+          if [ -z "${DB_HOST:-}" ]; then
+            echo "FATAL: Required environment variable DB_HOST is not set"
+            echo "ERROR: Cannot connect to database - DB_HOST must be configured"
+            echo "Hint: Check secret 'db-credentials' for key 'DB_HOST'"
+            exit 1
+          fi
+          echo "Connecting to $DB_HOST..."
+        env:
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_HOST
+              optional: true
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: DB_PORT
+              optional: true
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "32Mi"
+          limits:
+            memory: "64Mi"

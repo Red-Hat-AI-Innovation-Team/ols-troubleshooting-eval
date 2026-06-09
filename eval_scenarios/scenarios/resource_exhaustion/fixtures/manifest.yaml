@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ml-serving
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-server
+  namespace: ml-serving
+  labels:
+    app: model-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model-server
+  template:
+    metadata:
+      labels:
+        app: model-server
+    spec:
+      containers:
+      - name: server
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          echo "model-server v2.0.3 starting..."
+          echo "INFO: Loading model weights into memory..."
+          echo "INFO: Model loaded (estimated 2.1GB resident)"
+          echo "INFO: Serving on :8080"
+          iteration=0
+          while true; do
+            iteration=$((iteration + 1))
+            echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) WARN: Memory usage at 95% of limit (61Mi/64Mi)"
+            echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) ERROR: Inference request failed: java.lang.OutOfMemoryError: GC overhead limit exceeded"
+            echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) WARN: Response latency spike: 12340ms (SLA: 500ms)"
+            if [ $((iteration % 3)) -eq 0 ]; then
+              echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) ERROR: Request queue depth: $((iteration * 47)) (max: 100)"
+              echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) WARN: Dropping requests due to backpressure"
+            fi
+            sleep 5
+          done
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "32Mi"
+          limits:
+            cpu: "100m"
+            memory: "64Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-server-svc
+  namespace: ml-serving
+spec:
+  selector:
+    app: model-server
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+# HPA configured but can't scale because max replicas = 1
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: model-server-hpa
+  namespace: ml-serving
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: model-server
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50

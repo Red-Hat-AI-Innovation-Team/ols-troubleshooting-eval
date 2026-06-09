@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app-frontend
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: data-backend
+---
+# Database in data-backend namespace - deliberately broken (wrong image tag)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-primary
+  namespace: data-backend
+  labels:
+    app: postgres-primary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-primary
+  template:
+    metadata:
+      labels:
+        app: postgres-primary
+        tier: database
+    spec:
+      containers:
+      - name: postgres
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          echo "PostgreSQL 15.2 starting..."
+          echo "FATAL: could not open relation mapping file 'global/pg_filenode.map': No such file or directory"
+          echo "LOG: database system was not properly shut down; automatic recovery in progress"
+          echo "FATAL: WAL segment recovery failed - data directory corrupted"
+          echo "LOG: startup process (PID 1) exited with exit code 1"
+          exit 1
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "32Mi"
+          limits:
+            memory: "64Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  namespace: data-backend
+spec:
+  selector:
+    app: postgres-primary
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+# App in app-frontend namespace depends on postgres in data-backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-api
+  namespace: app-frontend
+  labels:
+    app: inventory-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-api
+  template:
+    metadata:
+      labels:
+        app: inventory-api
+        tier: api
+    spec:
+      containers:
+      - name: api
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          echo "inventory-api v3.2.1 starting..."
+          echo "INFO: Connecting to database at postgres-svc.data-backend.svc:5432..."
+          attempt=0
+          while true; do
+            attempt=$((attempt + 1))
+            echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) ERROR: Connection to postgres-svc.data-backend.svc:5432 refused (attempt $attempt)"
+            echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) WARN: Database health check failed, retrying in 10s..."
+            if [ $attempt -ge 5 ]; then
+              echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) FATAL: Max connection retries exceeded. Database unreachable."
+              echo "$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ) ERROR: Shutting down - cannot operate without database"
+              exit 1
+            fi
+            sleep 10
+          done
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "32Mi"
+          limits:
+            memory: "64Mi"
