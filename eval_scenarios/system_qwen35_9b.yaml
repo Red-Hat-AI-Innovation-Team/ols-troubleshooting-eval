@@ -4,9 +4,9 @@
 llm:
   provider: "openai" # Judge LLM Provider (openai, gemini etc..)
   model: "gpt-5-mini" # Model name for the provider
-  temperature: 0.0 # Generation temperature
+  temperature: 1 # Generation temperature
   max_tokens: 5000 # Maximum tokens in response
-  timeout: 300 # Request timeout in seconds
+  timeout: 600 # Request timeout in seconds
   num_retries: 3 # Retry attempts
   cache_enabled: false
 
@@ -16,7 +16,7 @@ api:
   enabled: true # Enable API calls instead of using pre-filled data
   api_base: http://localhost:8080 # Base API URL
   endpoint_type: query # Use "streaming" or "query" endpoint
-  timeout: 300 # API request timeout in seconds
+  timeout: 600 # API request timeout in seconds
 
   # API input configuration
   provider: "my_openai" # LLM provider for queries (matches olsconfig.yaml)

@@ -19,12 +19,16 @@ set -euo pipefail
 #   TRACING        Enable Langfuse tracing: "on" or "off" (default: off)
 #   OLS_DIR        Path to lightspeed-service (default: ./lightspeed-service)
 #   EVAL_CLI       Path to lightspeed-eval binary (auto-detected)
+#   ITS_BUDGET     Inference-time scaling budget (default: unset = no ITS)
+#   ITS_ALGORITHM  ITS algorithm: self-consistency, best-of-n (default: self-consistency)
+#   ITS_TOOL_VOTE  ITS voting strategy: tool_hierarchical, tool_flat_all (default: tool_hierarchical)
 #
 # Examples:
 #   ./run_eval.sh gpt5mini_run1 https://api.openai.com/v1 gpt-5-mini 1
 #   ./run_eval.sh nemotron_base http://localhost:8234/v1 openshift-expert 3
 #   TRACING=on ./run_eval.sh nemotron_sft http://localhost:8250/v1 nemotron-gpt55-sft 5
 #   JUDGE_MODEL=gpt-4.1 ./run_eval.sh gpt5mini_41judge https://api.openai.com/v1 gpt-5-mini 3
+#   ITS_BUDGET=4 ./run_eval.sh gpt5mini_its4 https://api.openai.com/v1 gpt-5-mini 3
 
 MODEL_LABEL="${1:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
 MODEL_URL="${2:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
@@ -34,6 +38,10 @@ ITERATIONS="${4:-${ITERATIONS:-3}}"
 ITER_OFFSET="${ITER_OFFSET:-0}"
 JUDGE_MODEL="${JUDGE_MODEL:-gpt-5-mini}"
 TRACING="${TRACING:-off}"
+ITS_BUDGET="${ITS_BUDGET:-}"
+ITS_ALGORITHM="${ITS_ALGORITHM:-self-consistency}"
+ITS_TOOL_VOTE="${ITS_TOOL_VOTE:-tool_hierarchical}"
+ITS_PORT=8100
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
@@ -57,13 +65,22 @@ fi
 
 if [[ "$MODEL_URL" == *"openai.com"* ]]; then PROVIDER_TYPE="openai"; else PROVIDER_TYPE="rhoai_vllm"; fi
 
+# When ITS is enabled, OLS talks to the ITS gateway instead of the LLM directly
+if [ -n "$ITS_BUDGET" ]; then
+    OLS_LLM_URL="http://127.0.0.1:${ITS_PORT}/v1"
+    OLS_PROVIDER_TYPE="rhoai_vllm"
+else
+    OLS_LLM_URL="${MODEL_URL}"
+    OLS_PROVIDER_TYPE="${PROVIDER_TYPE}"
+fi
+
 mkdir -p "$WORK_DIR"
 
 cat > "$WORK_DIR/olsconfig.yaml" << EOF
 llm_providers:
   - name: my_openai
-    type: ${PROVIDER_TYPE}
-    url: "${MODEL_URL}"
+    type: ${OLS_PROVIDER_TYPE}
+    url: "${OLS_LLM_URL}"
     credentials_path: ${SCRIPT_DIR}/.openai_key
     models:
       - name: ${MODEL_NAME}
@@ -112,6 +129,26 @@ MCP_CONFIG="${MCP_CONFIG:-$SCRIPT_DIR/mcp_config.toml}"
 pkill -f "openshift-mcp-server" 2>/dev/null || true; sleep 2
 "$MCP_SERVER" --port 8085 ${MCP_CONFIG:+--config "$MCP_CONFIG"} > "$WORK_DIR/mcp.log" 2>&1 &
 sleep 3
+
+# Start ITS gateway if budget is set
+if [ -n "$ITS_BUDGET" ]; then
+    pkill -f "its-iaas" 2>/dev/null || true; sleep 1
+    cd "$OLS_DIR"
+    uv run its-iaas --port "$ITS_PORT" > "$WORK_DIR/its.log" 2>&1 &
+    sleep 3
+    # Configure the gateway
+    ITS_API_KEY=$(cat "$SCRIPT_DIR/.openai_key" 2>/dev/null || echo "")
+    curl -sf -X POST "http://127.0.0.1:${ITS_PORT}/configure" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"endpoint\": \"${MODEL_URL}\",
+            \"api_key\": \"${ITS_API_KEY}\",
+            \"model\": \"${MODEL_NAME}\",
+            \"alg\": \"${ITS_ALGORITHM}\",
+            \"tool_vote\": \"${ITS_TOOL_VOTE}\",
+            \"budget\": ${ITS_BUDGET}
+        }" > /dev/null && echo "ITS gateway configured: budget=${ITS_BUDGET}, alg=${ITS_ALGORITHM}" || echo "ERROR: ITS gateway configuration failed"
+fi
 
 cd "$OLS_DIR"
 pkill -f "runner.py" 2>/dev/null || true; sleep 2
@@ -193,7 +230,7 @@ done
 
 echo ""
 echo "========================================="
-echo "  Eval complete: $MODEL_LABEL"
+echo "  Eval complete: $MODEL_LABEL${ITS_BUDGET:+ (ITS budget=${ITS_BUDGET}, ${ITS_ALGORITHM})}"
 echo "  $(date)"
 echo "========================================="
 
@@ -217,3 +254,4 @@ if total_all > 0:
 
 pkill -f "runner.py" 2>/dev/null || true
 pkill -f "openshift-mcp-server" 2>/dev/null || true
+pkill -f "its-iaas" 2>/dev/null || true
