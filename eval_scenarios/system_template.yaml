@@ -4,7 +4,7 @@
 llm:
   provider: "openai" # Judge LLM Provider (openai, gemini etc..)
   model: "gpt-5-mini" # Model name for the provider
-  temperature: 0.0 # Generation temperature
+  temperature: 1 # Generation temperature (gpt-5-mini only supports temperature=1)
   max_tokens: 5000 # Maximum tokens in response
   timeout: 600 # Request timeout in seconds
   num_retries: 3 # Retry attempts
