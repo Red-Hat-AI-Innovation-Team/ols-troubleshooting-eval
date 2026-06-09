@@ -102,8 +102,8 @@
       turn_metrics:
         - custom:answer_correctness
 
-  # setup_script: scenarios/config_drift_analysis/setup.sh
-  # cleanup_script: scenarios/config_drift_analysis/cleanup.sh
+  setup_script: scenarios/config_drift_analysis/setup.sh
+  cleanup_script: scenarios/config_drift_analysis/cleanup.sh
 
 # --- readiness_probe_diagnosis: Pod naming ambiguity ---
 - conversation_group_id: readiness_probe_diagnosis

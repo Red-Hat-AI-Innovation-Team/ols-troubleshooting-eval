@@ -13,22 +13,18 @@ oc create secret generic gateway-proxy-log-script \
   -n "$NS" --dry-run=client -o yaml | oc apply -f -
 oc apply -f "$FIXTURE_DIR/manifest.yaml"
 
-# Wait until the pod is ready and both sentinel log lines are present
-ATTEMPT=0
-until [ "$ATTEMPT" -ge 80 ]; do
-  ATTEMPT=$((ATTEMPT + 1))
-  if oc wait --for=condition=ready pod -l "app=$APP" -n "$NS" --timeout=2s 2>/dev/null; then
-    LOGS=$(oc logs -l "app=$APP" -n "$NS" --tail=10000 2>/dev/null || true)
-    if echo "$LOGS" | grep -q "Configuration file change detected" \
-    && echo "$LOGS" | grep -q '500 GET /api/health - Connection refused'; then
-      echo "Log sentinels found after $ATTEMPT checks"
-      exit 0
-    fi
-  fi
-  echo "check $ATTEMPT/40 — waiting 3s…"
-  sleep 3
-done
+# Wait for pod ready, then verify log sentinels exist
+# The log generator prints all lines immediately on startup,
+# so once the pod is ready the sentinels are already there.
+oc wait --for=condition=ready pod -l "app=$APP" -n "$NS" --timeout=240s
 
-echo "Sentinels not found within timeout"
+LOGS=$(oc logs -l "app=$APP" -n "$NS" --tail=10000 2>/dev/null || true)
+if echo "$LOGS" | grep -q "Configuration file change detected" \
+&& echo "$LOGS" | grep -q '500 GET /api/health - Connection refused'; then
+  echo "Log sentinels found"
+  exit 0
+fi
+
+echo "ERROR: Pod ready but sentinels not found in logs"
 oc logs -l "app=$APP" -n "$NS" --tail=30 2>/dev/null || true
 exit 1

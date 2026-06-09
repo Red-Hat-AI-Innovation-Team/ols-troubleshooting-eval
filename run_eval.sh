@@ -71,7 +71,7 @@ llm_providers:
 
 mcp_servers:
   - name: openshift-mcp-server
-    url: 'http://127.0.0.1:8089/mcp'
+    url: 'http://127.0.0.1:8085/mcp'
     headers:
       Authorization: kubernetes
     timeout: 30
@@ -107,8 +107,10 @@ fi
 
 OUTPUT_BASE="$EVAL_DIR/results/traced_${MODEL_LABEL}"
 
-pkill -f "kubernetes-mcp-server" 2>/dev/null || true; sleep 2
-NODE_OPTIONS="" npx kubernetes-mcp-server@latest --port 8089 --read-only > "$WORK_DIR/mcp.log" 2>&1 &
+MCP_SERVER="${MCP_SERVER:-/mnt/vde/workspace/vpcuser/tmp/openshift-mcp-server}"
+MCP_CONFIG="${MCP_CONFIG:-$SCRIPT_DIR/mcp_config.toml}"
+pkill -f "openshift-mcp-server" 2>/dev/null || true; sleep 2
+"$MCP_SERVER" --port 8085 ${MCP_CONFIG:+--config "$MCP_CONFIG"} > "$WORK_DIR/mcp.log" 2>&1 &
 sleep 3
 
 cd "$OLS_DIR"
@@ -152,25 +154,23 @@ for iter in $(seq 1 $ITERATIONS); do
 
         scenario_dir="$EVAL_DIR/scenarios/$tag"
 
-        if [ "$tag" != "config_drift_analysis" ]; then
-            [ -f "$scenario_dir/cleanup.sh" ] && bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
-            sleep 3
+        [ -f "$scenario_dir/cleanup.sh" ] && bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
+        sleep 3
 
-            ns_list=$(grep -hE '^NS=|^NS_[AB]=' "$scenario_dir"/setup.sh 2>/dev/null | sed 's/^NS[_AB]*="//' | sed 's/"//')
-            for ns in $(echo "$ns_list" | sort -u | grep -v '^$'); do
-                oc create namespace "$ns" 2>/dev/null || true
-                if [ -n "${DOCKERHUB_USER:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
-                    oc create secret docker-registry dockerhub \
-                        --docker-server=docker.io \
-                        --docker-username="$DOCKERHUB_USER" \
-                        --docker-password="$DOCKERHUB_TOKEN" \
-                        -n "$ns" --dry-run=client -o yaml 2>/dev/null | oc apply -f - 2>/dev/null
-                    oc secrets link default dockerhub --for=pull -n "$ns" 2>/dev/null
-                fi
-            done
+        ns_list=$(grep -hE '^NS=|^NS_[AB]=' "$scenario_dir"/setup.sh 2>/dev/null | sed 's/^NS[_AB]*="//' | sed 's/"//')
+        for ns in $(echo "$ns_list" | sort -u | grep -v '^$'); do
+            oc create namespace "$ns" 2>/dev/null || true
+            if [ -n "${DOCKERHUB_USER:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
+                oc create secret docker-registry dockerhub \
+                    --docker-server=docker.io \
+                    --docker-username="$DOCKERHUB_USER" \
+                    --docker-password="$DOCKERHUB_TOKEN" \
+                    -n "$ns" --dry-run=client -o yaml 2>/dev/null | oc apply -f - 2>/dev/null
+                oc secrets link default dockerhub --for=pull -n "$ns" 2>/dev/null
+            fi
+        done
 
-            [ -f "$scenario_dir/setup.sh" ] && bash "$scenario_dir/setup.sh" 2>&1 | tail -1 || echo "WARN: setup"
-        fi
+        [ -f "$scenario_dir/setup.sh" ] && bash "$scenario_dir/setup.sh" 2>&1 | tail -1 || echo "WARN: setup"
 
         ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/$tag"
         mkdir -p "$ITER_DIR"
@@ -182,7 +182,7 @@ for iter in $(seq 1 $ITERATIONS); do
             --output-dir "$ITER_DIR" \
             --tags "$tag" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
 
-        if [ "$tag" != "config_drift_analysis" ] && [ -f "$scenario_dir/cleanup.sh" ]; then
+        if [ -f "$scenario_dir/cleanup.sh" ]; then
             bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
         fi
         sleep 3
@@ -216,4 +216,4 @@ if total_all > 0:
 "
 
 pkill -f "runner.py" 2>/dev/null || true
-pkill -f "kubernetes-mcp-server" 2>/dev/null || true
+pkill -f "openshift-mcp-server" 2>/dev/null || true
