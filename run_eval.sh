@@ -116,7 +116,7 @@ dev_config:
 EOF
 
 sed "s|model: \"openshift-expert\"|model: \"${MODEL_NAME}\"|; s|model: \"gpt-5-mini\"|model: \"${JUDGE_MODEL}\"|" \
-    "$EVAL_DIR/system_qwen35_9b.yaml" > "$WORK_DIR/system.yaml"
+    "$EVAL_DIR/system_template.yaml" > "$WORK_DIR/system.yaml"
 
 if [ ! -f "$SCRIPT_DIR/.openai_key" ] && [ -n "${OPENAI_API_KEY:-}" ]; then
     echo "$OPENAI_API_KEY" > "$SCRIPT_DIR/.openai_key"
