@@ -12,20 +12,19 @@ oc create secret generic report-generator-logs-script \
   -n "$NS" --dry-run=client -o yaml | oc apply -f -
 oc apply -f "$FIXTURE_DIR/manifest.yaml"
 
-# Helper: check whether all three sentinel lines are in the pod logs
-logs_ready() {
-  local logs
-  logs=$(oc logs -l "app=$APP" -n "$NS" --tail=10000 2>/dev/null || true)
-  echo "$logs" | grep "Detected repeated failures during 03:00-03:05 window" >/dev/null || return 1
-  echo "$logs" | grep "System health check passed" >/dev/null || return 1
-  echo "$logs" | grep "Job executed successfully in 167ms\." >/dev/null || return 1
-}
+# Wait for pod ready, then verify log sentinels exist.
+# The log generator prints all lines immediately on startup,
+# so once the pod is ready the sentinels are already there.
+oc wait --for=condition=ready pod -l "app=$APP" -n "$NS" --timeout=240s
 
-ATTEMPT=0
-until logs_ready; do
-  ATTEMPT=$((ATTEMPT + 1))
-  [ "$ATTEMPT" -lt 40 ] || { echo "Sentinels not found after 40 checks"; oc get pods -n "$NS"; exit 1; }
-  echo "check $ATTEMPT/40 — waiting 3s…"
-  sleep 3
-done
-echo "All log sentinels present (attempt $ATTEMPT)"
+LOGS=$(oc logs -l "app=$APP" -n "$NS" --tail=10000 2>/dev/null || true)
+if echo "$LOGS" | grep -q "Detected repeated failures during 03:00-03:05 window" \
+&& echo "$LOGS" | grep -q "System health check passed" \
+&& echo "$LOGS" | grep -q "Job executed successfully in 167ms\."; then
+  echo "All log sentinels present"
+  exit 0
+fi
+
+echo "ERROR: Pod ready but sentinels not found in logs"
+oc logs -l "app=$APP" -n "$NS" --tail=30 2>/dev/null || true
+exit 1
