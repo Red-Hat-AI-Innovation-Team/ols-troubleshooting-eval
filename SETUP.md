@@ -49,29 +49,53 @@ All services run on the host, not in the cluster. Only the broken scenarios run 
 - Docker Hub credentials (username + PAT)
 - Red Hat pull secret at `~/.crc/pull-secret.json`
 
-## One-Time Setup
-
-### 1. Clone and install
+## Quick Start
 
 ```bash
 git clone https://github.com/Red-Hat-AI-Innovation-Team/ols-troubleshooting-eval.git
 cd ols-troubleshooting-eval
 git checkout ols-eval-reconciliation
-bash setup.sh
-```
 
-### 2. Credentials
+# 1. Install OLS + eval deps
+make setup
 
-```bash
+# 2. Create credentials (manual, one-time)
 cat > .env << EOF
 DOCKERHUB_USER=<your_dockerhub_username>
 DOCKERHUB_TOKEN=<your_dockerhub_pat>
 EOF
-
 echo "<your_openai_key>" > .openai_key
+
+# 3. Set up CRC + cache + MCP server (automated, idempotent)
+make env-up
+
+# 4. Run eval
+make eval ARGS="gpt5mini https://api.openai.com/v1 gpt-5-mini 1"
+
+# 5. Teardown
+make env-down       # stop CRC (fast restart later)
+make env-nuke       # full cleanup (delete CRC VM + stop cache)
 ```
 
-### 3. Docker Hub pull-through cache
+`make env-up` automates everything after credentials:
+
+| Step | What it does | Skips if |
+|------|-------------|----------|
+| Docker Hub cache | Starts `registry:2` pull-through proxy on port 5000, pre-warms all scenario images | Container already running |
+| CRC | Sets `host-network-access=true`, runs `crc setup` + `crc start` | CRC already running |
+| CRC mirror | SSHs into CRC VM, writes CRI-O drop-in config, restarts CRI-O | Config file already exists |
+| MCP server | Clones + builds Go `openshift-mcp-server` binary | Binary already exists |
+| Cluster login | `oc login` as kubeadmin | — |
+
+After `crc delete`, just run `make env-up` again — the cache data persists on the host, CRC gets recreated, and the mirror is reconfigured automatically.
+
+---
+
+## Detailed Setup (Reference)
+
+The steps below explain what `make env-up` does internally. You don't need to run these manually — they're here so you understand the components.
+
+### Docker Hub pull-through cache
 
 Caches Docker Hub images locally so scenario deployments don't hit rate limits. Persists across CRC stop/start/delete.
 
@@ -241,8 +265,4 @@ Results from this eval are not directly comparable to runs using older OLS versi
 
 ## After `crc delete`
 
-The pull-through cache on the host persists. After `crc start` on a fresh VM:
-
-1. Re-run step 5 (configure CRC mirror)
-2. Re-run step 7 (login)
-3. Ready to eval — images served from cache
+Just run `make env-up` again. The pull-through cache persists on the host — CRC gets recreated, mirror reconfigured, and login refreshed automatically. No images need to be re-pulled from Docker Hub.
