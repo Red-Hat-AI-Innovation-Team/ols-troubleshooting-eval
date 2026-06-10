@@ -132,9 +132,9 @@ sleep 3
 
 # Start ITS gateway if budget is set
 if [ -n "$ITS_BUDGET" ]; then
-    pkill -f "its-iaas" 2>/dev/null || true; sleep 1
+    pkill -f "iaas" 2>/dev/null || true; sleep 1
     cd "$OLS_DIR"
-    uv run its-iaas --port "$ITS_PORT" > "$WORK_DIR/its.log" 2>&1 &
+    uv run python "$SCRIPT_DIR/its_gateway/iaas.py" --port "$ITS_PORT" > "$WORK_DIR/its.log" 2>&1 &
     sleep 3
     # Configure the gateway
     ITS_API_KEY=$(cat "$SCRIPT_DIR/.openai_key" 2>/dev/null || echo "")
@@ -254,4 +254,4 @@ if total_all > 0:
 
 pkill -f "runner.py" 2>/dev/null || true
 pkill -f "openshift-mcp-server" 2>/dev/null || true
-pkill -f "its-iaas" 2>/dev/null || true
+pkill -f "iaas.py" 2>/dev/null || true

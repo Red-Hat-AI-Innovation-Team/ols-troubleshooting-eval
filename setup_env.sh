@@ -165,9 +165,22 @@ else
     ok "Built at $MCP_BIN"
 fi
 
-# ---------- Step 5: Cluster login ----------
+# ---------- Step 5: its_hub (for ITS support) ----------
 
-log "Step 5/5: Cluster login"
+log "Step 5/6: its_hub"
+
+OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
+if (cd "$OLS_DIR" && uv run python -c "import its_hub" 2>/dev/null); then
+    skip "its_hub already installed"
+else
+    echo "  Installing its_hub into OLS venv..."
+    (cd "$OLS_DIR" && uv pip install its-hub 2>/dev/null)
+    ok "its_hub installed"
+fi
+
+# ---------- Step 6: Cluster login ----------
+
+log "Step 6/6: Cluster login"
 
 eval $(crc oc-env 2>/dev/null) || true
 
