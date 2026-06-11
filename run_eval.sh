@@ -134,7 +134,7 @@ sleep 3
 if [ -n "$ITS_BUDGET" ]; then
     pkill -f "iaas" 2>/dev/null || true; sleep 1
     cd "$OLS_DIR"
-    uv run python its_hub.integration.iaas --port "$ITS_PORT" > "$WORK_DIR/its.log" 2>&1 &
+    uv run python -m its_hub.integration.iaas --port "$ITS_PORT" > "$WORK_DIR/its.log" 2>&1 &
     sleep 3
     # Configure the gateway
     ITS_API_KEY=$(cat "$SCRIPT_DIR/.openai_key" 2>/dev/null || echo "")
