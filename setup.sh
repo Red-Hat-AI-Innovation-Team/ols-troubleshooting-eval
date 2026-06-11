@@ -15,10 +15,12 @@ if ! command -v uv &>/dev/null; then
     exit 1
 fi
 
-# 2. Clone lightspeed-service if not present
+# 2. Clone lightspeed-service if not present (pinned to known-good commit)
+OLS_COMMIT="${OLS_COMMIT:-f600c714}"
 if [ ! -d "$OLS_DIR" ]; then
-    echo "Cloning lightspeed-service..."
+    echo "Cloning lightspeed-service (pinned to $OLS_COMMIT)..."
     git clone https://github.com/openshift/lightspeed-service.git "$OLS_DIR"
+    (cd "$OLS_DIR" && git checkout "$OLS_COMMIT")
 else
     echo "lightspeed-service already present at $OLS_DIR"
 fi
