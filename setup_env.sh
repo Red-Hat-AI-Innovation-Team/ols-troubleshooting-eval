@@ -174,7 +174,7 @@ if (cd "$OLS_DIR" && uv run python -c "import its_hub" 2>/dev/null); then
     skip "its_hub already installed"
 else
     echo "  Installing its_hub into OLS venv..."
-    (cd "$OLS_DIR" && uv pip install its-hub 2>/dev/null)
+    (cd "$OLS_DIR" && uv pip install git+https://github.com/Red-Hat-AI-Innovation-Team/its_hub.git@add_iaas 2>/dev/null)
     ok "its_hub installed"
 fi
 
