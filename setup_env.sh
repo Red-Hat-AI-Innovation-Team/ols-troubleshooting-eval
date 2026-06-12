@@ -22,6 +22,8 @@ CACHE_PORT=5000
 CACHE_NAME="dockerhub-cache"
 MCP_BIN="${MCP_SERVER:-$SCRIPT_DIR/.work/openshift-mcp-server}"
 MCP_BUILD_DIR="/tmp/openshift-mcp-server-build"
+OBS_MCP_BIN="${OBS_MCP_SERVER:-$SCRIPT_DIR/.work/obs-mcp}"
+OBS_MCP_BUILD_DIR="/tmp/obs-mcp-build"
 CRC_SSH_KEY="$HOME/.crc/machines/crc/id_ed25519"
 MIRROR_CONF="099-dockerhub-mirror.conf"
 
@@ -33,6 +35,8 @@ SCENARIO_IMAGES=(
     "library/alpine:3.19"
     "nginxinc/nginx-unprivileged:alpine"
     "nginxinc/nginx-unprivileged:latest"
+    "library/postgres:16"
+    "prometheuscommunity/postgres-exporter:v0.15.0"
 )
 
 log() { echo ""; echo "=== $1 ==="; }
@@ -62,7 +66,7 @@ GO_BIN="${GO_BIN:-$(command -v go 2>/dev/null || echo /usr/local/go/bin/go)}"
 
 # ---------- Step 1: Docker Hub pull-through cache ----------
 
-log "Step 1/5: Docker Hub pull-through cache"
+log "Step 1/7: Docker Hub pull-through cache"
 
 if podman ps --format "{{.Names}}" 2>/dev/null | grep -q "^${CACHE_NAME}$"; then
     skip "Cache already running on port $CACHE_PORT"
@@ -98,7 +102,7 @@ done
 
 # ---------- Step 2: CRC ----------
 
-log "Step 2/5: CRC cluster"
+log "Step 2/7: CRC cluster"
 
 CRC_STATUS=$(crc status 2>/dev/null | grep "CRC VM:" | awk '{print $3}' || echo "Stopped")
 
@@ -121,7 +125,7 @@ fi
 
 # ---------- Step 3: CRC mirror config ----------
 
-log "Step 3/5: CRC Docker Hub mirror"
+log "Step 3/7: CRC Docker Hub mirror"
 
 SSH="ssh -i $CRC_SSH_KEY -p 2222 -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o LogLevel=ERROR core@127.0.0.1"
 
@@ -151,7 +155,7 @@ $SSH "curl -sf --max-time 5 http://host.crc.testing:${CACHE_PORT}/v2/ > /dev/nul
 
 # ---------- Step 4: MCP server ----------
 
-log "Step 4/5: Go MCP server"
+log "Step 4/7: openshift-mcp-server"
 
 if [ -x "$MCP_BIN" ]; then
     skip "Binary exists at $MCP_BIN"
@@ -165,9 +169,25 @@ else
     ok "Built at $MCP_BIN"
 fi
 
-# ---------- Step 5: its_hub (for ITS support) ----------
+# ---------- Step 5: obs-mcp (for MCP evals) ----------
 
-log "Step 5/6: its_hub"
+log "Step 5/7: obs-mcp"
+
+if [ -x "$OBS_MCP_BIN" ]; then
+    skip "Binary exists at $OBS_MCP_BIN"
+else
+    echo "  Building obs-mcp..."
+    if [ ! -d "$OBS_MCP_BUILD_DIR" ]; then
+        git clone --depth 1 https://github.com/rhobs/obs-mcp.git "$OBS_MCP_BUILD_DIR"
+    fi
+    mkdir -p "$(dirname "$OBS_MCP_BIN")"
+    (cd "$OBS_MCP_BUILD_DIR" && "$GO_BIN" build -o "$OBS_MCP_BIN" ./cmd/obs-mcp/)
+    ok "Built at $OBS_MCP_BIN"
+fi
+
+# ---------- Step 6: its_hub (for ITS support) ----------
+
+log "Step 6/7: its_hub"
 
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
 if (cd "$OLS_DIR" && uv run python -c "import its_hub" 2>/dev/null); then
@@ -178,9 +198,9 @@ else
     ok "its_hub installed"
 fi
 
-# ---------- Step 6: Cluster login ----------
+# ---------- Step 7: Cluster login ----------
 
-log "Step 6/6: Cluster login"
+log "Step 7/7: Cluster login"
 
 eval $(crc oc-env 2>/dev/null) || true
 
@@ -204,6 +224,7 @@ echo ""
 echo "  Cache:      http://localhost:${CACHE_PORT} (${CACHE_DIR})"
 echo "  CRC:        $(crc status 2>/dev/null | grep 'CRC VM:' || echo 'unknown')"
 echo "  MCP server: ${MCP_BIN}"
+echo "  obs-mcp:    ${OBS_MCP_BIN}"
 echo "  Cluster:    $(oc whoami 2>/dev/null || echo 'not logged in') @ $(oc whoami --show-server 2>/dev/null || echo 'unknown')"
 echo ""
 echo "  Run an eval:"

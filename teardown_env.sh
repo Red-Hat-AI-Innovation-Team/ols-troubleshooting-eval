@@ -19,6 +19,9 @@ log "Stopping eval services"
 pkill -f "runner.py" 2>/dev/null && ok "OLS stopped" || ok "OLS not running"
 pkill -f "openshift-mcp-server" 2>/dev/null && ok "MCP server stopped" || ok "MCP server not running"
 pkill -f "its-iaas" 2>/dev/null && ok "ITS gateway stopped" || ok "ITS gateway not running"
+pkill -f "obs-mcp" 2>/dev/null && ok "obs-mcp stopped" || ok "obs-mcp not running"
+pkill -f "port-forward.*prometheus-operated" 2>/dev/null && ok "Prometheus port-forward stopped" || ok "Prometheus port-forward not running"
+pkill -f "port-forward.*alertmanager-operated" 2>/dev/null && ok "Alertmanager port-forward stopped" || ok "Alertmanager port-forward not running"
 
 # ---------- Stop/delete CRC ----------
 

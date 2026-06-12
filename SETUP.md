@@ -15,26 +15,28 @@ Our runs use nodes with 80 CPUs, 1.2TB RAM, and NVMe storage.
 ## Architecture
 
 ```
-                                    ┌─────────────┐
-                                    │  CRC (VM)   │
+                                    ┌──────────────┐
+                                    │  CRC (VM)    │
                                     │  OpenShift   │
+                                    │  + Prometheus│
                                     │  + broken    │
                                     │  scenarios   │
                                     └──────▲───────┘
                                            │ kubectl/oc
-┌─────────────┐    ┌──────────────┐   ┌────┴─────────┐
-│ lightspeed  │◄──►│ OLS          │──►│ openshift-   │
-│ -eval       │    │ (port 8080)  │   │ mcp-server   │
-│ (judge)     │    │              │   │ (port 8085)  │
-└─────────────┘    └──────┬───────┘   └──────────────┘
-                          │
+                                           │ port-forward (9090, 9093)
+┌─────────────┐    ┌──────────────┐   ┌────┴─────────┐    ┌──────────┐
+│ lightspeed  │<-->│ OLS          │-->│ openshift-   │    │ obs-mcp  │
+│ -eval       │    │ (port 8080)  │   │ mcp-server   │    │ (9100)   │
+│ (judge)     │    │              │-->│ (port 8085)  │    │ Prom/AM  │
+└─────────────┘    └──────┬───────┘   └──────────────┘    └──────────┘
+                          │                 k8s resources   metrics/alerts
               ┌───────────┴───────────┐
               │  Without ITS:         │
-              │  OLS → LLM directly   │
+              │  OLS -> LLM directly  │
               │                       │
               │  With ITS:            │
-              │  OLS → ITS gateway    │
-              │  (port 8100) → LLM    │
+              │  OLS -> ITS gateway   │
+              │  (port 8100) -> LLM   │
               └───────────────────────┘
 ```
 
@@ -85,7 +87,9 @@ make env-nuke       # full cleanup (delete CRC VM + stop cache)
 | CRC | Sets `host-network-access=true`, runs `crc setup` + `crc start` | CRC already running |
 | CRC mirror | SSHs into CRC VM, writes CRI-O drop-in config, restarts CRI-O | Config file already exists |
 | MCP server | Clones + builds Go `openshift-mcp-server` binary | Binary already exists |
-| Cluster login | `oc login` as kubeadmin | — |
+| obs-mcp | Clones + builds Go `obs-mcp` binary (for MCP evals) | Binary already exists |
+| its_hub | Installs `its-hub` into OLS venv (for ITS) | Already installed |
+| Cluster login | `oc login` as kubeadmin | -- |
 
 After `crc delete`, just run `make env-up` again — the cache data persists on the host, CRC gets recreated, and the mirror is reconfigured automatically.
 
@@ -202,6 +206,45 @@ When `ITS_BUDGET` is set, the script:
 4. OLS sends requests to the gateway, which makes N parallel LLM calls and majority-votes on tool calls
 5. Returns the winner in OpenAI streaming format — OLS doesn't know ITS is happening
 
+## Running MCP Evals (Payments/Demo6)
+
+Open-ended troubleshooting evals that test OLS against a live broken cluster using both Kubernetes tools (openshift-mcp-server) and observability tools (obs-mcp for Prometheus/Alertmanager). Uses the payments/demo6 scenario: a cross-namespace connection leak that exhausts a shared PostgreSQL pool and causes cascade failures with firing alerts.
+
+Prerequisites: `make env-up` (which builds both openshift-mcp-server and obs-mcp).
+
+```bash
+# Single iteration
+make mcp-eval ARGS="gpt5mini_mcp https://api.openai.com/v1 gpt-5-mini 1"
+
+# Multiple iterations (cluster state is reset between each)
+MCP_EVALS=1 ./run_eval.sh gpt5mini_mcp https://api.openai.com/v1 gpt-5-mini 3
+
+# With ITS
+ITS_BUDGET=4 MCP_EVALS=1 ./run_eval.sh gpt5mini_mcp_its4 https://api.openai.com/v1 gpt-5-mini 1
+```
+
+The script automates everything:
+1. Starts port-forwards to Prometheus (9090) and Alertmanager (9093) inside CRC
+2. Starts obs-mcp on port 9100 (queries Prometheus metrics and alerts)
+3. Deploys the payments scenario (two namespaces, shared PostgreSQL, red herring CrashLoopBackOff)
+4. Breaks it (rolls out buggy reporting-service v1.0.2, waits ~3 min for alerts to fire)
+5. Runs 6 conversations from `mcp_evals.yaml` against the broken cluster
+6. Between iterations: cleans up, wipes Prometheus TSDB, redeploys + rebreaks
+7. Cleans up the payments scenario at the end
+
+The 6 conversations (11 total turns):
+
+| Conversation | Turns | What it tests |
+|---|---|---|
+| triage_001 | 1 | General "what's wrong?" cluster investigation |
+| alerts_001 | 2 | List firing alerts, then investigate root cause of the most critical |
+| pod_001 | 2 | Find failing pods, then get related events |
+| metrics_001 | 2 | Check CPU/memory pressure, then find top-consuming namespace |
+| deployment_001 | 2 | Find unhealthy deployments, then provide fix steps |
+| error_rate_001 | 2 | Check HTTP error rates, then investigate what changed |
+
+All scored with `geval:generic_troubleshooting_experience` -- the judge checks whether the response uses real cluster evidence (tool call results) rather than generic suggestions.
+
 ### Environment variables
 
 | Variable | Default | Description |
@@ -213,8 +256,12 @@ When `ITS_BUDGET` is set, the script:
 | `ITS_ALGORITHM` | self-consistency | ITS algorithm |
 | `ITS_TOOL_VOTE` | tool_hierarchical | Voting strategy |
 | `MCP_SERVER` | (auto) | Path to openshift-mcp-server binary |
+| `MCP_EVALS` | (unset) | Set to run MCP evals instead of scenario evals |
+| `OBS_MCP_SERVER` | (auto) | Path to obs-mcp binary |
 
 ## What Happens During an Eval
+
+### Scenario mode (default)
 
 1. Go `openshift-mcp-server` starts on port 8085 (host-side, read-write)
 2. (If ITS) `its-iaas` gateway starts on port 8100
@@ -223,11 +270,23 @@ When `ITS_BUDGET` is set, the script:
    - Cleanup previous scenario
    - Create namespace + Docker Hub pull secret
    - Deploy broken workload (`setup.sh`)
-   - `lightspeed-eval` sends query → OLS → (ITS gateway →) LLM → MCP tools → cluster
+   - `lightspeed-eval` sends query -> OLS -> (ITS gateway ->) LLM -> MCP tools -> cluster
    - Judge scores response
    - Cleanup scenario
 5. Print pass/fail summary
 6. Kill all services
+
+### MCP mode (`MCP_EVALS=1`)
+
+1. Go `openshift-mcp-server` starts on port 8085
+2. Port-forwards to Prometheus (9090) and Alertmanager (9093)
+3. `obs-mcp` starts on port 9100 (queries Prometheus/Alertmanager)
+4. `lightspeed-service` starts on port 8080 with both MCP servers configured
+5. Payments/demo6 scenario deployed and broken (alerts firing)
+6. 6 open-ended troubleshooting conversations run against the live broken cluster
+7. Between iterations: cleanup, Prometheus TSDB wipe, redeploy + rebreak
+8. Print pass/fail summary
+9. Kill all services + port-forwards
 
 ## Results
 

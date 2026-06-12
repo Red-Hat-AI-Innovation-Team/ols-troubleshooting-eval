@@ -1,4 +1,4 @@
-.PHONY: setup env-up env-down env-nuke eval help
+.PHONY: setup env-up env-down env-nuke eval mcp-eval help
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -15,6 +15,10 @@ env-down: ## Stop CRC (preserves VM for fast restart)
 env-nuke: ## Delete CRC + stop cache (full cleanup)
 	bash teardown_env.sh --force
 
-eval: ## Run eval (usage: make eval ARGS="<label> <url> <model> [iters]")
+eval: ## Run scenario eval (usage: make eval ARGS="<label> <url> <model> [iters]")
 	@if [ -z "$(ARGS)" ]; then echo "Usage: make eval ARGS=\"<label> <model_url> <model_name> [iterations]\""; exit 1; fi
 	export OPENAI_API_KEY=$$(cat .openai_key) && ./run_eval.sh $(ARGS)
+
+mcp-eval: ## Run MCP eval with payments/demo6 (usage: make mcp-eval ARGS="<label> <url> <model> [iters]")
+	@if [ -z "$(ARGS)" ]; then echo "Usage: make mcp-eval ARGS=\"<label> <model_url> <model_name> [iterations]\""; exit 1; fi
+	export OPENAI_API_KEY=$$(cat .openai_key) && MCP_EVALS=1 ./run_eval.sh $(ARGS)

@@ -22,6 +22,8 @@ set -euo pipefail
 #   ITS_BUDGET     Inference-time scaling budget (default: unset = no ITS)
 #   ITS_ALGORITHM  ITS algorithm: self-consistency, best-of-n (default: self-consistency)
 #   ITS_TOOL_VOTE  ITS voting strategy: tool_hierarchical, tool_flat_all (default: tool_hierarchical)
+#   MCP_EVALS      Run MCP evals instead of scenario evals (default: unset)
+#                  Deploys payments/demo6, starts obs-mcp + port-forwards, runs mcp_evals.yaml
 #
 # Examples:
 #   ./run_eval.sh gpt5mini_run1 https://api.openai.com/v1 gpt-5-mini 1
@@ -29,6 +31,7 @@ set -euo pipefail
 #   TRACING=on ./run_eval.sh nemotron_sft http://localhost:8250/v1 nemotron-gpt55-sft 5
 #   JUDGE_MODEL=gpt-4.1 ./run_eval.sh gpt5mini_41judge https://api.openai.com/v1 gpt-5-mini 3
 #   ITS_BUDGET=4 ./run_eval.sh gpt5mini_its4 https://api.openai.com/v1 gpt-5-mini 3
+#   MCP_EVALS=1 ./run_eval.sh gpt5mini_mcp https://api.openai.com/v1 gpt-5-mini 1
 
 MODEL_LABEL="${1:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
 MODEL_URL="${2:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
@@ -42,6 +45,7 @@ ITS_BUDGET="${ITS_BUDGET:-}"
 ITS_ALGORITHM="${ITS_ALGORITHM:-self-consistency}"
 ITS_TOOL_VOTE="${ITS_TOOL_VOTE:-tool_hierarchical}"
 ITS_PORT=8100
+MCP_EVALS="${MCP_EVALS:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
@@ -87,6 +91,14 @@ llm_providers:
         context_window_size: 32768
 
 mcp_servers:
+$(if [ -n "$MCP_EVALS" ]; then cat << 'MCP_BLOCK'
+  - name: obs-mcp
+    url: 'http://127.0.0.1:9100/mcp'
+    headers:
+      kubernetes-authorization: kubernetes
+    timeout: 5
+MCP_BLOCK
+fi)
   - name: openshift-mcp-server
     url: 'http://127.0.0.1:8085/mcp'
     headers:
@@ -150,6 +162,27 @@ if [ -n "$ITS_BUDGET" ]; then
         }" > /dev/null && echo "ITS gateway configured: budget=${ITS_BUDGET}, alg=${ITS_ALGORITHM}" || echo "ERROR: ITS gateway configuration failed"
 fi
 
+# Start obs-mcp + port-forwards for MCP evals
+if [ -n "$MCP_EVALS" ]; then
+    pkill -f "port-forward.*prometheus-operated" 2>/dev/null || true
+    pkill -f "port-forward.*alertmanager-operated" 2>/dev/null || true
+    pkill -f "obs-mcp" 2>/dev/null || true
+    sleep 1
+
+    oc port-forward svc/prometheus-operated 9090:9090 \
+        -n openshift-monitoring > "$WORK_DIR/pf-prom.log" 2>&1 &
+    oc port-forward svc/alertmanager-operated 9093:9093 \
+        -n openshift-monitoring > "$WORK_DIR/pf-alert.log" 2>&1 &
+    sleep 3
+
+    OBS_MCP="${OBS_MCP_SERVER:-$SCRIPT_DIR/.work/obs-mcp}"
+    PROMETHEUS_URL=http://localhost:9090 ALERTMANAGER_URL=http://localhost:9093 \
+        "$OBS_MCP" -listen 127.0.0.1:9100 -auth-mode header \
+        > "$WORK_DIR/obs-mcp.log" 2>&1 &
+    sleep 3
+    echo "obs-mcp started on port 9100"
+fi
+
 cd "$OLS_DIR"
 pkill -f "runner.py" 2>/dev/null || true; sleep 2
 EVAL_MODEL_LABEL="$MODEL_LABEL" \
@@ -165,72 +198,116 @@ done
 
 mkdir -p "$OUTPUT_BASE"
 
-TAGS=(envvar_missing batch_failure storage_binding namespace_pod_count \
-      scheduled_outage_detection periodic_failure_window \
-      readiness_probe_diagnosis ingress_rule_mismatch oom wrong_networkpolicy \
-      config_drift_analysis)
+PAYMENTS_DIR="$SCRIPT_DIR/scenarios/payments"
 
 echo "========================================="
 echo "  Model:      $MODEL_NAME @ $MODEL_URL"
 echo "  Label:      $MODEL_LABEL"
 echo "  Judge:      $JUDGE_MODEL"
+echo "  Mode:       ${MCP_EVALS:+mcp}${MCP_EVALS:-scenario}"
 echo "  Iterations: $ITERATIONS (offset $ITER_OFFSET)"
 echo "  Tracing:    $TRACING"
 echo "  Results:    $OUTPUT_BASE"
 echo "  $(date)"
 echo "========================================="
 
-for iter in $(seq 1 $ITERATIONS); do
-    actual_iter=$((iter + ITER_OFFSET))
-    echo ""
-    echo "=== Iteration $actual_iter (run $iter/$ITERATIONS) ==="
+if [ -n "$MCP_EVALS" ]; then
+    # --- MCP eval mode: deploy payments scenario, run open-ended evals ---
 
-    for tag in "${TAGS[@]}"; do
-        echo "--- $tag ---"
-        printf "scenario=%s\niteration=%s\ncheckpoint=%s\n" "$tag" "$actual_iter" "$MODEL_LABEL" > /tmp/eval_context.txt
+    echo "Deploying payments scenario..."
+    (cd "$PAYMENTS_DIR" && bash scripts/deploy.sh)
+    echo "Breaking payments scenario (waiting for alerts -- ~3 min)..."
+    (cd "$PAYMENTS_DIR" && bash scripts/break.sh)
 
-        scenario_dir="$EVAL_DIR/scenarios/$tag"
+    for iter in $(seq 1 $ITERATIONS); do
+        actual_iter=$((iter + ITER_OFFSET))
+        echo ""
+        echo "=== MCP Iteration $actual_iter (run $iter/$ITERATIONS) ==="
 
-        [ -f "$scenario_dir/cleanup.sh" ] && bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
-        sleep 3
-
-        ns_list=$(grep -hE '^NS=|^NS_[AB]=' "$scenario_dir"/setup.sh 2>/dev/null | sed 's/^NS[_AB]*="//' | sed 's/"//')
-        for ns in $(echo "$ns_list" | sort -u | grep -v '^$'); do
-            oc create namespace "$ns" 2>/dev/null || true
-            if [ -n "${DOCKERHUB_USER:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
-                oc create secret docker-registry dockerhub \
-                    --docker-server=docker.io \
-                    --docker-username="$DOCKERHUB_USER" \
-                    --docker-password="$DOCKERHUB_TOKEN" \
-                    -n "$ns" --dry-run=client -o yaml 2>/dev/null | oc apply -f - 2>/dev/null
-                oc secrets link default dockerhub --for=pull -n "$ns" 2>/dev/null
-            fi
-        done
-
-        [ -f "$scenario_dir/setup.sh" ] && bash "$scenario_dir/setup.sh" 2>&1 | tail -1 || echo "WARN: setup"
-
-        ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/$tag"
+        ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/mcp"
         mkdir -p "$ITER_DIR"
 
         cd "$OLS_DIR"
         API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
             --system-config "$WORK_DIR/system.yaml" \
-            --eval-data "$EVAL_DIR/evals.yaml" \
-            --output-dir "$ITER_DIR" \
-            --tags "$tag" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
+            --eval-data "$EVAL_DIR/mcp_evals.yaml" \
+            --output-dir "$ITER_DIR" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
 
-        if [ -f "$scenario_dir/cleanup.sh" ]; then
-            bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
+        echo "MCP iteration $actual_iter complete"
+
+        if [ "$iter" -lt "$ITERATIONS" ]; then
+            echo "Resetting cluster state for next iteration..."
+            (cd "$PAYMENTS_DIR" && bash scripts/cleanup.sh) 2>/dev/null || true
+            (cd "$PAYMENTS_DIR" && bash scripts/delete-history.sh) 2>/dev/null || true
+            sleep 10
+            (cd "$PAYMENTS_DIR" && bash scripts/deploy.sh)
+            (cd "$PAYMENTS_DIR" && bash scripts/break.sh)
         fi
-        sleep 3
-        echo "Done: $tag"
     done
-    echo "Iteration $actual_iter complete"
-done
+
+    echo "Cleaning up payments scenario..."
+    (cd "$PAYMENTS_DIR" && bash scripts/cleanup.sh) 2>/dev/null || true
+
+else
+    # --- Scenario eval mode: per-scenario setup/eval/cleanup ---
+
+    TAGS=(envvar_missing batch_failure storage_binding namespace_pod_count \
+          scheduled_outage_detection periodic_failure_window \
+          readiness_probe_diagnosis ingress_rule_mismatch oom wrong_networkpolicy \
+          config_drift_analysis)
+
+    for iter in $(seq 1 $ITERATIONS); do
+        actual_iter=$((iter + ITER_OFFSET))
+        echo ""
+        echo "=== Iteration $actual_iter (run $iter/$ITERATIONS) ==="
+
+        for tag in "${TAGS[@]}"; do
+            echo "--- $tag ---"
+            printf "scenario=%s\niteration=%s\ncheckpoint=%s\n" "$tag" "$actual_iter" "$MODEL_LABEL" > /tmp/eval_context.txt
+
+            scenario_dir="$EVAL_DIR/scenarios/$tag"
+
+            [ -f "$scenario_dir/cleanup.sh" ] && bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
+            sleep 3
+
+            ns_list=$(grep -hE '^NS=|^NS_[AB]=' "$scenario_dir"/setup.sh 2>/dev/null | sed 's/^NS[_AB]*="//' | sed 's/"//')
+            for ns in $(echo "$ns_list" | sort -u | grep -v '^$'); do
+                oc create namespace "$ns" 2>/dev/null || true
+                if [ -n "${DOCKERHUB_USER:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
+                    oc create secret docker-registry dockerhub \
+                        --docker-server=docker.io \
+                        --docker-username="$DOCKERHUB_USER" \
+                        --docker-password="$DOCKERHUB_TOKEN" \
+                        -n "$ns" --dry-run=client -o yaml 2>/dev/null | oc apply -f - 2>/dev/null
+                    oc secrets link default dockerhub --for=pull -n "$ns" 2>/dev/null
+                fi
+            done
+
+            [ -f "$scenario_dir/setup.sh" ] && bash "$scenario_dir/setup.sh" 2>&1 | tail -1 || echo "WARN: setup"
+
+            ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/$tag"
+            mkdir -p "$ITER_DIR"
+
+            cd "$OLS_DIR"
+            API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
+                --system-config "$WORK_DIR/system.yaml" \
+                --eval-data "$EVAL_DIR/evals.yaml" \
+                --output-dir "$ITER_DIR" \
+                --tags "$tag" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
+
+            if [ -f "$scenario_dir/cleanup.sh" ]; then
+                bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
+            fi
+            sleep 3
+            echo "Done: $tag"
+        done
+        echo "Iteration $actual_iter complete"
+    done
+fi
 
 echo ""
 echo "========================================="
-echo "  Eval complete: $MODEL_LABEL${ITS_BUDGET:+ (ITS budget=${ITS_BUDGET}, ${ITS_ALGORITHM})}"
+echo "  Eval complete: $MODEL_LABEL${ITS_BUDGET:+ (ITS budget=${ITS_BUDGET}, ${ITS_ALGORITHM})}${MCP_EVALS:+ (MCP evals)}"
 echo "  $(date)"
 echo "========================================="
 
@@ -255,3 +332,6 @@ if total_all > 0:
 pkill -f "runner.py" 2>/dev/null || true
 pkill -f "openshift-mcp-server" 2>/dev/null || true
 pkill -f "iaas.py" 2>/dev/null || true
+pkill -f "obs-mcp" 2>/dev/null || true
+pkill -f "port-forward.*prometheus-operated" 2>/dev/null || true
+pkill -f "port-forward.*alertmanager-operated" 2>/dev/null || true

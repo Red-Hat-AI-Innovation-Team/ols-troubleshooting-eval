@@ -60,7 +60,6 @@ metrics_metadata:
       evaluation_params:
         - query
         - response
-        - contexts
       evaluation_steps:
         - "Step 1: Check if the response is based on real cluster evidence or is just providing generic suggestions to a problem. In the latter the test MUST fail, otherwise go to next step."
         - "Step 2: Check if the response contains an analysis related to the query content"
