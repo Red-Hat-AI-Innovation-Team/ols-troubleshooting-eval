@@ -314,19 +314,27 @@ echo "========================================="
 python3 -c "
 import csv, glob
 path = '$OUTPUT_BASE'
-total_all = p_all = 0
+p_all = f_all = e_all = 0
 for i in range(1, 100):
-    t = p = 0
-    for f in sorted(glob.glob(f'{path}/iter_{i:02d}/*/*detailed*.csv')):
-        for row in csv.DictReader(open(f)):
-            t += 1
-            if row.get('result') == 'PASS': p += 1
-    if t > 0:
-        total_all += t; p_all += p
-        print(f'iter_{i:02d}: {p}/{t} = {p/t*100:.1f}%')
+    p = f = e = 0
+    for fp in sorted(glob.glob(f'{path}/iter_{i:02d}/*/*detailed*.csv')):
+        for row in csv.DictReader(open(fp)):
+            r = row.get('result', '')
+            if r == 'PASS': p += 1
+            elif r == 'FAIL': f += 1
+            elif r == 'ERROR': e += 1
+    judged = p + f
+    if judged + e > 0:
+        p_all += p; f_all += f; e_all += e
+        parts = [f'{p}/{judged} = {p/judged*100:.1f}%' if judged else '0/0']
+        if e: parts.append(f'{e} errors')
+        print(f'iter_{i:02d}: {\"  \".join(parts)}')
     else: break
-if total_all > 0:
-    print(f'TOTAL: {p_all}/{total_all} = {p_all/total_all*100:.1f}%')
+judged_all = p_all + f_all
+if judged_all > 0:
+    parts = [f'{p_all}/{judged_all} = {p_all/judged_all*100:.1f}%']
+    if e_all: parts.append(f'{e_all} errors')
+    print(f'TOTAL: {\"  \".join(parts)}')
 "
 
 pkill -f "runner.py" 2>/dev/null || true

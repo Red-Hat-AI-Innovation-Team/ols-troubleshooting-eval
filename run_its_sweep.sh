@@ -160,22 +160,23 @@ for line in sys.stdin:
         label, elapsed = line.split(',', 1)
         runs.append((label, elapsed))
 
-fmt = '{:<40} {:>16} {:>12} {:>14}'
-print(fmt.format('Config', 'Pass Rate', 'Avg Score', 'Elapsed'))
-print('-' * 84)
+fmt = '{:<40} {:>16} {:>12} {:>8} {:>14}'
+print(fmt.format('Config', 'Pass Rate', 'Avg Score', 'Errors', 'Elapsed'))
+print('-' * 92)
 
 for label, elapsed in runs:
     path = f'{results_dir}/traced_{label}'
-    total = passed = 0
+    passed = failed = errors = 0
     scores = []
     for i in range(1, 100):
         found = False
         for f in sorted(glob.glob(f'{path}/iter_{i:02d}/*/*detailed*.csv')):
             found = True
             for row in csv.DictReader(open(f)):
-                total += 1
-                if row.get('result') == 'PASS':
-                    passed += 1
+                r = row.get('result', '')
+                if r == 'PASS': passed += 1
+                elif r == 'FAIL': failed += 1
+                elif r == 'ERROR': errors += 1
                 s = row.get('score', '')
                 if s:
                     try: scores.append(float(s))
@@ -183,14 +184,17 @@ for label, elapsed in runs:
         if not found:
             break
 
-    if total > 0:
-        rate = f'{passed}/{total} ({passed/total*100:.1f}%)'
+    judged = passed + failed
+    if judged > 0:
+        rate = f'{passed}/{judged} ({passed/judged*100:.1f}%)'
         avg_score = f'{sum(scores)/len(scores):.3f}' if scores else 'n/a'
+        err_str = str(errors) if errors else '-'
     else:
         rate = 'no data'
         avg_score = 'n/a'
+        err_str = str(errors) if errors else '-'
 
-    print(fmt.format(label, rate, avg_score, elapsed))
+    print(fmt.format(label, rate, avg_score, err_str, elapsed))
 
 print()
 " "$RESULTS_DIR"
