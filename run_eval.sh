@@ -44,6 +44,7 @@ TRACING="${TRACING:-off}"
 ITS_BUDGET="${ITS_BUDGET:-}"
 ITS_ALGORITHM="${ITS_ALGORITHM:-self-consistency}"
 ITS_TOOL_VOTE="${ITS_TOOL_VOTE:-tool_hierarchical}"
+ITS_TEMPERATURE="${ITS_TEMPERATURE:-}"
 ITS_PORT=8100
 MCP_EVALS="${MCP_EVALS:-}"
 
@@ -150,16 +151,18 @@ if [ -n "$ITS_BUDGET" ]; then
     sleep 3
     # Configure the gateway
     ITS_API_KEY=$(cat "$SCRIPT_DIR/.openai_key" 2>/dev/null || echo "")
-    curl -sf -X POST "http://127.0.0.1:${ITS_PORT}/configure" \
-        -H "Content-Type: application/json" \
-        -d "{
+    ITS_CONFIG="{
             \"endpoint\": \"${MODEL_URL}\",
             \"api_key\": \"${ITS_API_KEY}\",
             \"model\": \"${MODEL_NAME}\",
             \"alg\": \"${ITS_ALGORITHM}\",
             \"tool_vote\": \"${ITS_TOOL_VOTE}\",
             \"budget\": ${ITS_BUDGET}
-        }" > /dev/null && echo "ITS gateway configured: budget=${ITS_BUDGET}, alg=${ITS_ALGORITHM}" || echo "ERROR: ITS gateway configuration failed"
+            ${ITS_TEMPERATURE:+,\"temperature\": ${ITS_TEMPERATURE}}
+        }"
+    curl -sf -X POST "http://127.0.0.1:${ITS_PORT}/configure" \
+        -H "Content-Type: application/json" \
+        -d "$ITS_CONFIG" > /dev/null && echo "ITS gateway configured: budget=${ITS_BUDGET}, alg=${ITS_ALGORITHM}${ITS_TEMPERATURE:+, temp=${ITS_TEMPERATURE}}" || echo "ERROR: ITS gateway configuration failed"
 fi
 
 # Start obs-mcp + port-forwards for MCP evals
