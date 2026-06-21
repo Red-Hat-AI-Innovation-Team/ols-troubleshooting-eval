@@ -46,6 +46,7 @@ ITS_ALGORITHM="${ITS_ALGORITHM:-self-consistency}"
 ITS_TOOL_VOTE="${ITS_TOOL_VOTE:-tool_hierarchical}"
 ITS_TEMPERATURE="${ITS_TEMPERATURE:-}"
 ITS_PORT=8100
+CONTEXT_WINDOW="${CONTEXT_WINDOW:-128000}"
 MCP_EVALS="${MCP_EVALS:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -89,7 +90,7 @@ llm_providers:
     credentials_path: ${SCRIPT_DIR}/.openai_key
     models:
       - name: ${MODEL_NAME}
-        context_window_size: 32768
+        context_window_size: ${CONTEXT_WINDOW}
 
 mcp_servers:
 $(if [ -n "$MCP_EVALS" ]; then cat << 'MCP_BLOCK'
