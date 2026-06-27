@@ -7,3 +7,4 @@ __pycache__/
 eval_scenarios/results/
 lightspeed-service/
 lightspeed-evaluation/
+external_libs
