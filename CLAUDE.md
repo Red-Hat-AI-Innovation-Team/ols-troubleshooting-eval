@@ -85,9 +85,9 @@ Each scenario in `eval_scenarios/scenarios/<tag>/`:
 ### MCP Server Config
 
 `mcp_config.toml` — Go-based openshift-mcp-server:
-- Port 8085, read_write mode
-- Denies: ServiceAccounts, Secrets, ClusterRoles, ClusterRoleBindings, RoleBindings
-- Disabled tools: apply_resource, delete_resource, manage_approval
+- Port 8085, read_write mode (`read_only = false`, `disable_destructive = false`)
+- Denies: ServiceAccounts, Secrets, all `rbac.authorization.k8s.io/v1` (ClusterRoles, ClusterRoleBindings, RoleBindings, Roles)
+- Disabled tools: configuration_view, helm_install, helm_list, helm_uninstall
 
 ### Services (ports)
 
