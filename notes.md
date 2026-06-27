@@ -3,7 +3,13 @@ Setting up CRC Cluster
 
 - `make env-up` to start the CRC cluster.
 - `make env-down` stop services but keep the CRC VM
-- `make env-nuke` full cleanup.
+- `make env-nuke` full cleanup. On next run might hit timeout issues during pulling of the docker images.
+
+---
+
+2 MCP servers:
+- external_libs/openshift-mcp-server: K8s MCP
+- external_libs/obs-mcp: Prometheus/Alertmanager MCP
 
 ---
 
