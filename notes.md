@@ -101,3 +101,56 @@ The eval tells you exactly where to invest training budget:
 | Tool Chaining | Implicit in results | **Medium** — hard to measure separately |
 
 A 2-4B model trained heavily on temporal reasoning and structured comparison tasks could potentially match or beat a general-purpose 31B model on this specific eval, because those skills aren't well-represented in general pre-training data.
+
+---
+
+## Synthetic Data Generation Pipeline
+
+Here's how I'd structure the pipeline:
+
+### Phase 1: Build a "world model" catalog
+
+Create JSON/YAML files describing fictional but realistic clusters:
+- Namespaces, pods, deployments, services, nodes
+- Current states (running, crashed, pending, evicted)
+- Events associated with resources
+- Metrics available and their approximate values
+- Active alerts and silences
+
+This is your ground truth. 50-100 cluster scenarios with varying complexity.
+
+### Phase 2: Question generation
+
+For each scenario, use an LLM (70B+ class — Llama 3.1 70B, Qwen 2.5 72B) to generate questions at each difficulty tier. Prompt it with:
+- The scenario description
+- The tool schemas
+- The tier you want
+- Example questions from other scenarios
+
+**Critical**: Have the generator LLM also produce the expected tool call sequence (the "gold" plan) AND the expected final answer. This gives you end-to-end training signal.
+
+### Phase 3: Synthetic execution traces
+
+For each (scenario, question, gold plan), simulate the execution:
+1. Generate realistic tool outputs consistent with the scenario
+2. Show the model the question, the tool output, and ask it to either (a) extract the needed info and call the next tool, or (b) synthesize the final answer
+
+This creates multi-turn conversation training data:
+```
+User: Why is checkout-service unhealthy?
+Assistant: [thinking] I should first check events for warnings... [tool_call: events_list(namespace="production", fieldSelector="type=Warning")]
+Tool result: [realistic YAML output]
+Assistant: [thinking] I see ImagePullBackOff events for checkout-service-7f8b9c-x2k4d. Let me check the pod logs for more detail... [tool_call: pods_log(name="checkout-service-7f8b9c-x2k4d", namespace="production", previous=true)]
+Tool result: [realistic log output]
+Assistant: The checkout-service is unhealthy because...
+```
+
+### Phase 4: Hard negative augmentation
+
+Take correct examples and create adversarial variants:
+- Same question, wrong tool selected → train model to avoid
+- Right tool, wrong parameters (e.g., missing namespace, wrong fieldSelector syntax)
+- Correct tool output but wrong information extracted
+- Unnecessary tool calls (model calls 5 tools when 2 suffice)
+
+
