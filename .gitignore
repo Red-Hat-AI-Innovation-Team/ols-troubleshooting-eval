@@ -9,3 +9,7 @@ lightspeed-service/
 lightspeed-evaluation/
 external_libs
 /ra/uv.lock
+/ra/seed_data.json
+/.llm.md
+/mcp_tools.json
+/.dingllm
