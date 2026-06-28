@@ -1,6 +1,6 @@
 """Tests for mock_tools.py.
 
-Spins up a test_openshift_cluster DB, loads schema + seed_data.json,
+Spins up a test_openshift_cluster DB, loads schema + test_data.json,
 runs tool assertions, then drops the test DB.
 
 Usage:
@@ -29,7 +29,7 @@ ADMIN_DSN = f"host={PG_HOST} port={PG_PORT} dbname=postgres user={PG_USER}"
 TEST_DSN = f"host={PG_HOST} port={PG_PORT} dbname={TEST_DB} user={PG_USER}"
 
 SCHEMA_PATH = Path(__file__).parent / "world_model_db_schema.sql"
-SEED_PATH = Path(__file__).parent / "seed_data.json"
+SEED_PATH = Path(__file__).parent / "test_data.json"
 
 # ---------------------------------------------------------------------------
 # DB setup / teardown
