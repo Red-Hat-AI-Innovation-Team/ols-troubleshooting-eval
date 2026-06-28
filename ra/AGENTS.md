@@ -7,20 +7,20 @@ Mock MCP tool environment + LLM agent loop for evaluating OpenShift troubleshoot
 ```
 ra/
   agent.py                  # Generic LLM agent loop with tool calling (dataclass)
-  run_agent.py              # Entry point: user-sim SRE + troubleshooter conversation loop
+  run_agent.py              # Entry point: user-sim SRE + troubleshooter Socratic conversation loop
   mock_tools.py             # 30 PostgreSQL-backed mock MCP tools (openshift-mcp + obs-mcp)
   vshell.py                 # In-memory virtual shell for pods_exec (fs + network sim)
-  db.py                     # DB connection, schema init, seed loading, teardown
-  seeding_order.py          # Topological sort of tables by FK dependencies
+  db.py                     # DB connection/schema/seed/teardown + seeding order (topo sort by FK)
   generate_scenario_based_data.py  # Scenario-driven seed data generation (with JSONB schemas)
   llm/                      # Provider-agnostic LLM client abstraction
     base.py                 #   ABC: LLMClient.chat() interface
-    types.py                #   Dataclasses: LLMResponse, ToolCall
-    anthropic_vertex.py     #   Anthropic Vertex AI implementation (streaming)
+    types.py                #   Dataclasses: LLMResponse, ToolCall, Message, ToolDef, ToolResult
+    anthropic_vertex.py     #   Anthropic Vertex AI implementation (streaming + extended thinking)
     openai_client.py        #   OpenAI-compatible implementation (+ custom base_url)
   world_model_db_schema.sql # 20+ tables modeling K8s/OpenShift cluster state
   raw_tool_defs.json        # MCP tool definitions (Anthropic format source)
-  seed_data.json            # Generated cluster seed data (used by tests and agent)
+  seed_data.json            # Generated cluster seed data (used by agent)
+  test_data.json            # Seed data for tests (separate from agent seed data)
   MCP_TOOLS.md              # Full MCP tool schema documentation (30 tools)
 ```
 
@@ -59,11 +59,12 @@ uv run python test_mock_tool.py
 
 - `psycopg2-binary` — PostgreSQL client
 - `anthropic[vertex]` — Anthropic SDK with Vertex AI support
+- `openai` — OpenAI SDK (for OpenAIClient + custom base_url endpoints)
 - `pyyaml` — YAML serialization for tool outputs
 
 ## Architecture
 
-**Data flow**: `run_agent.py` creates two Agent instances — a user-simulator (SRE with full DB knowledge) and a troubleshooter (has MCP tools, no DB access). They converse for up to 5 rounds until the SRE says "DONE".
+**Data flow**: `run_agent.py` creates two Agent instances — a user-simulator (SRE with full DB knowledge) and a troubleshooter (has MCP tools, no DB access). The user-sim generates an initial question from seed data, then they converse Socratically for up to 5 rounds until the SRE says "DONE". The user-sim nudges the troubleshooter toward root cause without giving the answer.
 
 **Mock tools** (`mock_tools.py`): Each tool function takes `(conn, *, param=...) -> str`. The `TOOLS` dict maps tool names to functions. `call_tool()` dispatches by name. `load_tool_defs()` reads `raw_tool_defs.json` and converts to Anthropic tool format.
 
@@ -75,16 +76,18 @@ uv run python test_mock_tool.py
 
 - Module-level docstrings on every file
 - `from __future__ import annotations` in `llm/` package
-- Dataclasses for state containers (`Agent`, `ToolCall`, `LLMResponse`, `VFile`, `VNet`)
+- Dataclasses for state containers (`Agent`, `Table`, `ToolCall`, `LLMResponse`, `VFile`, `VNet`)
 - ABC for `LLMClient` interface, concrete impl in separate module
 - Type hints throughout: `str | None`, `list[dict]`, `Callable[[str, dict], str]`
 - Keyword-only args for tool functions (using `*` separator)
+- Mixed indentation: `db.py` and `vshell.py` use 2-space indent; all other files use 4-space
+- `db.connect()` is a context manager (`with db.connect() as conn:`)
 - No linter/formatter config in pyproject.toml (no ruff, no mypy configured)
 
 ## Testing
 
 - Custom test runner in `test_mock_tool.py` (not pytest)
-- Tests spin up a `test_openshift_cluster` DB, load schema + `seed_data.json`, run assertions, then drop DB
+- Tests spin up a `test_openshift_cluster` DB, load schema + `test_data.json`, run assertions, then drop DB
 - Each test function: `def test_<tool_name>(conn)` — takes a psycopg2 connection
 - Run single test by editing `main()` or filtering in the test list
 - Run all: `uv run python test_mock_tool.py`
