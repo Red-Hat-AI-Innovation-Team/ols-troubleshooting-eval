@@ -10,8 +10,7 @@ ra/
   run_agent.py              # Entry point: user-sim SRE + troubleshooter conversation loop
   mock_tools.py             # 30 PostgreSQL-backed mock MCP tools (openshift-mcp + obs-mcp)
   vshell.py                 # In-memory virtual shell for pods_exec (fs + network sim)
-  db.py                     # DB connection config (host=127.0.0.1 port=5433)
-  init_db.py                # DB lifecycle: create/schema/seed/teardown
+  db.py                     # DB connection, schema init, seed loading, teardown
   seeding_order.py          # Topological sort of tables by FK dependencies
   generate_seed_data.py     # LLM-based seed data generation (per-table)
   generate_scenario_based_data.py  # Scenario-driven holistic seed data generation
@@ -36,8 +35,8 @@ podman run -d --name world-model-pg -p 127.0.0.1:5433:5432 \
   docker.io/library/postgres:17
 
 # DB lifecycle
-uv run python init_db.py init seed_data.json    # create DB + schema + seed
-uv run python init_db.py teardown                # drop DB
+uv run python db.py init seed_data.json    # create DB + schema + seed
+uv run python db.py teardown                # drop DB
 
 # Seed data generation
 uv run python generate_seed_data.py              # per-table LLM generation
