@@ -196,7 +196,10 @@ class Agent:
 
             tool_results: list[dict] = []
             for tu in tool_uses:
-                result = self.tool_handler(tu.name, tu.input or {})
+                try:
+                    result = self.tool_handler(tu.name, tu.input or {})
+                except Exception as e:
+                    result = f"Error executing {tu.name}: {type(e).__name__}: {e}"
                 tool_results.append({
                     "type": "tool_result",
                     "tool_use_id": tu.id,
