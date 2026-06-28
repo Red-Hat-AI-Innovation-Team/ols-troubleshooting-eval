@@ -194,9 +194,9 @@ def main():
     if args.skip_embed and OUTPUT_PATH.exists():
         print("Loading cached embeddings...")
         data = json.loads(OUTPUT_PATH.read_text())
-        all_embeddings = data["embeddings"]
+        all_embeddings: list[list[float]] = data["embeddings"]
     else:
-        all_embeddings: list[list[float]] = []
+        all_embeddings = []
         client = httpx.Client()
         for i in range(0, len(scenarios), BATCH_SIZE):
             batch = scenarios[i : i + BATCH_SIZE]

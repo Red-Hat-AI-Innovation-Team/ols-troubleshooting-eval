@@ -130,7 +130,8 @@ class VShell:
       "date": lambda a, s: "Mon Jan  1 00:00:00 UTC 2024",
     }
     if cmd in table:
-      return table[cmd](args, stdin)
+      result: str | None = table[cmd](args, stdin)
+      return result
     return f"bash: {cmd}: command not found"
 
   # ---- filesystem helpers ----
@@ -138,7 +139,7 @@ class VShell:
   def _resolve(self, path: str) -> str:
     if not path.startswith("/"):
       path = self.cwd.rstrip("/") + "/" + path
-    parts = []
+    parts: list[str] = []
     for p in path.split("/"):
       if p == "" or p == ".":
         continue
@@ -450,7 +451,7 @@ class VShell:
     if stdin is None:
       return None
     delim = "\t"
-    fields = []
+    fields: list[int] = []
     i = 0
     while i < len(args):
       if args[i] == "-d" and i + 1 < len(args):
@@ -458,10 +459,10 @@ class VShell:
       elif args[i] == "-f" and i + 1 < len(args):
         for p in args[i + 1].split(","):
           if "-" in p:
-            s, _, e = p.partition("-")
-            s = int(s) if s else 1
-            e = int(e) if e else 999
-            fields.extend(range(s, e + 1))
+            s_str, _, e_str = p.partition("-")
+            s_int = int(s_str) if s_str else 1
+            e_int = int(e_str) if e_str else 999
+            fields.extend(range(s_int, e_int + 1))
           else:
             fields.append(int(p))
         i += 2

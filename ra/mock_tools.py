@@ -26,12 +26,12 @@ def _dict_cur(conn):
 
 
 def _yaml_out(data: Any) -> str:
-    return yaml.dump(data, default_flow_style=False, sort_keys=False)
+    return str(yaml.dump(data, default_flow_style=False, sort_keys=False))
 
 
 def _parse_field_selector(field_selector: str) -> list[tuple[str, str]]:
     """Parse 'key=value,key2=value2' into [(key, value), ...]."""
-    pairs = []
+    pairs: list[tuple[str, str]] = []
     if not field_selector:
         return pairs
     for part in field_selector.split(","):
@@ -66,7 +66,7 @@ def events_list(
         query += " AND n.name = %s"
         params.append(namespace)
 
-    for key, val in _parse_field_selector(fieldSelector):
+    for key, val in _parse_field_selector(fieldSelector or ""):
         col_map = {
             "type": "e.event_type",
             "reason": "e.reason",
@@ -126,7 +126,7 @@ def namespaces_list(
     query = "SELECT * FROM namespaces WHERE 1=1"
     params: list = []
 
-    for key, val in _parse_field_selector(fieldSelector):
+    for key, val in _parse_field_selector(fieldSelector or ""):
         if key == "metadata.name":
             query += " AND name = %s"
             params.append(val)
@@ -366,7 +366,7 @@ def _pods_query(
                 query += " AND p.labels->>%s = %s"
                 params.extend([k.strip(), v.strip()])
 
-    for key, val in _parse_field_selector(fieldSelector):
+    for key, val in _parse_field_selector(fieldSelector or ""):
         col_map = {
             "status.phase": "p.phase",
             "spec.nodeName": "p.node_id",  # approximate
@@ -702,7 +702,7 @@ def pods_run(
     ns_id = ns_row["id"]
 
     pod_uid = str(uuid.uuid4())
-    spec_json = {"containers": [{"name": "main", "image": image}]}
+    spec_json: dict[str, Any] = {"containers": [{"name": "main", "image": image}]}
     if port:
         spec_json["containers"][0]["ports"] = [{"containerPort": port}]
 
@@ -1415,7 +1415,7 @@ def call_tool(conn, name: str, params: dict | None = None) -> str:
     """Dispatch a tool call by name."""
     if name not in TOOLS:
         return f"Error: unknown tool '{name}'"
-    return TOOLS[name](conn, **(params or {}))
+    return str(TOOLS[name](conn, **(params or {})))
 
 
 # ---------------------------------------------------------------------------
