@@ -7,17 +7,15 @@ Usage:
 import json
 from pathlib import Path
 
-import psycopg2
 from anthropic import AnthropicVertex
 
 from agent import Agent
+import db
 from mock_tools import TOOLS, call_tool
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-
-DB_DSN = "host=127.0.0.1 port=5433 dbname=openshift_cluster user=postgres"
 
 SEED_DATA_PATH = Path(__file__).parent / "seed_data.json"
 
@@ -131,6 +129,14 @@ def load_tool_defs() -> list[dict]:
     return tools
 
 
+def make_tool_handler(conn):
+    """Create a tool_handler callable bound to a psycopg2 connection."""
+    def handler(name: str, params: dict) -> str:
+        clean = {k: v for k, v in params.items() if k not in STRIP_PARAMS}
+        return call_tool(conn, name, clean)
+    return handler
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -140,7 +146,7 @@ MAX_CONVERSATION_ROUNDS = 5
 
 if __name__ == "__main__":
     client = AnthropicVertex()
-    conn = psycopg2.connect(DB_DSN)
+    conn = db.connect()
 
     # --- User simulator agent (has seed data, acts as SRE) ---
     seed_data = SEED_DATA_PATH.read_text()
@@ -156,15 +162,11 @@ if __name__ == "__main__":
     )
 
     # --- Troubleshooting agent (has tools, no seed data) ---
-    def tool_handler(name: str, params: dict) -> str:
-        clean = {k: v for k, v in params.items() if k not in STRIP_PARAMS}
-        return call_tool(conn, name, clean)
-
     troubleshooter = Agent(
         system_prompt=SYSTEM_PROMPT,
         model="claude-opus-4-6@default",
         tool_defs=load_tool_defs(),
-        tool_handler=tool_handler,
+        tool_handler=make_tool_handler(conn),
         client=client,
     )
 
