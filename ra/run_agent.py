@@ -34,22 +34,20 @@ CLUSTER DATABASE:
 You are role-playing as a mid-level SRE who just got paged or noticed something \
 wrong on a dashboard. You do NOT have direct database access — you can only see \
 what a real operator would see: dashboards, pager alerts, user complaints, \
-kubectl output you glanced at.
+kubectl output you glanced at."""
 
-Generate a single realistic troubleshooting question. Rules:
-- Sound like a real human typing in Slack or a chat window — casual, not a report
+QUESTION_GEN_USER_PROMPT = """Generate a single realistic troubleshooting question. Rules:
+- Sound like a real human typing in to an ai agent — casual, not a report
 - Mention only 1-3 symptoms you'd actually notice first (NOT a complete inventory)
 - Leave the root cause for the agent to discover
 - Do NOT enumerate every affected pod/namespace/node — pick what stands out most
 - Do NOT mention database tables, column values, or internal IDs
 - Keep it to 1-3 sentences max
 - You may include minor informalities: abbreviations, missing punctuation, \
-  a lowercase start — but don't overdo it
+a lowercase start — but don't overdo it
 - The question must be answerable through multi-step tool investigation
 
 Respond with ONLY the question, nothing else."""
-
-QUESTION_GEN_USER_PROMPT = "Generate a troubleshooting question for this cluster."
 
 SYSTEM_PROMPT = """\
 You are an OpenShift/Kubernetes troubleshooting agent. You have access to MCP \
@@ -207,7 +205,7 @@ def generate_question(client: AnthropicVertex) -> str:
         tool_defs=[],
         tool_handler=lambda _name, _params: "",
         client=client,
-        max_turns=1,
+        max_turns=10,
         thinking_budget=5_000,
         max_tokens=8_000,
     )
@@ -217,12 +215,9 @@ def generate_question(client: AnthropicVertex) -> str:
 if __name__ == "__main__":
     client = AnthropicVertex()
 
-    if len(sys.argv) > 1:
-        query = sys.argv[1]
-    else:
-        print("Generating question from seed data...\n")
-        query = generate_question(client)
-        print(f"\nGenerated question: {query}\n")
+    print("Generating question from seed data...\n")
+    query = generate_question(client)
+    print(f"\nGenerated question: {query}\n")
 
     conn = psycopg2.connect(DB_DSN)
 
