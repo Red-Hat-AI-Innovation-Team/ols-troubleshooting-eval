@@ -18,6 +18,7 @@ ra/
     base.py                 #   ABC: LLMClient.chat() interface
     types.py                #   Dataclasses: LLMResponse, ToolCall
     anthropic_vertex.py     #   Anthropic Vertex AI implementation (streaming)
+    openai_client.py        #   OpenAI-compatible implementation (+ custom base_url)
   world_model_db_schema.sql # 20+ tables modeling K8s/OpenShift cluster state
   raw_tool_defs.json        # MCP tool definitions (Anthropic format source)
   seed_data.json            # Generated cluster seed data
@@ -55,6 +56,7 @@ uv run python test_mock_tool.py
 |----------|---------|
 | `CLOUD_ML_REGION` | Vertex AI region (default: us-east5) |
 | `ANTHROPIC_VERTEX_PROJECT_ID` | GCP project ID for Anthropic Vertex |
+| `OPENAI_API_KEY` | API key for OpenAIClient (read by SDK if not passed) |
 
 ## Dependencies
 
