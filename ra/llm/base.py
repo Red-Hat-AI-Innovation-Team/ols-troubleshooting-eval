@@ -3,26 +3,24 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any
 
-from llm.types import LLMResponse
+from llm.types import LLMResponse, Message, ToolDef
 
 
 class LLMClient(ABC):
     """Provider-agnostic interface for chat-with-tools.
 
-    Each implementation:
-    1. Translates tool defs + messages to provider format
-    2. Calls the provider API
-    3. Normalizes provider response -> LLMResponse
+    Each implementation translates internal types (Message, ToolDef)
+    to provider format at the edge, calls the API, and normalizes
+    the response back to LLMResponse.
     """
 
     @abstractmethod
     def chat(
         self,
         model: str,
-        messages: list[dict[str, Any]],
-        tools: list[dict[str, Any]],
+        messages: list[Message],
+        tools: list[ToolDef],
         max_tokens: int,
         system: str,
         thinking_budget: int,

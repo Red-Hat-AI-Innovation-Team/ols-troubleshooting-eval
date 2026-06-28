@@ -8,7 +8,7 @@ import anthropic
 from anthropic.types import ToolUseBlock
 
 from llm.base import LLMClient
-from llm.types import LLMResponse, ToolCall
+from llm.types import LLMResponse, Message, ToolCall, ToolDef
 
 
 class AnthropicVertexClient(LLMClient):
@@ -25,27 +25,85 @@ class AnthropicVertexClient(LLMClient):
     def chat(
         self,
         model: str,
-        messages: list[dict[str, Any]],
-        tools: list[dict[str, Any]],
+        messages: list[Message],
+        tools: list[ToolDef],
         max_tokens: int,
         system: str,
         thinking_budget: int,
     ) -> LLMResponse:
-        with self._client.messages.stream(
+        kwargs: dict[str, Any] = dict(
             model=model,
             max_tokens=max_tokens,
             thinking={"type": "enabled", "budget_tokens": thinking_budget},
             system=system,
-            tools=tools,
-            messages=messages,
-        ) as stream:
+            messages=_to_anthropic_messages(messages),
+        )
+        if tools:
+            kwargs["tools"] = _to_anthropic_tools(tools)
+
+        with self._client.messages.stream(**kwargs) as stream:
             response = stream.get_final_message()
 
         return _parse_response(response)
 
 
+# ---------------------------------------------------------------------------
+# Internal → Anthropic format
+# ---------------------------------------------------------------------------
+
+def _to_anthropic_tools(tools: list[ToolDef]) -> list[dict[str, Any]]:
+    return [
+        {
+            "name": t.name,
+            "description": t.description,
+            "input_schema": t.parameters,
+        }
+        for t in tools
+    ]
+
+
+def _to_anthropic_messages(messages: list[Message]) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for msg in messages:
+        if msg.role == "tool":
+            out.append({
+                "role": "user",
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tr.tool_call_id,
+                        "content": tr.content,
+                    }
+                    for tr in msg.tool_results
+                ],
+            })
+        elif msg.role == "assistant" and msg.tool_calls:
+            content: list[dict[str, Any]] = []
+            if msg.content:
+                content.append({"type": "text", "text": msg.content})
+            for tc in msg.tool_calls:
+                content.append({
+                    "type": "tool_use",
+                    "id": tc.id,
+                    "name": tc.name,
+                    "input": tc.arguments,
+                })
+            out.append({"role": "assistant", "content": content})
+        elif msg.role == "assistant":
+            content_blocks: list[dict[str, Any]] = []
+            if msg.content:
+                content_blocks.append({"type": "text", "text": msg.content})
+            out.append({"role": "assistant", "content": content_blocks or msg.content})
+        else:
+            out.append({"role": msg.role, "content": msg.content or ""})
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Anthropic response → internal types
+# ---------------------------------------------------------------------------
+
 def _parse_response(response: anthropic.types.Message) -> LLMResponse:
-    """Normalize an Anthropic response into LLMResponse."""
     content_parts: list[str] = []
     tool_calls: list[ToolCall] = []
 
