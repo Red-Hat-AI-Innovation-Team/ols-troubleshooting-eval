@@ -6,6 +6,7 @@ import json
 from typing import Any
 
 import openai
+from openai.types.chat.chat_completion_message_tool_call import ChatCompletionMessageToolCall
 
 from llm.base import LLMClient
 from llm.types import LLMResponse, Message, ToolCall, ToolDef
@@ -105,6 +106,8 @@ def _parse_response(response: openai.types.chat.ChatCompletion) -> LLMResponse:
     tool_calls: list[ToolCall] = []
     if msg.tool_calls:
         for tc in msg.tool_calls:
+            if not isinstance(tc, ChatCompletionMessageToolCall):
+                continue
             arguments = json.loads(tc.function.arguments) if tc.function.arguments else {}
             tool_calls.append(ToolCall(
                 id=tc.id,

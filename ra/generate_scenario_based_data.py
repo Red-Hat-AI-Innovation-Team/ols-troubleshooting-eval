@@ -490,19 +490,19 @@ def generate_seed_data(
     generated: dict[str, list[dict]] = {}
 
     for i, table_name in enumerate(seeding_order):
-        count: int = row_counts.get(table_name, 0)
-        if count == 0:
+        row_count: int = row_counts.get(table_name, 0)
+        if row_count == 0:
             print(f"[{i + 1}/{len(seeding_order)}] Skipping {table_name} (0 rows)")
             generated[table_name] = []
             continue
 
         print(
-            f"[{i + 1}/{len(seeding_order)}] Generating {count} rows "
+            f"[{i + 1}/{len(seeding_order)}] Generating {row_count} rows "
             f"for: {table_name} ..."
         )
 
         meta: db.TableMeta = all_metas[table_name]
-        rows: list[dict] = generate_rows(client, meta, generated, count, system_prompt)
+        rows: list[dict] = generate_rows(client, meta, generated, row_count, system_prompt)
         generated[table_name] = rows
 
         print(f"  -> {len(rows)} rows generated")
