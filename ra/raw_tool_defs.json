@@ -1,0 +1,886 @@
+{
+  "openshift_mcp_server": {
+    "tool_count": 19,
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "configuration_contexts_list",
+          "description": "List all available context names and associated server urls from the kubeconfig file",
+          "parameters": {
+            "type": "object",
+            "properties": {}
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "events_list",
+          "description": "List Kubernetes events (warnings, errors, state changes) for debugging and troubleshooting in the current cluster from all namespaces",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "fieldSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes field selector to filter events by field values (e.g. 'type=Warning', 'involvedObject.name=my-pod'). Supported fields: involvedObject.kind, involvedObject.name, involvedObject.namespace, involvedObject.uid, involvedObject.apiVersion, involvedObject.resourceVersion, involvedObject.fieldPath, reason, reportingComponent, source, type. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+                "pattern": "^[.\\-A-Za-z0-9]+([=!,]{1,2}[./\\-A-Za-z0-9]+)+$"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Optional Namespace to retrieve the events from. If not provided, will list events from all namespaces"
+              }
+            }
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "namespaces_list",
+          "description": "List all the Kubernetes namespaces in the current cluster",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "fieldSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes field selector to filter namespaces by field values (e.g. 'metadata.name=default', 'status.phase=Active'). Supported fields: metadata.name, status.phase. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+                "pattern": "^[.\\-A-Za-z0-9]+([=!,]{1,2}[./\\-A-Za-z0-9]+)+$"
+              }
+            }
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "nodes_log",
+          "description": "Get logs from a Kubernetes node (kubelet, kube-proxy, or other system logs). This accesses node logs through the Kubernetes API proxy to the kubelet",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the node to get logs from"
+              },
+              "query": {
+                "type": "string",
+                "description": "query specifies services(s) or files from which to return logs (required). Example: \"kubelet\" to fetch kubelet logs, \"/<log-file-name>\" to fetch a specific log file from the node (e.g., \"/var/log/kubelet.log\" or \"/var/log/kube-proxy.log\")"
+              },
+              "tailLines": {
+                "type": "integer",
+                "description": "Number of lines to retrieve from the end of the logs (Optional, 0 means all logs)",
+                "default": 100,
+                "minimum": 0
+              }
+            },
+            "required": [
+              "name",
+              "query"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "nodes_stats_summary",
+          "description": "Get detailed resource usage statistics from a Kubernetes node via the kubelet's Summary API. Provides comprehensive metrics including CPU, memory, filesystem, and network usage at the node, pod, and container levels. On systems with cgroup v2 and kernel 4.20+, also includes PSI (Pressure Stall Information) metrics that show resource pressure for CPU, memory, and I/O. See https://kubernetes.io/docs/reference/instrumentation/understand-psi-metrics/ for details on PSI metrics",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the node to get stats from"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "nodes_top",
+          "description": "List the resource consumption (CPU and memory) as recorded by the Kubernetes Metrics Server for the specified Kubernetes Nodes or all nodes in the cluster",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "label_selector": {
+                "type": "string",
+                "description": "Kubernetes label selector (e.g. 'node-role.kubernetes.io/worker=') to filter nodes by label (Optional, only applicable when name is not provided)",
+                "pattern": "^([/_.\\-A-Za-z0-9=, ()!])+$"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the Node to get the resource consumption from (Optional, all Nodes if not provided)"
+              }
+            }
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_delete",
+          "description": "Delete a Kubernetes Pod in the current or provided namespace with the provided name",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the Pod to delete"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Namespace to delete the Pod from"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_exec",
+          "description": "Execute a command in a Kubernetes Pod (shell access, run commands in container) in the current or provided namespace with the provided name and command",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "command": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Command to execute in the Pod container. The first item is the command to be run, and the rest are the arguments to that command. Example: [\"ls\", \"-l\", \"/tmp\"]"
+              },
+              "container": {
+                "type": "string",
+                "description": "Name of the Pod container where the command will be executed (Optional)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the Pod where the command will be executed"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Namespace of the Pod where the command will be executed"
+              }
+            },
+            "required": [
+              "name",
+              "command"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_get",
+          "description": "Get a Kubernetes Pod in the current or provided namespace with the provided name",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the Pod"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Namespace to get the Pod from"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_list",
+          "description": "List all the Kubernetes pods in the current cluster from all namespaces",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "fieldSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes field selector to filter pods by field values (e.g. 'status.phase=Running', 'spec.nodeName=node1'). Supported fields: metadata.name, metadata.namespace, spec.nodeName, spec.restartPolicy, spec.schedulerName, spec.serviceAccountName, status.phase (Pending/Running/Succeeded/Failed/Unknown), status.podIP, status.nominatedNodeName. Note: CrashLoopBackOff is a container state, not a pod phase, so it cannot be filtered directly. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+                "pattern": "^[.\\-A-Za-z0-9]+([=!,]{1,2}[./\\-A-Za-z0-9]+)+$"
+              },
+              "labelSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the pods by label",
+                "pattern": "^([/_.\\-A-Za-z0-9=, ()!])+$"
+              }
+            }
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_list_in_namespace",
+          "description": "List all the Kubernetes pods in the specified namespace in the current cluster",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "fieldSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes field selector to filter pods by field values (e.g. 'status.phase=Running', 'spec.nodeName=node1'). Supported fields: metadata.name, metadata.namespace, spec.nodeName, spec.restartPolicy, spec.schedulerName, spec.serviceAccountName, status.phase (Pending/Running/Succeeded/Failed/Unknown), status.podIP, status.nominatedNodeName. Note: CrashLoopBackOff is a container state, not a pod phase, so it cannot be filtered directly. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+                "pattern": "^[.\\-A-Za-z0-9]+([=!,]{1,2}[./\\-A-Za-z0-9]+)+$"
+              },
+              "labelSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the pods by label",
+                "pattern": "^([/_.\\-A-Za-z0-9=, ()!])+$"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Namespace to list pods from"
+              }
+            },
+            "required": [
+              "namespace"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_log",
+          "description": "Get the logs of a Kubernetes Pod in the current or provided namespace with the provided name",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "type": "string",
+                "description": "Name of the Pod container to get the logs from (Optional)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the Pod to get the logs from"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Namespace to get the Pod logs from"
+              },
+              "previous": {
+                "type": "boolean",
+                "description": "Return previous terminated container logs (Optional)"
+              },
+              "tail": {
+                "type": "integer",
+                "description": "Number of lines to retrieve from the end of the logs (Optional, default: 100)",
+                "default": 100,
+                "minimum": 0
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_run",
+          "description": "Run a Kubernetes Pod in the current or provided namespace with the provided container image and optional name",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "image": {
+                "type": "string",
+                "description": "Container Image to run in the Pod"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the Pod (Optional, random name if not provided)"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Namespace to run the Pod in"
+              },
+              "port": {
+                "type": "number",
+                "description": "TCP/IP port to expose from the Pod container (Optional, no port exposed if not provided)"
+              }
+            },
+            "required": [
+              "image"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "pods_top",
+          "description": "List the resource consumption (CPU and memory) as recorded by the Kubernetes Metrics Server for the specified Kubernetes Pods in the all namespaces, the provided namespace, or the current namespace",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "all_namespaces": {
+                "type": "boolean",
+                "description": "If true, list the resource consumption for all Pods in all namespaces. If false, list the resource consumption for Pods in the provided namespace or the current namespace",
+                "default": true
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "label_selector": {
+                "type": "string",
+                "description": "Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the pods by label (Optional, only applicable when name is not provided)",
+                "pattern": "^([/_.\\-A-Za-z0-9=, ()!])+$"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the Pod to get the resource consumption from (Optional, all Pods in the namespace if not provided)"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Namespace to get the Pods resource consumption from (Optional, current namespace if not provided and all_namespaces is false)"
+              }
+            }
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "resources_create_or_update",
+          "description": "Create or update a Kubernetes resource in the current cluster by providing a YAML or JSON representation of the resource.\nIMPORTANT: For Pod resources, you MUST set spec.securityContext and spec.containers[*].securityContext. For workload resources (Deployment, StatefulSet, Job), you MUST set spec.template.spec.securityContext and spec.template.spec.containers[*].securityContext. Use a non-root security context: set runAsNonRoot: true, allowPrivilegeEscalation: false, and drop ALL capabilities (capabilities: {drop: [\"ALL\"]}). Omitting the SecurityContext will cause pod scheduling failures on OpenShift and other clusters that enforce restricted security policies.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "resource": {
+                "type": "string",
+                "description": "A JSON or YAML containing a representation of the Kubernetes resource. Should include top-level fields such as apiVersion,kind,metadata, and spec"
+              }
+            },
+            "required": [
+              "resource"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "resources_delete",
+          "description": "Delete a Kubernetes resource in the current cluster by providing its apiVersion, kind, optionally the namespace, and its name\n(common apiVersion and kind include: v1 Pod, v1 Service, v1 Node, apps/v1 Deployment, networking.k8s.io/v1 Ingress)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "apiVersion": {
+                "type": "string",
+                "description": "apiVersion of the resource (examples of valid apiVersion are: v1, apps/v1, networking.k8s.io/v1)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "gracePeriodSeconds": {
+                "type": "integer",
+                "description": "Optional duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used"
+              },
+              "kind": {
+                "type": "string",
+                "description": "kind of the resource (examples of valid kind are: Pod, Service, Deployment, Ingress)"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the resource"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Optional Namespace to delete the namespaced resource from (ignored in case of cluster scoped resources). If not provided, will delete resource from configured namespace"
+              }
+            },
+            "required": [
+              "apiVersion",
+              "kind",
+              "name"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "resources_get",
+          "description": "Get a Kubernetes resource in the current cluster by providing its apiVersion, kind, optionally the namespace, and its name\n(common apiVersion and kind include: v1 Pod, v1 Service, v1 Node, apps/v1 Deployment, networking.k8s.io/v1 Ingress)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "apiVersion": {
+                "type": "string",
+                "description": "apiVersion of the resource (examples of valid apiVersion are: v1, apps/v1, networking.k8s.io/v1)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "kind": {
+                "type": "string",
+                "description": "kind of the resource (examples of valid kind are: Pod, Service, Deployment, Ingress)"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the resource"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Optional Namespace to retrieve the namespaced resource from (ignored in case of cluster scoped resources). If not provided, will get resource from configured namespace"
+              }
+            },
+            "required": [
+              "apiVersion",
+              "kind",
+              "name"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "resources_list",
+          "description": "List Kubernetes resources and objects in the current cluster by providing their apiVersion and kind and optionally the namespace and label selector\n(common apiVersion and kind include: v1 Pod, v1 Service, v1 Node, apps/v1 Deployment, networking.k8s.io/v1 Ingress)",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "apiVersion": {
+                "type": "string",
+                "description": "apiVersion of the resources (examples of valid apiVersion are: v1, apps/v1, networking.k8s.io/v1)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "fieldSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes field selector to filter resources by field values (e.g. 'status.phase=Running', 'metadata.name=myresource'). Supported fields vary by resource type. For Pods: metadata.name, metadata.namespace, spec.nodeName, spec.restartPolicy, spec.schedulerName, spec.serviceAccountName, status.phase (Pending/Running/Succeeded/Failed/Unknown), status.podIP, status.nominatedNodeName. See https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/",
+                "pattern": "^[.\\-A-Za-z0-9]+([=!,]{1,2}[./\\-A-Za-z0-9]+)+$"
+              },
+              "kind": {
+                "type": "string",
+                "description": "kind of the resources (examples of valid kind are: Pod, Service, Deployment, Ingress)"
+              },
+              "labelSelector": {
+                "type": "string",
+                "description": "Optional Kubernetes label selector (e.g. 'app=myapp,env=prod' or 'app in (myapp,yourapp)'), use this option when you want to filter the resources by label",
+                "pattern": "^([/_.\\-A-Za-z0-9=, ()!])+$"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Optional Namespace to retrieve the namespaced resources from (ignored in case of cluster scoped resources). If not provided, will list resources from all namespaces"
+              }
+            },
+            "required": [
+              "apiVersion",
+              "kind"
+            ]
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "resources_scale",
+          "description": "Get or update the scale of a Kubernetes resource in the current cluster by providing its apiVersion, kind, name, and optionally the namespace. If the scale is set in the tool call, the scale will be updated to that value. Always returns the current scale of the resource",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "apiVersion": {
+                "type": "string",
+                "description": "apiVersion of the resource (examples of valid apiVersion are apps/v1)"
+              },
+              "context": {
+                "type": "string",
+                "description": "Optional parameter selecting which context to run the tool in. Defaults to analyze-agent--yizheng/api-preprod-stable-spoke1-dc-iad2-itup-redhat-com:6443/rawhad if not set"
+              },
+              "kind": {
+                "type": "string",
+                "description": "kind of the resource (examples of valid kind are: StatefulSet, Deployment)"
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the resource"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "Optional Namespace to get/update the namespaced resource scale from (ignored in case of cluster scoped resources). If not provided, will get/update resource scale from configured namespace"
+              },
+              "scale": {
+                "type": "integer",
+                "description": "Optional scale to update the resources scale to. If not provided, will return the current scale of the resource, and not update it"
+              }
+            },
+            "required": [
+              "apiVersion",
+              "kind",
+              "name"
+            ]
+          },
+          "strict": false
+        }
+      }
+    ]
+  },
+  "obs_mcp": {
+    "tool_count": 9,
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "execute_instant_query",
+          "description": "Execute a PromQL instant query to get current/point-in-time values.\n\nPREREQUISITE: You MUST call list_metrics first to verify the metric exists\n\nWHEN TO USE:\n- Current state questions: \"What is the current error rate?\"\n- Point-in-time snapshots: \"How many pods are running?\"\n- Latest values: \"Which pods are in Pending state?\"\n\nThe 'query' parameter MUST use metric names that were returned by list_metrics.",
+          "parameters": {
+            "properties": {
+              "query": {
+                "description": "PromQL query string using metric names verified via list_metrics",
+                "type": "string"
+              },
+              "time": {
+                "description": "Evaluation time as RFC3339 or Unix timestamp. Omit or use 'NOW' for current time.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "execute_range_query",
+          "description": "Execute a PromQL range query to get time-series data over a period.\n\nPREREQUISITE: You MUST call list_metrics first to verify the metric exists\n\nWHEN TO USE:\n- Trends over time: \"What was CPU usage over the last hour?\"\n- Rate calculations: \"How many requests per second?\"\n- Historical analysis: \"Were there any restarts in the last 5 minutes?\"\n\nTIME PARAMETERS:\n- 'duration': Look back from now (e.g., \"5m\", \"1h\", \"24h\")\n- 'step': Data point resolution (e.g., \"1m\" for 1-hour duration, \"5m\" for 24-hour duration)\n\nThe 'query' parameter MUST use metric names that were returned by list_metrics.",
+          "parameters": {
+            "properties": {
+              "duration": {
+                "description": "Duration to look back from now (e.g., '1h', '30m', '1d', '2w') (optional)",
+                "pattern": "^\\d+[smhdwy]$",
+                "type": "string"
+              },
+              "end": {
+                "description": "End time as RFC3339 or Unix timestamp (optional). Use `NOW` for current time.",
+                "type": "string"
+              },
+              "query": {
+                "description": "PromQL query string using metric names verified via list_metrics",
+                "type": "string"
+              },
+              "start": {
+                "description": "Start time as RFC3339 or Unix timestamp (optional)",
+                "type": "string"
+              },
+              "step": {
+                "description": "Query resolution step width (e.g., '15s', '1m', '1h'). Choose based on time range: shorter ranges use smaller steps.",
+                "pattern": "^\\d+[smhdwy]$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "query",
+              "step"
+            ],
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_alerts",
+          "description": "Get alerts from Alertmanager.\n\nWHEN TO USE:\n- START HERE when investigating issues: if the user asks about things breaking, errors, failures, outages, services being down, or anything going wrong in the cluster\n- When the user mentions a specific alert name - use this tool to get the alert's full labels (namespace, pod, service, etc.) which are essential for further investigation with other tools\n- To see currently firing alerts in the cluster\n- To check which alerts are active, silenced, or inhibited\n- To understand what's happening before diving into metrics or logs\n\nINVESTIGATION TIP: Alert labels often contain the exact identifiers (pod names, namespaces, job names) needed for targeted queries with prometheus tools.\n\nFILTERING:\n- Use 'active' to filter for only active alerts (not resolved)\n- Use 'silenced' to filter for silenced alerts\n- Use 'inhibited' to filter for inhibited alerts\n- Use 'filter' to apply label matchers (e.g., \"alertname=HighCPU\")\n- Use 'receiver' to filter alerts by receiver name\n\nAll filter parameters are optional. Without filters, all alerts are returned.",
+          "parameters": {
+            "properties": {
+              "active": {
+                "description": "Filter for active alerts only (true/false, optional)",
+                "type": "boolean"
+              },
+              "filter": {
+                "description": "Label matchers to filter alerts (e.g., 'alertname=HighCPU', optional)",
+                "type": "string"
+              },
+              "inhibited": {
+                "description": "Filter for inhibited alerts only (true/false, optional)",
+                "type": "boolean"
+              },
+              "receiver": {
+                "description": "Receiver name to filter alerts (optional)",
+                "type": "string"
+              },
+              "silenced": {
+                "description": "Filter for silenced alerts only (true/false, optional)",
+                "type": "boolean"
+              },
+              "unprocessed": {
+                "description": "Filter for unprocessed alerts only (true/false, optional)",
+                "type": "boolean"
+              }
+            },
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_label_names",
+          "description": "Get all label names (dimensions) available for filtering a metric.\n\nWHEN TO USE (after calling list_metrics):\n- To discover how to filter metrics (by namespace, pod, service, etc.)\n- Before constructing label matchers in PromQL queries\n\nThe 'metric' parameter should use a metric name from list_metrics output.",
+          "parameters": {
+            "properties": {
+              "end": {
+                "description": "End time for label discovery as RFC3339 or Unix timestamp (optional, defaults to now)",
+                "type": "string"
+              },
+              "metric": {
+                "description": "Metric name (from list_metrics) to get label names for. Leave empty for all metrics.",
+                "type": "string"
+              },
+              "start": {
+                "description": "Start time for label discovery as RFC3339 or Unix timestamp (optional, defaults to 1 hour ago)",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_label_values",
+          "description": "Get all unique values for a specific label.\n\nWHEN TO USE (after calling list_metrics and get_label_names):\n- To find exact label values for filtering (namespace names, pod names, etc.)\n- To see what values exist before constructing queries\n\nThe 'metric' parameter should use a metric name from list_metrics output.",
+          "parameters": {
+            "properties": {
+              "end": {
+                "description": "End time for label value discovery as RFC3339 or Unix timestamp (optional, defaults to now)",
+                "type": "string"
+              },
+              "label": {
+                "description": "Label name (from get_label_names) to get values for",
+                "type": "string"
+              },
+              "metric": {
+                "description": "Metric name (from list_metrics) to scope the label values to. Leave empty for all metrics.",
+                "type": "string"
+              },
+              "start": {
+                "description": "Start time for label value discovery as RFC3339 or Unix timestamp (optional, defaults to 1 hour ago)",
+                "type": "string"
+              }
+            },
+            "required": [
+              "label"
+            ],
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_series",
+          "description": "Get time series matching selectors and preview cardinality.\n\nWHEN TO USE (optional, after calling list_metrics):\n- To verify label filters match expected series before querying\n- To check cardinality and avoid slow queries\n\nCARDINALITY GUIDANCE:\n- <100 series: Safe\n- 100-1000: Usually fine\n- >1000: Add more label filters\n\nThe selector should use metric names from list_metrics output.",
+          "parameters": {
+            "properties": {
+              "end": {
+                "description": "End time for series discovery as RFC3339 or Unix timestamp (optional, defaults to now)",
+                "type": "string"
+              },
+              "matches": {
+                "description": "PromQL series selector using metric names from list_metrics",
+                "type": "string"
+              },
+              "start": {
+                "description": "Start time for series discovery as RFC3339 or Unix timestamp (optional, defaults to 1 hour ago)",
+                "type": "string"
+              }
+            },
+            "required": [
+              "matches"
+            ],
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "get_silences",
+          "description": "Get silences from Alertmanager.\n\nWHEN TO USE:\n- To see which alerts are currently silenced\n- To check active, pending, or expired silences\n- To investigate why certain alerts are not firing notifications\n\nFILTERING:\n- Use 'filter' to apply label matchers to find specific silences\n\nSilences are used to temporarily mute alerts based on label matchers. This tool helps you understand what is currently silenced in your environment.",
+          "parameters": {
+            "properties": {
+              "filter": {
+                "description": "Label matchers to filter silences (e.g., 'alertname=HighCPU', optional)",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "list_metrics",
+          "description": "MANDATORY FIRST STEP: List all available metric names in Prometheus.\n\nYOU MUST CALL THIS TOOL BEFORE ANY OTHER QUERY TOOL\n\nThis tool MUST be called first for EVERY observability question to:\n1. Discover what metrics actually exist in this environment\n2. Find the EXACT metric name to use in queries\n3. Avoid querying non-existent metrics\n4. The 'name_regex' parameter should always be provided, and be a best guess of what the metric would be named like.\n5. Do not use a blanket regex like .* or .+ in the 'name_regex' parameter. Use specific ones like kube.*, node.*, etc.\n\nREGEX PATTERN GUIDANCE:\n- Prometheus metrics are typically prefixed (e.g., 'prometheus_tsdb_head_series', 'kube_pod_status_phase')\n- To match metrics CONTAINING a substring, use wildcards: '.*tsdb.*' matches 'prometheus_tsdb_head_series'\n- Without wildcards, the pattern matches EXACTLY: 'tsdb' only matches a metric literally named 'tsdb' (which rarely exists)\n- Common patterns: 'kube_pod.*' (pods), '.*memory.*' (memory-related), 'node_.*' (node metrics)\n- If you get empty results, try adding '.*' before/after your search term\n\nNEVER skip this step. NEVER guess metric names. Metric names vary between environments.\n\nAfter calling this tool:\n1. Search the returned list for relevant metrics\n2. Use the EXACT metric name found in subsequent queries\n3. If no relevant metric exists, inform the user",
+          "parameters": {
+            "properties": {
+              "name_regex": {
+                "description": "Regex pattern to filter metric names. IMPORTANT: Metric names are typically prefixed (e.g., 'prometheus_tsdb_head_series'). Use wildcards to match substrings: '.*tsdb.*' matches any metric containing 'tsdb', while 'tsdb' only matches the exact string 'tsdb'. Examples: 'http_.*' (starts with http_), '.*memory.*' (contains memory), 'node_.*' (starts with node_). This parameter is required. Don't pass in blanket regex like '.*' or '.+'.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name_regex"
+            ],
+            "type": "object"
+          },
+          "strict": false
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "show_timeseries",
+          "description": "Display the results as an interactive timeseries chart.\n\nThis tool works like execute_range_query but renders the results as a visual chart in the UI clients.\nUse it when the user wants to see a graph or visualization of time-series data and to use visuals to provide the answer.\nUse the show_timeseries as the last tool call after all the other Prometheus tool calls where finalized.\n\nTIME PARAMETERS:\n- 'duration': Look back from now (e.g., \"5m\", \"1h\", \"24h\")\n- 'step': Data point resolution (e.g., \"1m\" for 1-hour duration, \"5m\" for 24-hour duration)\n- 'title': A descriptive chart title (e.g., \"API Error Rate Over Last Hour\")\n- 'description': An explanation of the chart's meaning or context (e.g., \"Shows the rate of HTTP 5xx errors per second, broken down by pod\")\n\nThe 'query' parameter MUST be a range query and must use metric names that were returned by list_metrics.",
+          "parameters": {
+            "properties": {
+              "description": {
+                "description": "Explanation of the chart's meaning or context (e.g., 'Shows the rate of HTTP 5xx errors per second, broken down by pod'). Displayed below the title when provided.",
+                "type": "string"
+              },
+              "duration": {
+                "description": "Duration to look back from now (e.g., '1h', '30m', '1d', '2w') (optional)",
+                "pattern": "^\\d+[smhdwy]$",
+                "type": "string"
+              },
+              "end": {
+                "description": "End time as RFC3339 or Unix timestamp (optional). Use `NOW` for current time.",
+                "type": "string"
+              },
+              "query": {
+                "description": "PromQL query string using metric names verified via list_metrics",
+                "type": "string"
+              },
+              "start": {
+                "description": "Start time as RFC3339 or Unix timestamp (optional)",
+                "type": "string"
+              },
+              "step": {
+                "description": "Query resolution step width (e.g., '15s', '1m', '1h'). Choose based on time range: shorter ranges use smaller steps.",
+                "pattern": "^\\d+[smhdwy]$",
+                "type": "string"
+              },
+              "title": {
+                "description": "Human-readable chart title describing what the query shows (e.g., 'API Error Rate Over Last Hour'). Displayed above the chart when provided.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "query",
+              "step"
+            ],
+            "type": "object"
+          },
+          "strict": false
+        }
+      }
+    ]
+  },
+  "total_tool_count": 28
+}
