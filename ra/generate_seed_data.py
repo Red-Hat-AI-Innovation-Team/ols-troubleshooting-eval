@@ -16,7 +16,7 @@ import psycopg2
 import psycopg2.extras
 from anthropic import AnthropicVertex
 
-from seeding_order import get_seeding_order
+from db import get_seeding_order
 
 
 # ---------------------------------------------------------------------------
