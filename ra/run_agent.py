@@ -1,4 +1,4 @@
-"""Run a single-turn troubleshooting agent loop against the mock MCP tools.
+"""Run a troubleshooting agent loop against the mock MCP tools.
 
 Usage:
     uv run python run_agent.py
@@ -7,7 +7,9 @@ Usage:
 
 import json
 import sys
+from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
 import psycopg2
 from anthropic import AnthropicVertex
@@ -19,9 +21,6 @@ from mock_tools import TOOLS, call_tool
 # ---------------------------------------------------------------------------
 
 DB_DSN = "host=127.0.0.1 port=5433 dbname=openshift_cluster user=postgres"
-MODEL = "claude-opus-4-6@default"
-MAX_TURNS = 20
-THINKING_BUDGET = 10_000
 
 DEFAULT_QUERY = (
     "We're seeing degraded performance on our ecommerce platform and some pods "
@@ -41,12 +40,11 @@ Be thorough but efficient. Start broad (check alerts, pod status, events) then \
 drill into specific issues you discover."""
 
 # ---------------------------------------------------------------------------
-# Load tool definitions
+# Tool definitions
 # ---------------------------------------------------------------------------
 
 STRIP_PARAMS = {"context"}  # not supported by mock tools
 
-# Tools in TOOLS registry but not in raw_tool_defs.json — add minimal defs
 EXTRA_TOOL_DEFS = [
     {
         "name": "projects_list",
@@ -75,13 +73,11 @@ def load_tool_defs() -> list[dict]:
             if name not in TOOLS:
                 continue
 
-            # Convert OpenAI format -> Anthropic format
             params = fn.get("parameters", {"type": "object", "properties": {}})
-            # Strip unsupported params
             props = {k: v for k, v in params.get("properties", {}).items() if k not in STRIP_PARAMS}
             required = [r for r in params.get("required", []) if r not in STRIP_PARAMS]
 
-            input_schema = {"type": "object", "properties": props}
+            input_schema: dict = {"type": "object", "properties": props}
             if required:
                 input_schema["required"] = required
 
@@ -91,7 +87,6 @@ def load_tool_defs() -> list[dict]:
                 "input_schema": input_schema,
             })
 
-    # Add extras not in raw defs
     for extra in EXTRA_TOOL_DEFS:
         if extra["name"] not in {t["name"] for t in tools}:
             tools.append(extra)
@@ -100,74 +95,77 @@ def load_tool_defs() -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Agent loop
+# Agent
 # ---------------------------------------------------------------------------
 
+# tool_handler signature: (tool_name: str, params: dict) -> str
+ToolHandler = Callable[[str, dict], str]
 
-def run_agent(query: str) -> str:
-    """Run the agent loop and return the final text answer."""
-    conn = psycopg2.connect(DB_DSN)
-    client = AnthropicVertex()
-    tool_defs = load_tool_defs()
 
-    messages: list[dict] = [{"role": "user", "content": query}]
+@dataclass
+class Agent:
+    system_prompt: str
+    model: str
+    tool_defs: list[dict]
+    tool_handler: ToolHandler
+    client: AnthropicVertex
+    max_turns: int = 20
+    thinking_budget: int = 10_000
+    max_tokens: int = 16_000
+    messages: list[dict] = field(default_factory=list)
 
-    print(f"User: {query}\n")
-    print("=" * 60)
+    def run(self, query: str) -> str:
+        """Run the agent loop for a user query. Returns the final text answer."""
+        self.messages.append({"role": "user", "content": query})
 
-    for turn in range(MAX_TURNS):
-        print(f"\n--- Turn {turn + 1} ---")
+        print(f"User: {query}\n")
+        print("=" * 60)
 
-        with client.messages.stream(
-            model=MODEL,
-            max_tokens=16_000,
-            thinking={"type": "enabled", "budget_tokens": THINKING_BUDGET},
-            system=SYSTEM_PROMPT,
-            tools=tool_defs,
-            messages=messages,
-        ) as stream:
-            response = stream.get_final_message()
+        for turn in range(self.max_turns):
+            print(f"\n--- Turn {turn + 1} ---")
 
-        # Collect tool_use blocks and text blocks
-        tool_uses: list = []
-        text_parts: list[str] = []
+            with self.client.messages.stream(
+                model=self.model,
+                max_tokens=self.max_tokens,
+                thinking={"type": "enabled", "budget_tokens": self.thinking_budget},
+                system=self.system_prompt,
+                tools=self.tool_defs,
+                messages=self.messages,
+            ) as stream:
+                response = stream.get_final_message()
 
-        for block in response.content:
-            if block.type == "tool_use":
-                tool_uses.append(block)
-            elif block.type == "text":
-                text_parts.append(block.text)
+            tool_uses: list = []
+            text_parts: list[str] = []
 
-        # Print tool calls
-        for tu in tool_uses:
-            params_str = json.dumps(tu.input, separators=(",", ":")) if tu.input else "{}"
-            print(f"  -> {tu.name}({params_str})")
+            for block in response.content:
+                if block.type == "tool_use":
+                    tool_uses.append(block)
+                elif block.type == "text":
+                    text_parts.append(block.text)
 
-        # If no tool calls, we're done
-        if not tool_uses:
-            final_answer = "\n".join(text_parts)
-            conn.close()
-            return final_answer
+            for tu in tool_uses:
+                params_str = json.dumps(tu.input, separators=(",", ":")) if tu.input else "{}"
+                print(f"  -> {tu.name}({params_str})")
 
-        # Execute tools and build next messages
-        messages.append({"role": "assistant", "content": response.content})
+            if not tool_uses:
+                final_answer = "\n".join(text_parts)
+                self.messages.append({"role": "assistant", "content": response.content})
+                return final_answer
 
-        tool_results: list[dict] = []
-        for tu in tool_uses:
-            # Strip unsupported params before dispatching
-            clean_params = {k: v for k, v in (tu.input or {}).items() if k not in STRIP_PARAMS}
-            result = call_tool(conn, tu.name, clean_params)
-            tool_results.append({
-                "type": "tool_result",
-                "tool_use_id": tu.id,
-                "content": result,
-            })
+            self.messages.append({"role": "assistant", "content": response.content})
 
-        messages.append({"role": "user", "content": tool_results})
+            tool_results: list[dict] = []
+            for tu in tool_uses:
+                result = self.tool_handler(tu.name, tu.input or {})
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": tu.id,
+                    "content": result,
+                })
 
-    # Safety: hit max turns
-    conn.close()
-    return "[Agent hit max turns without producing a final answer]"
+            self.messages.append({"role": "user", "content": tool_results})
+
+        return "[Agent hit max turns without producing a final answer]"
 
 
 # ---------------------------------------------------------------------------
@@ -176,7 +174,24 @@ def run_agent(query: str) -> str:
 
 if __name__ == "__main__":
     query = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_QUERY
-    answer = run_agent(query)
+
+    conn = psycopg2.connect(DB_DSN)
+
+    def tool_handler(name: str, params: dict) -> str:
+        clean = {k: v for k, v in params.items() if k not in STRIP_PARAMS}
+        return call_tool(conn, name, clean)
+
+    agent = Agent(
+        system_prompt=SYSTEM_PROMPT,
+        model="claude-opus-4-6@default",
+        tool_defs=load_tool_defs(),
+        tool_handler=tool_handler,
+        client=AnthropicVertex(),
+    )
+
+    answer = agent.run(query)
+    conn.close()
+
     print("\n" + "=" * 60)
     print("FINAL ANSWER:")
     print("=" * 60)
