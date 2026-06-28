@@ -22,10 +22,30 @@ from mock_tools import TOOLS, call_tool
 
 DB_DSN = "host=127.0.0.1 port=5433 dbname=openshift_cluster user=postgres"
 
-DEFAULT_QUERY = (
-    "We're seeing degraded performance on our ecommerce platform and some pods "
-    "aren't coming up. Can you investigate what's going on?"
-)
+SEED_DATA_PATH = Path(__file__).parent / "seed_data.json"
+
+QUESTION_GEN_SYSTEM_PROMPT = """\
+You have complete knowledge of an OpenShift/Kubernetes cluster's internal state. \
+Below is the full database backing this cluster — every table, every row.
+
+CLUSTER DATABASE:
+{seed_data}
+
+You are role-playing as a user/SRE who is observing symptoms on this cluster but \
+does NOT have direct database access. You can only see what a real operator would \
+see: dashboards showing high latency, pager alerts firing, users complaining, \
+pods not coming up, etc.
+
+Generate a single realistic troubleshooting question that a human operator would \
+ask, based on the actual problems visible in this data. The question should:
+- Sound natural (like a real person asking for help)
+- Reference observable symptoms, NOT internal database details
+- Be open-ended enough to require investigation with tools
+- NOT mention specific table names, column values, or IDs from the database
+
+Respond with ONLY the question, nothing else."""
+
+QUESTION_GEN_USER_PROMPT = "Generate a troubleshooting question for this cluster."
 
 SYSTEM_PROMPT = """\
 You are an OpenShift/Kubernetes troubleshooting agent. You have access to MCP \
@@ -172,8 +192,33 @@ class Agent:
 # Main
 # ---------------------------------------------------------------------------
 
+def generate_question(client: AnthropicVertex) -> str:
+    """Use an LLM to generate a troubleshooting question from seed data."""
+    seed_data = SEED_DATA_PATH.read_text()
+    system = QUESTION_GEN_SYSTEM_PROMPT.format(seed_data=seed_data)
+
+    question_agent = Agent(
+        system_prompt=system,
+        model="claude-opus-4-6@default",
+        tool_defs=[],
+        tool_handler=lambda _name, _params: "",
+        client=client,
+        max_turns=1,
+        thinking_budget=5_000,
+        max_tokens=8_000,
+    )
+    return question_agent.run(QUESTION_GEN_USER_PROMPT)
+
+
 if __name__ == "__main__":
-    query = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_QUERY
+    client = AnthropicVertex()
+
+    if len(sys.argv) > 1:
+        query = sys.argv[1]
+    else:
+        print("Generating question from seed data...\n")
+        query = generate_question(client)
+        print(f"\nGenerated question: {query}\n")
 
     conn = psycopg2.connect(DB_DSN)
 
@@ -186,7 +231,7 @@ if __name__ == "__main__":
         model="claude-opus-4-6@default",
         tool_defs=load_tool_defs(),
         tool_handler=tool_handler,
-        client=AnthropicVertex(),
+        client=client,
     )
 
     answer = agent.run(query)
