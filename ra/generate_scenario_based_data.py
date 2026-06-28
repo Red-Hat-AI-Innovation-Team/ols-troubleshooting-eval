@@ -17,7 +17,7 @@ import psycopg2
 import psycopg2.extras
 from anthropic import AnthropicVertex
 
-from seeding_order import get_seeding_order
+from db import get_seeding_order
 
 
 # ---------------------------------------------------------------------------
@@ -195,6 +195,147 @@ def build_full_schema_summary(all_metas: dict[str, TableMeta], seeding_order: li
 # JSON schema builder
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Explicit JSON schemas for JSONB columns consumed by mock_tools / vshell.
+# Keyed by (table_name, column_name).  Only columns with a fixed contract
+# need entries — free-form JSONB columns (manifest, stats_summary_json, …)
+# keep the default empty schema so the LLM has creative freedom.
+# ---------------------------------------------------------------------------
+
+_LABEL_MAP_SCHEMA: dict = {
+    "type": "object",
+    "description": "Kubernetes label map: string keys to string values",
+    "additionalProperties": {"type": "string"},
+}
+
+_ANNOTATION_MAP_SCHEMA: dict = {
+    "type": "object",
+    "description": "Kubernetes annotation map: string keys to string values",
+    "additionalProperties": {"type": "string"},
+}
+
+JSONB_COLUMN_SCHEMAS: dict[tuple[str, str], dict] = {
+    # --- labels / annotations (all tables) ---
+    ("nodes", "labels"): _LABEL_MAP_SCHEMA,
+    ("nodes", "annotations"): _ANNOTATION_MAP_SCHEMA,
+    ("namespaces", "labels"): _LABEL_MAP_SCHEMA,
+    ("namespaces", "annotations"): _ANNOTATION_MAP_SCHEMA,
+    ("pods", "labels"): _LABEL_MAP_SCHEMA,
+    ("pods", "annotations"): _ANNOTATION_MAP_SCHEMA,
+    ("resources", "labels"): _LABEL_MAP_SCHEMA,
+    ("resources", "annotations"): _ANNOTATION_MAP_SCHEMA,
+
+    # --- nodes.taints ---
+    ("nodes", "taints"): {
+        "type": "array",
+        "description": "Kubernetes taints array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "key": {"type": "string"},
+                "value": {"type": "string"},
+                "effect": {"type": "string", "enum": ["NoSchedule", "PreferNoSchedule", "NoExecute"]},
+            },
+            "required": ["key", "effect"],
+        },
+    },
+
+    # --- pods.conditions ---
+    ("pods", "conditions"): {
+        "type": "array",
+        "description": "Pod condition array (same shape as status.conditions in K8s API)",
+        "items": {
+            "type": "object",
+            "properties": {
+                "type": {"type": "string"},
+                "status": {"type": "string", "enum": ["True", "False", "Unknown"]},
+                "lastTransitionTime": {"type": "string"},
+                "reason": {"type": "string"},
+                "message": {"type": "string"},
+            },
+            "required": ["type", "status"],
+        },
+    },
+
+    # --- containers.ports ---
+    ("containers", "ports"): {
+        "type": "array",
+        "description": "Container port list",
+        "items": {
+            "type": "object",
+            "properties": {
+                "containerPort": {"type": "integer"},
+                "protocol": {"type": "string", "enum": ["TCP", "UDP"]},
+                "name": {"type": "string"},
+            },
+            "required": ["containerPort"],
+        },
+    },
+
+    # --- containers.filesystem_json  (consumed by vshell.vfile_from_dict) ---
+    ("containers", "filesystem_json"): {
+        "type": "object",
+        "description": (
+            "Virtual filesystem for pods_exec. Keys are absolute POSIX paths. "
+            "Values are VFile objects. Example: "
+            '{ "/etc/hostname": {"content": "web-0", "is_directory": false, '
+            '"permissions": "-rw-r--r--", "owner": "root", "size_bytes": 5}, '
+            '"/var/log": {"is_directory": true} }'
+        ),
+        "additionalProperties": {
+            "type": "object",
+            "properties": {
+                "content": {"type": ["string", "null"], "description": "File text content (null for dirs)"},
+                "is_directory": {"type": "boolean", "description": "True for directories"},
+                "permissions": {"type": "string", "description": "Unix permission string, e.g. -rw-r--r--"},
+                "owner": {"type": "string", "description": "File owner, e.g. root"},
+                "size_bytes": {"type": "integer", "description": "File size in bytes"},
+            },
+        },
+    },
+
+    # --- containers.network_json  (consumed by vshell.vnet_from_dict) ---
+    ("containers", "network_json"): {
+        "type": "object",
+        "description": (
+            "Virtual network for pods_exec curl/nslookup. Has 'dns' and 'http' keys. "
+            "dns maps hostnames to {ip}. http maps URLs to {status_code, body, headers, error}."
+        ),
+        "properties": {
+            "dns": {
+                "type": "object",
+                "description": "DNS records: hostname -> {ip: string}",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {"ip": {"type": "string"}},
+                    "required": ["ip"],
+                },
+            },
+            "http": {
+                "type": "object",
+                "description": "HTTP endpoint stubs: URL -> response",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "status_code": {"type": "integer"},
+                        "body": {"type": "string"},
+                        "headers": {"type": "object", "additionalProperties": {"type": "string"}},
+                        "error": {"type": ["string", "null"]},
+                    },
+                },
+            },
+        },
+    },
+
+    # --- metrics.labels  (used as Prometheus label set) ---
+    ("metrics", "labels"): {
+        "type": "object",
+        "description": "Prometheus metric label set: string keys to string values (e.g. instance, job, namespace)",
+        "additionalProperties": {"type": "string"},
+    },
+}
+
+
 PG_TO_JSON_TYPE: dict[str, dict] = {
     "int2": {"type": "integer"},
     "int4": {"type": "integer"},
@@ -227,7 +368,12 @@ def build_row_schema(meta: TableMeta) -> dict:
     required: list[str] = []
 
     for col in meta.columns:
-        schema: dict = PG_TO_JSON_TYPE.get(col.udt_name, {"type": "string"}).copy()
+        # Use explicit JSONB schema if one exists, else fall back to PG type map
+        override = JSONB_COLUMN_SCHEMAS.get((meta.table_name, col.name))
+        if override is not None:
+            schema = override.copy()
+        else:
+            schema = PG_TO_JSON_TYPE.get(col.udt_name, {"type": "string"}).copy()
 
         desc: str = f"pg type: {col.udt_name}"
         if col.max_length:
@@ -236,7 +382,11 @@ def build_row_schema(meta: TableMeta) -> dict:
             desc += ", PRIMARY KEY"
         if col.column_default:
             desc += f", default: {col.column_default}"
-        schema["description"] = desc
+        # Preserve any description from the override, append PG metadata
+        if "description" in schema:
+            schema["description"] = schema["description"] + f" ({desc})"
+        else:
+            schema["description"] = desc
 
         if col.is_nullable and "type" in schema:
             t = schema["type"]
@@ -460,7 +610,20 @@ def generate_rows(
         response = stream.get_final_message()
 
     tool_block = next(b for b in response.content if b.type == "tool_use")
-    return tool_block.input["rows"]
+    rows = tool_block.input["rows"]
+
+    # Guard: Anthropic SDK can return a string instead of parsed JSON for
+    # large tool outputs.  Detect and attempt recovery.
+    if isinstance(rows, str):
+        rows = json.loads(rows)
+    if not isinstance(rows, list) or (rows and not isinstance(rows[0], dict)):
+        raise ValueError(
+            f"Table '{meta.table_name}': expected list[dict] from tool output, "
+            f"got {type(rows).__name__} "
+            f"(first element: {type(rows[0]).__name__ if rows else 'empty'})"
+        )
+
+    return rows
 
 
 # ---------------------------------------------------------------------------
