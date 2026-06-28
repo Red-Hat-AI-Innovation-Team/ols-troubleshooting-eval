@@ -90,8 +90,7 @@ def _apply_schema(conn: psycopg2.extensions.connection) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _insert_seed_data(conn: psycopg2.extensions.connection, seed_path: Path) -> int:
-  seed: dict[str, list[dict]] = json.loads(seed_path.read_text())
+def _insert_seed_data(conn: psycopg2.extensions.connection, seed: dict[str, list[dict]]) -> int:
   total_rows: int = 0
 
   for table_name, rows in seed.items():
@@ -153,13 +152,13 @@ def _advance_sequences(conn: psycopg2.extensions.connection) -> None:
 # ---------------------------------------------------------------------------
 
 
-def init_db(seed_path: Path) -> None:
+def init_db(seed: dict[str, list[dict]]) -> None:
   """Create DB, apply schema, load seed data, advance sequences."""
   _create_database()
 
   with connect(DB_DSN) as conn:
     _apply_schema(conn)
-    total_rows: int = _insert_seed_data(conn, seed_path)
+    total_rows: int = _insert_seed_data(conn, seed)
     _advance_sequences(conn)
 
   print(f"\nDone: {total_rows} total rows inserted into {DB_NAME}")
@@ -425,7 +424,8 @@ if __name__ == "__main__":
   cmd: str = sys.argv[1]
   if cmd == "init":
     seed_file: Path = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(__file__).parent / "seed_data.json"
-    init_db(seed_file)
+    seed: dict[str, list[dict]] = json.loads(seed_file.read_text())
+    init_db(seed)
   elif cmd == "teardown":
     teardown_db()
   else:

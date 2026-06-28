@@ -4,6 +4,7 @@ Usage:
     uv run python run_agent.py
 """
 
+import json
 from pathlib import Path
 
 from agent import Agent
@@ -78,14 +79,14 @@ drill into specific issues you discover."""
 MAX_CONVERSATION_ROUNDS = 5
 
 
-def run(seed_data_path: Path):
+def run(seed_data: dict[str, list[dict]]):
     client = AnthropicVertexClient()
     conn = db.connect()
 
     # --- User simulator agent (has seed data, acts as SRE) ---
-    seed_data = seed_data_path.read_text()
+    seed_data_str = json.dumps(seed_data, indent=2)
     user_sim = Agent(
-        system_prompt=USER_SIM_SYSTEM_PROMPT.format(seed_data=seed_data),
+        system_prompt=USER_SIM_SYSTEM_PROMPT.format(seed_data=seed_data_str),
         model="claude-opus-4-6@default",
         tool_defs=[],
         tool_handler=lambda _name, _params: "",
@@ -136,5 +137,6 @@ def run(seed_data_path: Path):
     conn.close()
 
 if __name__ == "__main__":
-  SEED_DATA_PATH = Path(__file__).parent / "seed_data.json"
-  run(SEED_DATA_PATH)
+  seed_data_path = Path(__file__).parent / "seed_data.json"
+  seed_data = json.loads(seed_data_path.read_text())
+  run(seed_data)
