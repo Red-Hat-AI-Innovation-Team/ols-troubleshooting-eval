@@ -10,186 +10,13 @@ Env vars:
 
 import json
 import sys
-from dataclasses import dataclass
 from pathlib import Path
 
 import psycopg2
-import psycopg2.extras
 
-from db import get_seeding_order
+import db
 from llm import AnthropicVertexClient, LLMResponse, Message, ToolDef
 from llm.base import LLMClient
-
-
-# ---------------------------------------------------------------------------
-# PG metadata extraction
-# ---------------------------------------------------------------------------
-
-
-@dataclass
-class ColumnMeta:
-    name: str
-    data_type: str
-    udt_name: str
-    max_length: int | None
-    is_nullable: bool
-    column_default: str | None
-
-
-@dataclass
-class ForeignKey:
-    column_name: str
-    foreign_table: str
-    foreign_column: str
-
-
-@dataclass
-class TableMeta:
-    table_name: str
-    columns: list[ColumnMeta]
-    primary_key: list[str]
-    foreign_keys: list[ForeignKey]
-    unique_constraints: dict[str, list[str]]
-
-
-def get_table_metadata(conn, table_name: str, schema: str = "public") -> TableMeta:
-    params = {"schema": schema, "table": table_name}
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-    cur.execute(
-        """
-        SELECT column_name, data_type, udt_name,
-               character_maximum_length, is_nullable, column_default
-        FROM information_schema.columns
-        WHERE table_schema = %(schema)s AND table_name = %(table)s
-        ORDER BY ordinal_position
-    """,
-        params,
-    )
-    columns = [
-        ColumnMeta(
-            name=r["column_name"],
-            data_type=r["data_type"],
-            udt_name=r["udt_name"],
-            max_length=r["character_maximum_length"],
-            is_nullable=r["is_nullable"] == "YES",
-            column_default=r["column_default"],
-        )
-        for r in cur.fetchall()
-    ]
-
-    cur.execute(
-        """
-        SELECT kcu.column_name
-        FROM information_schema.table_constraints tc
-        JOIN information_schema.key_column_usage kcu
-          ON tc.constraint_name = kcu.constraint_name
-         AND tc.table_schema = kcu.table_schema
-        WHERE tc.constraint_type = 'PRIMARY KEY'
-          AND tc.table_schema = %(schema)s
-          AND tc.table_name = %(table)s
-        ORDER BY kcu.ordinal_position
-    """,
-        params,
-    )
-    primary_key = [r["column_name"] for r in cur.fetchall()]
-
-    cur.execute(
-        """
-        SELECT kcu.column_name,
-               ccu.table_name AS foreign_table,
-               ccu.column_name AS foreign_column
-        FROM information_schema.table_constraints tc
-        JOIN information_schema.key_column_usage kcu
-          ON tc.constraint_name = kcu.constraint_name
-         AND tc.table_schema = kcu.table_schema
-        JOIN information_schema.constraint_column_usage ccu
-          ON tc.constraint_name = ccu.constraint_name
-         AND tc.table_schema = ccu.table_schema
-        WHERE tc.constraint_type = 'FOREIGN KEY'
-          AND tc.table_schema = %(schema)s
-          AND tc.table_name = %(table)s
-    """,
-        params,
-    )
-    foreign_keys = [
-        ForeignKey(
-            column_name=r["column_name"],
-            foreign_table=r["foreign_table"],
-            foreign_column=r["foreign_column"],
-        )
-        for r in cur.fetchall()
-    ]
-
-    cur.execute(
-        """
-        SELECT tc.constraint_name, kcu.column_name
-        FROM information_schema.table_constraints tc
-        JOIN information_schema.key_column_usage kcu
-          ON tc.constraint_name = kcu.constraint_name
-         AND tc.table_schema = kcu.table_schema
-        WHERE tc.constraint_type = 'UNIQUE'
-          AND tc.table_schema = %(schema)s
-          AND tc.table_name = %(table)s
-        ORDER BY tc.constraint_name, kcu.ordinal_position
-    """,
-        params,
-    )
-    uniques: dict[str, list[str]] = {}
-    for r in cur.fetchall():
-        uniques.setdefault(r["constraint_name"], []).append(r["column_name"])
-
-    cur.close()
-    return TableMeta(
-        table_name=table_name,
-        columns=columns,
-        primary_key=primary_key,
-        foreign_keys=foreign_keys,
-        unique_constraints=uniques,
-    )
-
-
-# ---------------------------------------------------------------------------
-# Schema summary builder
-# ---------------------------------------------------------------------------
-
-
-def format_table_summary(meta: TableMeta) -> str:
-    """Format a single table's schema as a compact text block."""
-    lines = [f"TABLE: {meta.table_name}"]
-    lines.append("  Columns:")
-    for col in meta.columns:
-        parts = [f"    {col.name} {col.udt_name}"]
-        if not col.is_nullable:
-            parts.append("NOT NULL")
-        if col.column_default:
-            parts.append(f"DEFAULT {col.column_default}")
-        if col.name in meta.primary_key:
-            parts.append("[PK]")
-        lines.append(" ".join(parts))
-
-    if meta.foreign_keys:
-        lines.append("  Foreign keys:")
-        for fk in meta.foreign_keys:
-            lines.append(
-                f"    {fk.column_name} -> {fk.foreign_table}({fk.foreign_column})"
-            )
-
-    if meta.unique_constraints:
-        lines.append("  Unique constraints:")
-        for _name, cols in meta.unique_constraints.items():
-            lines.append(f"    ({', '.join(cols)})")
-
-    return "\n".join(lines)
-
-
-def build_full_schema_summary(all_metas: dict[str, TableMeta], seeding_order: list[str]) -> str:
-    """Build a complete schema summary for all tables in seeding order."""
-    sections: list[str] = []
-    for table_name in seeding_order:
-        if table_name in all_metas:
-            sections.append(format_table_summary(all_metas[table_name]))
-    return "\n\n".join(sections)
 
 
 # ---------------------------------------------------------------------------
@@ -364,7 +191,7 @@ PG_TO_JSON_TYPE: dict[str, dict] = {
 }
 
 
-def build_row_schema(meta: TableMeta) -> dict:
+def build_row_schema(meta: db.TableMeta) -> dict:
     properties: dict[str, dict] = {}
     required: list[str] = []
 
@@ -408,7 +235,7 @@ def build_row_schema(meta: TableMeta) -> dict:
     }
 
 
-def build_tool_schema(meta: TableMeta, rows_count: int) -> dict:
+def build_tool_schema(meta: db.TableMeta, rows_count: int) -> dict:
     row_schema: dict = build_row_schema(meta)
     return {
         "type": "object",
@@ -523,7 +350,7 @@ Call the plan_rows tool with your decisions."""
 
 
 def build_user_prompt(
-    meta: TableMeta,
+    meta: db.TableMeta,
     rows_count: int,
     generated: dict[str, list[dict]],
 ) -> str:
@@ -577,7 +404,7 @@ Generate data that fits the scenario. Call the insert_rows tool with the generat
 
 def generate_rows(
     client: LLMClient,
-    meta: TableMeta,
+    meta: db.TableMeta,
     generated: dict[str, list[dict]],
     rows_count: int,
     system_prompt: str,
@@ -635,18 +462,18 @@ DEFAULT_SCENARIO: str = (
 def generate_seed_data(
     scenario: str = DEFAULT_SCENARIO,
     db_dsn: str = DB_DSN,
-) -> None:
+) -> dict[str, list[dict]]:
     conn = psycopg2.connect(db_dsn)
-    tables = get_seeding_order(conn)
+    tables = db.get_seeding_order(conn)
     seeding_order: list[str] = [t.table_name for t in tables]
 
-    all_metas: dict[str, TableMeta] = {}
+    all_metas: dict[str, db.TableMeta] = {}
     for table_name in seeding_order:
-        all_metas[table_name] = get_table_metadata(conn, table_name)
+        all_metas[table_name] = db.get_table_metadata(conn, table_name)
 
     conn.close()
 
-    schema_summary: str = build_full_schema_summary(all_metas, seeding_order)
+    schema_summary: str = db.build_full_schema_summary(all_metas, seeding_order)
 
     client: LLMClient = AnthropicVertexClient()
 
@@ -674,18 +501,20 @@ def generate_seed_data(
             f"for: {table_name} ..."
         )
 
-        meta: TableMeta = all_metas[table_name]
+        meta: db.TableMeta = all_metas[table_name]
         rows: list[dict] = generate_rows(client, meta, generated, count, system_prompt)
         generated[table_name] = rows
 
         print(f"  -> {len(rows)} rows generated")
 
-    out_path: Path = Path(__file__).parent / "seed_data.json"
-    out_path.write_text(json.dumps(generated, indent=2) + "\n")
-    print(f"\nWrote seed data to {out_path}")
+    return generated
 
 
 if __name__ == "__main__":
     scenario: str = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SCENARIO
-    generate_seed_data(scenario=scenario)
+    seed_data: dict[str, list[dict]] = generate_seed_data(scenario=scenario)
+
+    out_path: Path = Path(__file__).parent / "seed_data.json"
+    out_path.write_text(json.dumps(seed_data, indent=2) + "\n")
+    print(f"\nWrote seed data to {out_path}")
 

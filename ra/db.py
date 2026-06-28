@@ -166,6 +166,172 @@ def init_db(seed_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Schema introspection
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class ColumnMeta:
+  name: str
+  data_type: str
+  udt_name: str
+  max_length: int | None
+  is_nullable: bool
+  column_default: str | None
+
+
+@dataclass
+class ForeignKey:
+  column_name: str
+  foreign_table: str
+  foreign_column: str
+
+
+@dataclass
+class TableMeta:
+  table_name: str
+  columns: list[ColumnMeta]
+  primary_key: list[str]
+  foreign_keys: list[ForeignKey]
+  unique_constraints: dict[str, list[str]]
+
+
+def get_table_metadata(conn: psycopg2.extensions.connection, table_name: str, schema: str = "public") -> TableMeta:
+  params = {"schema": schema, "table": table_name}
+  cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+  cur.execute(
+    """
+    SELECT column_name, data_type, udt_name,
+           character_maximum_length, is_nullable, column_default
+    FROM information_schema.columns
+    WHERE table_schema = %(schema)s AND table_name = %(table)s
+    ORDER BY ordinal_position
+    """,
+    params,
+  )
+  columns = [
+    ColumnMeta(
+      name=r["column_name"],
+      data_type=r["data_type"],
+      udt_name=r["udt_name"],
+      max_length=r["character_maximum_length"],
+      is_nullable=r["is_nullable"] == "YES",
+      column_default=r["column_default"],
+    )
+    for r in cur.fetchall()
+  ]
+
+  cur.execute(
+    """
+    SELECT kcu.column_name
+    FROM information_schema.table_constraints tc
+    JOIN information_schema.key_column_usage kcu
+      ON tc.constraint_name = kcu.constraint_name
+     AND tc.table_schema = kcu.table_schema
+    WHERE tc.constraint_type = 'PRIMARY KEY'
+      AND tc.table_schema = %(schema)s
+      AND tc.table_name = %(table)s
+    ORDER BY kcu.ordinal_position
+    """,
+    params,
+  )
+  primary_key = [r["column_name"] for r in cur.fetchall()]
+
+  cur.execute(
+    """
+    SELECT kcu.column_name,
+           ccu.table_name AS foreign_table,
+           ccu.column_name AS foreign_column
+    FROM information_schema.table_constraints tc
+    JOIN information_schema.key_column_usage kcu
+      ON tc.constraint_name = kcu.constraint_name
+     AND tc.table_schema = kcu.table_schema
+    JOIN information_schema.constraint_column_usage ccu
+      ON tc.constraint_name = ccu.constraint_name
+     AND tc.table_schema = ccu.table_schema
+    WHERE tc.constraint_type = 'FOREIGN KEY'
+      AND tc.table_schema = %(schema)s
+      AND tc.table_name = %(table)s
+    """,
+    params,
+  )
+  foreign_keys = [
+    ForeignKey(
+      column_name=r["column_name"],
+      foreign_table=r["foreign_table"],
+      foreign_column=r["foreign_column"],
+    )
+    for r in cur.fetchall()
+  ]
+
+  cur.execute(
+    """
+    SELECT tc.constraint_name, kcu.column_name
+    FROM information_schema.table_constraints tc
+    JOIN information_schema.key_column_usage kcu
+      ON tc.constraint_name = kcu.constraint_name
+     AND tc.table_schema = kcu.table_schema
+    WHERE tc.constraint_type = 'UNIQUE'
+      AND tc.table_schema = %(schema)s
+      AND tc.table_name = %(table)s
+    ORDER BY tc.constraint_name, kcu.ordinal_position
+    """,
+    params,
+  )
+  uniques: dict[str, list[str]] = {}
+  for r in cur.fetchall():
+    uniques.setdefault(r["constraint_name"], []).append(r["column_name"])
+
+  cur.close()
+  return TableMeta(
+    table_name=table_name,
+    columns=columns,
+    primary_key=primary_key,
+    foreign_keys=foreign_keys,
+    unique_constraints=uniques,
+  )
+
+
+def format_table_summary(meta: TableMeta) -> str:
+  """Format a single table's schema as a compact text block."""
+  lines = [f"TABLE: {meta.table_name}"]
+  lines.append("  Columns:")
+  for col in meta.columns:
+    parts = [f"    {col.name} {col.udt_name}"]
+    if not col.is_nullable:
+      parts.append("NOT NULL")
+    if col.column_default:
+      parts.append(f"DEFAULT {col.column_default}")
+    if col.name in meta.primary_key:
+      parts.append("[PK]")
+    lines.append(" ".join(parts))
+
+  if meta.foreign_keys:
+    lines.append("  Foreign keys:")
+    for fk in meta.foreign_keys:
+      lines.append(
+        f"    {fk.column_name} -> {fk.foreign_table}({fk.foreign_column})"
+      )
+
+  if meta.unique_constraints:
+    lines.append("  Unique constraints:")
+    for _name, cols in meta.unique_constraints.items():
+      lines.append(f"    ({', '.join(cols)})")
+
+  return "\n".join(lines)
+
+
+def build_full_schema_summary(all_metas: dict[str, TableMeta], seeding_order: list[str]) -> str:
+  """Build a complete schema summary for all tables in seeding order."""
+  sections: list[str] = []
+  for table_name in seeding_order:
+    if table_name in all_metas:
+      sections.append(format_table_summary(all_metas[table_name]))
+  return "\n\n".join(sections)
+
+
+# ---------------------------------------------------------------------------
 # Seeding order (topological sort by FK dependencies)
 # ---------------------------------------------------------------------------
 
