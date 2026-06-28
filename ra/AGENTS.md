@@ -12,8 +12,7 @@ ra/
   vshell.py                 # In-memory virtual shell for pods_exec (fs + network sim)
   db.py                     # DB connection, schema init, seed loading, teardown
   seeding_order.py          # Topological sort of tables by FK dependencies
-  generate_seed_data.py     # LLM-based seed data generation (per-table)
-  generate_scenario_based_data.py  # Scenario-driven holistic seed data generation
+  generate_scenario_based_data.py  # Scenario-driven seed data generation (with JSONB schemas)
   llm/                      # Provider-agnostic LLM client abstraction
     base.py                 #   ABC: LLMClient.chat() interface
     types.py                #   Dataclasses: LLMResponse, ToolCall
@@ -21,8 +20,7 @@ ra/
     openai_client.py        #   OpenAI-compatible implementation (+ custom base_url)
   world_model_db_schema.sql # 20+ tables modeling K8s/OpenShift cluster state
   raw_tool_defs.json        # MCP tool definitions (Anthropic format source)
-  seed_data.json            # Generated cluster seed data
-  test_data.json            # Seed data for tests
+  seed_data.json            # Generated cluster seed data (used by tests and agent)
   MCP_TOOLS.md              # Full MCP tool schema documentation (30 tools)
 ```
 
@@ -40,7 +38,6 @@ uv run python db.py init seed_data.json    # create DB + schema + seed
 uv run python db.py teardown                # drop DB
 
 # Seed data generation
-uv run python generate_seed_data.py              # per-table LLM generation
 uv run python generate_scenario_based_data.py "A 3-node cluster with memory pressure"
 
 # Run agent loop
@@ -87,7 +84,7 @@ uv run python test_mock_tool.py
 ## Testing
 
 - Custom test runner in `test_mock_tool.py` (not pytest)
-- Tests spin up a `test_openshift_cluster` DB, load schema + `test_data.json`, run assertions, then drop DB
+- Tests spin up a `test_openshift_cluster` DB, load schema + `seed_data.json`, run assertions, then drop DB
 - Each test function: `def test_<tool_name>(conn)` — takes a psycopg2 connection
 - Run single test by editing `main()` or filtering in the test list
 - Run all: `uv run python test_mock_tool.py`
