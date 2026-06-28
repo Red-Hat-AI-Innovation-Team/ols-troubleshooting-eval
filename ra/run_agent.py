@@ -24,7 +24,7 @@ DB_DSN = "host=127.0.0.1 port=5433 dbname=openshift_cluster user=postgres"
 
 SEED_DATA_PATH = Path(__file__).parent / "seed_data.json"
 
-QUESTION_GEN_SYSTEM_PROMPT = """\
+USER_SIM_SYSTEM_PROMPT = """\
 You have complete knowledge of an OpenShift/Kubernetes cluster's internal state. \
 Below is the full database backing this cluster — every table, every row.
 
@@ -34,9 +34,27 @@ CLUSTER DATABASE:
 You are role-playing as a mid-level SRE who just got paged or noticed something \
 wrong on a dashboard. You do NOT have direct database access — you can only see \
 what a real operator would see: dashboards, pager alerts, user complaints, \
-kubectl output you glanced at."""
+kubectl output you glanced at.
 
-QUESTION_GEN_USER_PROMPT = """Generate a single realistic troubleshooting question. Rules:
+You are having a conversation with an AI troubleshooting agent. Your role:
+
+1. Your FIRST message is the initial troubleshooting question (symptoms you noticed).
+2. After that, you receive the agent's investigation responses.
+3. Evaluate each response against what you KNOW from the database.
+4. If the agent has NOT found the true root cause yet:
+   - Ask a Socratic follow-up that nudges them toward what they missed
+   - Hint at symptoms or areas they haven't investigated yet
+   - Do NOT give away the answer — guide them to discover it
+   - Stay in character as the SRE ("hmm but what about...", "I also noticed...", \
+     "did you check...")
+5. If the agent HAS correctly identified the root cause and explained the \
+   cascade clearly, respond with EXACTLY the word DONE on the first line, \
+   followed by a brief 1-2 sentence assessment of their diagnosis.
+
+Keep all follow-ups to 1-3 sentences. Stay casual and in character."""
+
+INITIAL_QUESTION_PROMPT = """\
+Generate a single realistic troubleshooting question. Rules:
 - Sound like a real human typing in to an ai agent — casual, not a report
 - Mention only 1-3 symptoms you'd actually notice first (NOT a complete inventory)
 - Leave the root cause for the agent to discover
@@ -194,38 +212,32 @@ class Agent:
 # Main
 # ---------------------------------------------------------------------------
 
-def generate_question(client: AnthropicVertex) -> str:
-    """Use an LLM to generate a troubleshooting question from seed data."""
-    seed_data = SEED_DATA_PATH.read_text()
-    system = QUESTION_GEN_SYSTEM_PROMPT.format(seed_data=seed_data)
-
-    question_agent = Agent(
-        system_prompt=system,
-        model="claude-opus-4-6@default",
-        tool_defs=[],
-        tool_handler=lambda _name, _params: "",
-        client=client,
-        max_turns=10,
-        thinking_budget=5_000,
-        max_tokens=8_000,
-    )
-    return question_agent.run(QUESTION_GEN_USER_PROMPT)
+MAX_CONVERSATION_ROUNDS = 5
 
 
 if __name__ == "__main__":
     client = AnthropicVertex()
-
-    print("Generating question from seed data...\n")
-    query = generate_question(client)
-    print(f"\nGenerated question: {query}\n")
-
     conn = psycopg2.connect(DB_DSN)
 
+    # --- User simulator agent (has seed data, acts as SRE) ---
+    seed_data = SEED_DATA_PATH.read_text()
+    user_sim = Agent(
+        system_prompt=USER_SIM_SYSTEM_PROMPT.format(seed_data=seed_data),
+        model="claude-opus-4-6@default",
+        tool_defs=[],
+        tool_handler=lambda _name, _params: "",
+        client=client,
+        max_turns=1,
+        thinking_budget=5_000,
+        max_tokens=8_000,
+    )
+
+    # --- Troubleshooting agent (has tools, no seed data) ---
     def tool_handler(name: str, params: dict) -> str:
         clean = {k: v for k, v in params.items() if k not in STRIP_PARAMS}
         return call_tool(conn, name, clean)
 
-    agent = Agent(
+    troubleshooter = Agent(
         system_prompt=SYSTEM_PROMPT,
         model="claude-opus-4-6@default",
         tool_defs=load_tool_defs(),
@@ -233,10 +245,33 @@ if __name__ == "__main__":
         client=client,
     )
 
-    answer = agent.run(query)
-    conn.close()
-
-    print("\n" + "=" * 60)
-    print("FINAL ANSWER:")
+    # --- Generate initial question ---
     print("=" * 60)
-    print(answer)
+    print("GENERATING INITIAL QUESTION")
+    print("=" * 60)
+    question = user_sim.run(INITIAL_QUESTION_PROMPT)
+    print(f"\n>>> SRE: {question}\n")
+
+    # --- Conversation loop ---
+    for round_num in range(MAX_CONVERSATION_ROUNDS):
+        print("=" * 60)
+        print(f"ROUND {round_num + 1}")
+        print("=" * 60)
+
+        # Troubleshooter investigates
+        answer = troubleshooter.run(question)
+        print(f"\n>>> Agent: {answer[:200]}...\n")
+
+        # User sim evaluates and responds
+        follow_up = user_sim.run(answer)
+        print(f"\n>>> SRE: {follow_up}\n")
+
+        if follow_up.strip().startswith("DONE"):
+            print("=" * 60)
+            print("CONVERSATION COMPLETE")
+            print("=" * 60)
+            break
+
+        question = follow_up
+
+    conn.close()
