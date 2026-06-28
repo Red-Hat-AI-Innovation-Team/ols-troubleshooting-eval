@@ -15,9 +15,10 @@ from pathlib import Path
 
 import psycopg2
 import psycopg2.extras
-from anthropic import AnthropicVertex
 
 from db import get_seeding_order
+from llm import AnthropicVertexClient, LLMResponse, Message, ToolDef
+from llm.base import LLMClient
 
 
 # ---------------------------------------------------------------------------
@@ -457,8 +458,11 @@ General rules:
 # ---------------------------------------------------------------------------
 
 
+MODEL: str = "claude-opus-4-6@default"
+
+
 def plan_row_counts(
-    client: AnthropicVertex,
+    client: LLMClient,
     scenario: str,
     schema_summary: str,
     seeding_order: list[str],
@@ -490,34 +494,27 @@ Be reasonable — enough data to tell the story, but not excessive.
 
 Call the plan_rows tool with your decisions."""
 
-    response = client.messages.create(
-        model="claude-opus-4-6@default",
-        max_tokens=16_000,
-        thinking={
-            "type": "enabled",
-            "budget_tokens": 10_000,
-        },
-        system=f"""You are planning data generation for an OpenShift monitoring database.
-
-COMPLETE DATABASE SCHEMA:
-{schema_summary}""",
+    response: LLMResponse = client.chat(
+        model=MODEL,
+        messages=[Message(role="user", content=prompt)],
         tools=[
-            {
-                "name": "plan_rows",
-                "description": "Specify how many rows to generate for each table",
-                "input_schema": {
+            ToolDef(
+                name="plan_rows",
+                description="Specify how many rows to generate for each table",
+                parameters={
                     "type": "object",
                     "properties": plan_tool_properties,
                     "required": seeding_order,
                 },
-            }
+            )
         ],
-        tool_choice={"type": "auto"},
-        messages=[{"role": "user", "content": prompt}],
+        max_tokens=16_000,
+        system=f"You are planning data generation for an OpenShift monitoring database.\n\nCOMPLETE DATABASE SCHEMA:\n{schema_summary}",
+        thinking_budget=10_000,
     )
 
-    tool_block = next(b for b in response.content if b.type == "tool_use")
-    return {k: int(v) for k, v in tool_block.input.items()}
+    tc = response.tool_calls[0]
+    return {k: int(v) for k, v in tc.arguments.items()}
 
 
 # ---------------------------------------------------------------------------
@@ -579,7 +576,7 @@ Generate data that fits the scenario. Call the insert_rows tool with the generat
 
 
 def generate_rows(
-    client: AnthropicVertex,
+    client: LLMClient,
     meta: TableMeta,
     generated: dict[str, list[dict]],
     rows_count: int,
@@ -589,28 +586,23 @@ def generate_rows(
     tool_schema: dict = build_tool_schema(meta, rows_count)
     user_prompt: str = build_user_prompt(meta, rows_count, generated)
 
-    with client.messages.stream(
-        model="claude-opus-4-6@default",
-        max_tokens=100_000,
-        thinking={
-            "type": "enabled",
-            "budget_tokens": 30_000,
-        },
-        system=system_prompt,
+    response: LLMResponse = client.chat(
+        model=MODEL,
+        messages=[Message(role="user", content=user_prompt)],
         tools=[
-            {
-                "name": "insert_rows",
-                "description": f"Insert generated seed rows for table '{meta.table_name}'",
-                "input_schema": tool_schema,
-            }
+            ToolDef(
+                name="insert_rows",
+                description=f"Insert generated seed rows for table '{meta.table_name}'",
+                parameters=tool_schema,
+            )
         ],
-        tool_choice={"type": "auto"},
-        messages=[{"role": "user", "content": user_prompt}],
-    ) as stream:
-        response = stream.get_final_message()
+        max_tokens=100_000,
+        system=system_prompt,
+        thinking_budget=30_000,
+    )
 
-    tool_block = next(b for b in response.content if b.type == "tool_use")
-    rows = tool_block.input["rows"]
+    tc = response.tool_calls[0]
+    rows = tc.arguments.get("rows", tc.arguments)
 
     # Guard: Anthropic SDK can return a string instead of parsed JSON for
     # large tool outputs.  Detect and attempt recovery.
@@ -656,7 +648,7 @@ def generate_seed_data(
 
     schema_summary: str = build_full_schema_summary(all_metas, seeding_order)
 
-    client: AnthropicVertex = AnthropicVertex()
+    client: LLMClient = AnthropicVertexClient()
 
     print(f"Scenario: {scenario}\n")
     print("Planning row counts...")
