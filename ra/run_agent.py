@@ -6,10 +6,9 @@ Usage:
 
 from pathlib import Path
 
-from anthropic import AnthropicVertex
-
 from agent import Agent
 import db
+from llm import AnthropicVertexClient
 import mock_tools
 
 # ---------------------------------------------------------------------------
@@ -80,7 +79,7 @@ MAX_CONVERSATION_ROUNDS = 5
 
 
 def run(seed_data_path: Path):
-    client = AnthropicVertex()
+    client = AnthropicVertexClient()
     conn = db.connect()
 
     # --- User simulator agent (has seed data, acts as SRE) ---

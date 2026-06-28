@@ -4,7 +4,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Callable
 
-from anthropic import AnthropicVertex
+from llm.base import LLMClient
 
 # tool_handler signature: (tool_name: str, params: dict) -> str
 ToolHandler = Callable[[str, dict], str]
@@ -16,7 +16,7 @@ class Agent:
     model: str
     tool_defs: list[dict]
     tool_handler: ToolHandler
-    client: AnthropicVertex
+    client: LLMClient
     max_turns: int = 20
     thinking_budget: int = 10_000
     max_tokens: int = 16_000
@@ -32,45 +32,51 @@ class Agent:
         for turn in range(self.max_turns):
             print(f"\n--- Turn {turn + 1} ---")
 
-            with self.client.messages.stream(
+            response = self.client.chat(
                 model=self.model,
-                max_tokens=self.max_tokens,
-                thinking={"type": "enabled", "budget_tokens": self.thinking_budget},
-                system=self.system_prompt,
-                tools=self.tool_defs,
                 messages=self.messages,
-            ) as stream:
-                response = stream.get_final_message()
+                tools=self.tool_defs,
+                max_tokens=self.max_tokens,
+                system=self.system_prompt,
+                thinking_budget=self.thinking_budget,
+            )
 
-            tool_uses: list = []
-            text_parts: list[str] = []
+            for tc in response.tool_calls:
+                params_str = json.dumps(tc.arguments, separators=(",", ":")) if tc.arguments else "{}"
+                print(f"  -> {tc.name}({params_str})")
 
-            for block in response.content:
-                if block.type == "tool_use":
-                    tool_uses.append(block)
-                elif block.type == "text":
-                    text_parts.append(block.text)
-
-            for tu in tool_uses:
-                params_str = json.dumps(tu.input, separators=(",", ":")) if tu.input else "{}"
-                print(f"  -> {tu.name}({params_str})")
-
-            if not tool_uses:
-                final_answer = "\n".join(text_parts)
-                self.messages.append({"role": "assistant", "content": response.content})
+            if not response.tool_calls:
+                final_answer = response.content or ""
+                # Store raw response content for conversation history
+                content_blocks = []
+                if response.content:
+                    content_blocks.append({"type": "text", "text": response.content})
+                self.messages.append({"role": "assistant", "content": content_blocks or response.content})
                 return final_answer
 
-            self.messages.append({"role": "assistant", "content": response.content})
+            # Build assistant message with tool use blocks
+            content_blocks = []
+            if response.content:
+                content_blocks.append({"type": "text", "text": response.content})
+            for tc in response.tool_calls:
+                content_blocks.append({
+                    "type": "tool_use",
+                    "id": tc.id,
+                    "name": tc.name,
+                    "input": tc.arguments,
+                })
+            self.messages.append({"role": "assistant", "content": content_blocks})
 
+            # Execute tools
             tool_results: list[dict] = []
-            for tu in tool_uses:
+            for tc in response.tool_calls:
                 try:
-                    result = self.tool_handler(tu.name, tu.input or {})
+                    result = self.tool_handler(tc.name, tc.arguments or {})
                 except Exception as e:
-                    result = f"Error executing {tu.name}: {type(e).__name__}: {e}"
+                    result = f"Error executing {tc.name}: {type(e).__name__}: {e}"
                 tool_results.append({
                     "type": "tool_result",
-                    "tool_use_id": tu.id,
+                    "tool_use_id": tc.id,
                     "content": result,
                 })
 
