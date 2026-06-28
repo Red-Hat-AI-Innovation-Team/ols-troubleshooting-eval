@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from pydantic import BaseModel
 
-@dataclass
-class ToolDef:
+
+class ToolDef(BaseModel):
     """A tool definition (provider-agnostic)."""
 
     name: str
@@ -15,8 +15,7 @@ class ToolDef:
     parameters: dict[str, Any]  # JSON Schema
 
 
-@dataclass
-class ToolCall:
+class ToolCall(BaseModel):
     """A tool invocation returned by the model."""
 
     id: str
@@ -24,8 +23,7 @@ class ToolCall:
     arguments: dict[str, Any]
 
 
-@dataclass
-class ToolResult:
+class ToolResult(BaseModel):
     """Result of executing a tool call."""
 
     tool_call_id: str
@@ -35,8 +33,7 @@ class ToolResult:
 Role = Literal["system", "user", "assistant", "tool"]
 
 
-@dataclass
-class Message:
+class Message(BaseModel):
     """A single message in a conversation.
 
     role:
@@ -48,16 +45,15 @@ class Message:
 
     role: Role
     content: str | None = None
-    tool_calls: list[ToolCall] = field(default_factory=list)
-    tool_results: list[ToolResult] = field(default_factory=list)
+    tool_calls: list[ToolCall] = []
+    tool_results: list[ToolResult] = []
 
 
-@dataclass
-class LLMResponse:
+class LLMResponse(BaseModel):
     """Normalized response from any provider."""
 
     content: str | None = None
-    tool_calls: list[ToolCall] = field(default_factory=list)
+    tool_calls: list[ToolCall] = []
     stop_reason: str | None = None
     tokens_in: int = 0
     tokens_out: int = 0

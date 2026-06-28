@@ -79,62 +79,63 @@ drill into specific issues you discover."""
 MAX_CONVERSATION_ROUNDS = 5
 
 
-def run(seed_data: dict[str, list[dict]]):
+def run(seed_data: dict[str, list[dict]]) -> list[dict]:
+    """Run the troubleshooting agent loop. Returns the troubleshooter's conversation history."""
     client = AnthropicVertexClient()
-    conn = db.connect()
 
-    # --- User simulator agent (has seed data, acts as SRE) ---
-    seed_data_str = json.dumps(seed_data, indent=2)
-    user_sim = Agent(
-        system_prompt=USER_SIM_SYSTEM_PROMPT.format(seed_data=seed_data_str),
-        model="claude-opus-4-6@default",
-        tool_defs=[],
-        tool_handler=lambda _name, _params: "",
-        client=client,
-        max_turns=1,
-        thinking_budget=5_000,
-        max_tokens=8_000,
-    )
+    with db.connect() as conn:
+        # --- User simulator agent (has seed data, acts as SRE) ---
+        seed_data_str = json.dumps(seed_data, indent=2)
+        user_sim = Agent(
+            system_prompt=USER_SIM_SYSTEM_PROMPT.format(seed_data=seed_data_str),
+            model="claude-opus-4-6@default",
+            tool_defs=[],
+            tool_handler=lambda _name, _params: "",
+            client=client,
+            max_turns=1,
+            thinking_budget=5_000,
+            max_tokens=8_000,
+        )
 
-    # --- Troubleshooting agent (has tools, no seed data) ---
-    troubleshooter = Agent(
-        system_prompt=SYSTEM_PROMPT,
-        model="claude-opus-4-6@default",
-        tool_defs=mock_tools.load_tool_defs(),
-        tool_handler=mock_tools.make_tool_handler(conn),
-        client=client,
-    )
+        # --- Troubleshooting agent (has tools, no seed data) ---
+        troubleshooter = Agent(
+            system_prompt=SYSTEM_PROMPT,
+            model="claude-opus-4-6@default",
+            tool_defs=mock_tools.load_tool_defs(),
+            tool_handler=mock_tools.make_tool_handler(conn),
+            client=client,
+        )
 
-    # --- Generate initial question ---
-    print("=" * 60)
-    print("GENERATING INITIAL QUESTION")
-    print("=" * 60)
-    question = user_sim.run(INITIAL_QUESTION_PROMPT)
-    print(f"\n>>> SRE: {question}\n")
-
-    # --- Conversation loop ---
-    for round_num in range(MAX_CONVERSATION_ROUNDS):
+        # --- Generate initial question ---
         print("=" * 60)
-        print(f"ROUND {round_num + 1}")
+        print("GENERATING INITIAL QUESTION")
         print("=" * 60)
+        question = user_sim.run(INITIAL_QUESTION_PROMPT)
+        print(f"\n>>> SRE: {question}\n")
 
-        # Troubleshooter investigates
-        answer = troubleshooter.run(question)
-        print(f"\n>>> Agent: {answer[:200]}...\n")
-
-        # User sim evaluates and responds
-        follow_up = user_sim.run(answer)
-        print(f"\n>>> SRE: {follow_up}\n")
-
-        if follow_up.strip().startswith("DONE"):
+        # --- Conversation loop ---
+        for round_num in range(MAX_CONVERSATION_ROUNDS):
             print("=" * 60)
-            print("CONVERSATION COMPLETE")
+            print(f"ROUND {round_num + 1}")
             print("=" * 60)
-            break
 
-        question = follow_up
+            # Troubleshooter investigates
+            answer = troubleshooter.run(question)
+            print(f"\n>>> Agent: {answer[:200]}...\n")
 
-    conn.close()
+            # User sim evaluates and responds
+            follow_up = user_sim.run(answer)
+            print(f"\n>>> SRE: {follow_up}\n")
+
+            if follow_up.strip().startswith("DONE"):
+                print("=" * 60)
+                print("CONVERSATION COMPLETE")
+                print("=" * 60)
+                break
+
+            question = follow_up
+
+    return [m.model_dump() for m in troubleshooter.messages]
 
 if __name__ == "__main__":
   seed_data_path = Path(__file__).parent / "seed_data.json"
