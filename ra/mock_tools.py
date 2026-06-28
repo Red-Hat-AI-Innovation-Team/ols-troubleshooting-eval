@@ -7,6 +7,7 @@ Output formats match MCP_TOOLS.md spec (YAML, JSON, or plain text).
 import json
 import re
 import shlex
+from pathlib import Path
 from typing import Any, Callable
 
 import psycopg2.extras
@@ -1415,3 +1416,66 @@ def call_tool(conn, name: str, params: dict | None = None) -> str:
     if name not in TOOLS:
         return f"Error: unknown tool '{name}'"
     return TOOLS[name](conn, **(params or {}))
+
+
+# ---------------------------------------------------------------------------
+# Tool def loading (Anthropic format)
+# ---------------------------------------------------------------------------
+
+STRIP_PARAMS = {"context"}  # not supported by mock tools
+
+EXTRA_TOOL_DEFS = [
+    {
+        "name": "projects_list",
+        "description": "List all OpenShift projects (namespaces with display names) in the cluster",
+        "input_schema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "targets_list",
+        "description": "List all Prometheus scrape targets and their status",
+        "input_schema": {"type": "object", "properties": {}},
+    },
+]
+
+
+def make_tool_handler(conn):
+    """Create a tool_handler callable bound to a psycopg2 connection."""
+    def handler(name: str, params: dict) -> str:
+        clean = {k: v for k, v in params.items() if k not in STRIP_PARAMS}
+        return call_tool(conn, name, clean)
+    return handler
+
+
+def load_tool_defs() -> list[dict]:
+    """Load tool defs from raw_tool_defs.json, convert to Anthropic format."""
+    raw = json.loads((Path(__file__).parent / "raw_tool_defs.json").read_text())
+
+    tools: list[dict] = []
+    for _server, section in raw.items():
+        if not isinstance(section, dict) or "tools" not in section:
+            continue
+        for t in section["tools"]:
+            fn = t["function"]
+            name = fn["name"]
+            if name not in TOOLS:
+                continue
+
+            params = fn.get("parameters", {"type": "object", "properties": {}})
+            props = {k: v for k, v in params.get("properties", {}).items() if k not in STRIP_PARAMS}
+            required = [r for r in params.get("required", []) if r not in STRIP_PARAMS]
+
+            input_schema: dict = {"type": "object", "properties": props}
+            if required:
+                input_schema["required"] = required
+
+            tools.append({
+                "name": name,
+                "description": fn.get("description", ""),
+                "input_schema": input_schema,
+            })
+
+    for extra in EXTRA_TOOL_DEFS:
+        if extra["name"] not in {t["name"] for t in tools}:
+            tools.append(extra)
+
+    return tools

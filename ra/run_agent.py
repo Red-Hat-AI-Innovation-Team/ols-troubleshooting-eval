@@ -4,20 +4,17 @@ Usage:
     uv run python run_agent.py
 """
 
-import json
 from pathlib import Path
 
 from anthropic import AnthropicVertex
 
 from agent import Agent
 import db
-from mock_tools import TOOLS, call_tool
+import mock_tools
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
-
-SEED_DATA_PATH = Path(__file__).parent / "seed_data.json"
 
 USER_SIM_SYSTEM_PROMPT = """\
 You have complete knowledge of an OpenShift/Kubernetes cluster's internal state. \
@@ -74,68 +71,6 @@ tools to gather real data and base your answer on what you find.
 Be thorough but efficient. Start broad (check alerts, pod status, events) then \
 drill into specific issues you discover."""
 
-# ---------------------------------------------------------------------------
-# Tool definitions
-# ---------------------------------------------------------------------------
-
-STRIP_PARAMS = {"context"}  # not supported by mock tools
-
-EXTRA_TOOL_DEFS = [
-    {
-        "name": "projects_list",
-        "description": "List all OpenShift projects (namespaces with display names) in the cluster",
-        "input_schema": {"type": "object", "properties": {}},
-    },
-    {
-        "name": "targets_list",
-        "description": "List all Prometheus scrape targets and their status",
-        "input_schema": {"type": "object", "properties": {}},
-    },
-]
-
-
-def load_tool_defs() -> list[dict]:
-    """Load tool defs from raw_tool_defs.json, convert to Anthropic format."""
-    raw = json.loads((Path(__file__).parent / "raw_tool_defs.json").read_text())
-
-    tools: list[dict] = []
-    for _server, section in raw.items():
-        if not isinstance(section, dict) or "tools" not in section:
-            continue
-        for t in section["tools"]:
-            fn = t["function"]
-            name = fn["name"]
-            if name not in TOOLS:
-                continue
-
-            params = fn.get("parameters", {"type": "object", "properties": {}})
-            props = {k: v for k, v in params.get("properties", {}).items() if k not in STRIP_PARAMS}
-            required = [r for r in params.get("required", []) if r not in STRIP_PARAMS]
-
-            input_schema: dict = {"type": "object", "properties": props}
-            if required:
-                input_schema["required"] = required
-
-            tools.append({
-                "name": name,
-                "description": fn.get("description", ""),
-                "input_schema": input_schema,
-            })
-
-    for extra in EXTRA_TOOL_DEFS:
-        if extra["name"] not in {t["name"] for t in tools}:
-            tools.append(extra)
-
-    return tools
-
-
-def make_tool_handler(conn):
-    """Create a tool_handler callable bound to a psycopg2 connection."""
-    def handler(name: str, params: dict) -> str:
-        clean = {k: v for k, v in params.items() if k not in STRIP_PARAMS}
-        return call_tool(conn, name, clean)
-    return handler
-
 
 # ---------------------------------------------------------------------------
 # Main
@@ -144,12 +79,12 @@ def make_tool_handler(conn):
 MAX_CONVERSATION_ROUNDS = 5
 
 
-if __name__ == "__main__":
+def run(seed_data_path: Path):
     client = AnthropicVertex()
     conn = db.connect()
 
     # --- User simulator agent (has seed data, acts as SRE) ---
-    seed_data = SEED_DATA_PATH.read_text()
+    seed_data = seed_data_path.read_text()
     user_sim = Agent(
         system_prompt=USER_SIM_SYSTEM_PROMPT.format(seed_data=seed_data),
         model="claude-opus-4-6@default",
@@ -165,8 +100,8 @@ if __name__ == "__main__":
     troubleshooter = Agent(
         system_prompt=SYSTEM_PROMPT,
         model="claude-opus-4-6@default",
-        tool_defs=load_tool_defs(),
-        tool_handler=make_tool_handler(conn),
+        tool_defs=mock_tools.load_tool_defs(),
+        tool_handler=mock_tools.make_tool_handler(conn),
         client=client,
     )
 
@@ -200,3 +135,7 @@ if __name__ == "__main__":
         question = follow_up
 
     conn.close()
+
+if __name__ == "__main__":
+  SEED_DATA_PATH = Path(__file__).parent / "seed_data.json"
+  run(SEED_DATA_PATH)
