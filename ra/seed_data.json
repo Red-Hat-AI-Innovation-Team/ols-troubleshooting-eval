@@ -1,0 +1,2150 @@
+{
+  "clusters": [
+    {
+      "id": 1,
+      "name": "prod-us-east-1",
+      "api_server_url": "https://api.prod-us-east-1.openshift.example.com:6443",
+      "is_openshift": true,
+      "version": "4.15.18",
+      "created_at": "2025-06-01T08:30:00Z"
+    },
+    {
+      "id": 2,
+      "name": "staging-eu-west-1",
+      "api_server_url": "https://api.staging-eu-west-1.openshift.example.com:6443",
+      "is_openshift": true,
+      "version": "4.14.35",
+      "created_at": "2025-06-05T14:15:22Z"
+    },
+    {
+      "id": 3,
+      "name": "dev-k8s-central",
+      "api_server_url": "https://10.120.5.40:6443",
+      "is_openshift": false,
+      "version": "1.30.2",
+      "created_at": "2025-06-12T19:45:03Z"
+    }
+  ],
+  "alerts": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "fingerprint": "a]b4c8d3e1f56789",
+      "state": "active",
+      "starts_at": "2025-06-18T03:12:44Z",
+      "ends_at": null,
+      "generator_url": "https://prometheus.prod-us-east-1.openshift.example.com/graph?g0.expr=rate%28kube_pod_container_status_restarts_total%5B10m%5D%29+%2A+60+%2A+5+%3E+0&g0.tab=1",
+      "annotations": {
+        "summary": "Pod is crash looping",
+        "description": "Pod checkout-service-7b4d6f8c9d-xk2rm in namespace ecommerce-prod is restarting 4.23 times / 5 minutes.",
+        "runbook_url": "https://runbooks.example.com/alerts/KubePodCrashLooping"
+      },
+      "silenced_by": [],
+      "inhibited_by": []
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "fingerprint": "c7f2e90a1b3d4e6f",
+      "state": "suppressed",
+      "starts_at": "2025-06-15T09:30:17Z",
+      "ends_at": null,
+      "generator_url": "https://prometheus.staging-eu-west-1.openshift.example.com/graph?g0.expr=sum%28namespace%3Akube_pod_container_resource_requests%7Bresource%3D%22memory%22%7D%29+%2F+sum%28kube_node_status_allocatable%7Bresource%3D%22memory%22%7D%29+%3E+0.9&g0.tab=1",
+      "annotations": {
+        "summary": "Cluster memory overcommit detected",
+        "description": "Cluster staging-eu-west-1 has overcommitted memory resource requests by 142% (threshold: 90%).",
+        "runbook_url": "https://runbooks.example.com/alerts/KubeMemoryOvercommit"
+      },
+      "silenced_by": [
+        "d4a8b2c1-6e3f-4a9d-b7c5-1f0e2d3a4b5c"
+      ],
+      "inhibited_by": []
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "fingerprint": "e5d4c3b2a1907f6e",
+      "state": "resolved",
+      "starts_at": "2025-06-20T14:05:33Z",
+      "ends_at": "2025-06-20T14:47:12Z",
+      "generator_url": "http://10.120.5.40:9090/graph?g0.expr=up%7Bjob%3D%22node-exporter%22%7D+%3D%3D+0&g0.tab=1",
+      "annotations": {
+        "summary": "Target is down",
+        "description": "100% of the node-exporter targets in namespace monitoring are down. 1 of 1 targets are down.",
+        "runbook_url": "https://runbooks.example.com/alerts/TargetDown"
+      },
+      "silenced_by": [],
+      "inhibited_by": [
+        "a]b4c8d3e1f56789"
+      ]
+    }
+  ],
+  "api_resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "api_version": "apps/v1",
+      "kind": "Deployment",
+      "is_namespaced": true,
+      "is_scalable": true
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "api_version": "route.openshift.io/v1",
+      "kind": "Route",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "api_version": "v1",
+      "kind": "Node",
+      "is_namespaced": false,
+      "is_scalable": false
+    }
+  ],
+  "kubeconfig_contexts": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "context_name": "prod-us-east-1/api-prod-us-east-1-openshift-example-com:6443/cluster-admin",
+      "server_url": "https://api.prod-us-east-1.openshift.example.com:6443",
+      "is_default": true,
+      "user_name": "cluster-admin/api-prod-us-east-1-openshift-example-com:6443",
+      "namespace": "openshift-monitoring"
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "context_name": "staging-eu-west-1/api-staging-eu-west-1-openshift-example-com:6443/developer",
+      "server_url": "https://api.staging-eu-west-1.openshift.example.com:6443",
+      "is_default": false,
+      "user_name": "developer/api-staging-eu-west-1-openshift-example-com:6443",
+      "namespace": "myproject-staging"
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "context_name": "dev-k8s-central",
+      "server_url": "https://10.120.5.40:6443",
+      "is_default": false,
+      "user_name": "k8s-admin@dev-k8s-central",
+      "namespace": "default"
+    }
+  ],
+  "metrics": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "container_cpu_usage_seconds_total",
+      "help_text": "Cumulative cpu time consumed by the container in core-seconds.",
+      "metric_type": "counter"
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "name": "kube_pod_status_phase",
+      "help_text": "The pods current phase (Pending, Running, Succeeded, Failed, Unknown).",
+      "metric_type": "gauge"
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "name": "apiserver_request_duration_seconds",
+      "help_text": "Response latency distribution in seconds for each verb, dry run value, group, version, resource, subresource, scope and component.",
+      "metric_type": "histogram"
+    }
+  ],
+  "namespaces": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "openshift-monitoring",
+      "uid": "a3e1f7b2-4c89-4d1a-b6e0-9f82c3d5a107",
+      "phase": "Active",
+      "labels": {
+        "app.kubernetes.io/part-of": "openshift-monitoring",
+        "kubernetes.io/metadata.name": "openshift-monitoring",
+        "openshift.io/cluster-monitoring": "true",
+        "pod-security.kubernetes.io/audit": "privileged",
+        "pod-security.kubernetes.io/enforce": "privileged",
+        "pod-security.kubernetes.io/warn": "privileged"
+      },
+      "annotations": {
+        "openshift.io/sa.scc.mcs": "s0:c21,c10",
+        "openshift.io/sa.scc.supplemental-groups": "1000540000/10000",
+        "openshift.io/sa.scc.uid-range": "1000540000/10000",
+        "openshift.io/description": "Core cluster monitoring stack including Prometheus, Alertmanager, and Thanos."
+      },
+      "is_openshift_project": true,
+      "created_at": "2025-06-01T08:31:12Z"
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "name": "payments-api-staging",
+      "uid": "d47b90c6-82f3-4e5a-a1d9-3bc6e8f24a59",
+      "phase": "Active",
+      "labels": {
+        "kubernetes.io/metadata.name": "payments-api-staging",
+        "app.kubernetes.io/managed-by": "argocd",
+        "app.kubernetes.io/part-of": "payments-platform",
+        "team": "fintech-backend",
+        "environment": "staging",
+        "cost-center": "cc-4420"
+      },
+      "annotations": {
+        "openshift.io/sa.scc.mcs": "s0:c25,c5",
+        "openshift.io/sa.scc.supplemental-groups": "1000680000/10000",
+        "openshift.io/sa.scc.uid-range": "1000680000/10000",
+        "openshift.io/requester": "svc-argocd",
+        "openshift.io/display-name": "Payments API (Staging)",
+        "openshift.io/description": "Staging environment for the payments processing microservices."
+      },
+      "is_openshift_project": true,
+      "created_at": "2025-06-06T09:22:47Z"
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "name": "dev-sandbox",
+      "uid": "f18e63a4-1d07-4af7-b8c3-57da40e91b82",
+      "phase": "Active",
+      "labels": {
+        "kubernetes.io/metadata.name": "dev-sandbox",
+        "app.kubernetes.io/managed-by": "helm",
+        "team": "platform-engineering",
+        "environment": "development",
+        "pod-security.kubernetes.io/enforce": "baseline",
+        "pod-security.kubernetes.io/warn": "restricted"
+      },
+      "annotations": {
+        "scheduler.alpha.kubernetes.io/defaultTolerations": "[]",
+        "field.cattle.io/description": "Shared sandbox namespace for platform engineering experiments and prototyping.",
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Namespace\",\"metadata\":{\"name\":\"dev-sandbox\"}}"
+      },
+      "is_openshift_project": false,
+      "created_at": "2025-06-12T20:03:55Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "ip-10-0-142-87.ec2.internal",
+      "uid": "a3f1d9e4-7b2c-4e8a-9f6d-1a2b3c4d5e6f",
+      "labels": {
+        "kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "kubernetes.io/hostname": "ip-10-0-142-87.ec2.internal",
+        "node-role.kubernetes.io/worker": "",
+        "node.openshift.io/os_id": "rhcos",
+        "topology.kubernetes.io/zone": "us-east-1b",
+        "topology.kubernetes.io/region": "us-east-1",
+        "node.kubernetes.io/instance-type": "m5.4xlarge",
+        "beta.kubernetes.io/instance-type": "m5.4xlarge"
+      },
+      "annotations": {
+        "machineconfiguration.openshift.io/currentConfig": "rendered-worker-a8b4c2d1e6f9340a7bc5",
+        "machineconfiguration.openshift.io/desiredConfig": "rendered-worker-a8b4c2d1e6f9340a7bc5",
+        "machineconfiguration.openshift.io/state": "Done",
+        "machineconfiguration.openshift.io/reason": "",
+        "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+      },
+      "taints": [],
+      "phase": "Running",
+      "allocatable_cpu_millicores": 15500,
+      "allocatable_memory_bytes": 65498251264,
+      "allocatable_pods": 250,
+      "capacity_cpu_millicores": 16000,
+      "capacity_memory_bytes": 68719476736,
+      "capacity_pods": 250,
+      "os_image": "Red Hat Enterprise Linux CoreOS 415.92.202406032239-0 (Plow)",
+      "kernel_version": "5.14.0-284.73.1.el9_2.x86_64",
+      "kubelet_version": "v1.28.13+b9a3b40",
+      "container_runtime": "cri-o://1.28.7-3.rhaos4.15.git6032a3f.el9",
+      "architecture": "amd64",
+      "created_at": "2025-06-01T08:45:12Z"
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "name": "ip-10-1-53-214.eu-west-1.compute.internal",
+      "uid": "b7e2c8f1-3d4a-4f9b-8c1e-5a6b7c8d9e0f",
+      "labels": {
+        "kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "kubernetes.io/hostname": "ip-10-1-53-214.eu-west-1.compute.internal",
+        "node-role.kubernetes.io/worker": "",
+        "node.openshift.io/os_id": "rhcos",
+        "topology.kubernetes.io/zone": "eu-west-1a",
+        "topology.kubernetes.io/region": "eu-west-1",
+        "node.kubernetes.io/instance-type": "m5.2xlarge",
+        "beta.kubernetes.io/instance-type": "m5.2xlarge"
+      },
+      "annotations": {
+        "machineconfiguration.openshift.io/currentConfig": "rendered-worker-e5f6a7b8c9d0213e4f56",
+        "machineconfiguration.openshift.io/desiredConfig": "rendered-worker-e5f6a7b8c9d0213e4f56",
+        "machineconfiguration.openshift.io/state": "Done",
+        "machineconfiguration.openshift.io/reason": "",
+        "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+      },
+      "taints": [
+        {
+          "key": "env",
+          "value": "staging",
+          "effect": "PreferNoSchedule"
+        }
+      ],
+      "phase": "Running",
+      "allocatable_cpu_millicores": 7500,
+      "allocatable_memory_bytes": 32212254720,
+      "allocatable_pods": 250,
+      "capacity_cpu_millicores": 8000,
+      "capacity_memory_bytes": 34359738368,
+      "capacity_pods": 250,
+      "os_image": "Red Hat Enterprise Linux CoreOS 414.92.202405281159-0 (Plow)",
+      "kernel_version": "5.14.0-284.67.1.el9_2.x86_64",
+      "kubelet_version": "v1.27.16+d68c383",
+      "container_runtime": "cri-o://1.27.8-5.rhaos4.14.git3810e2c.el9",
+      "architecture": "amd64",
+      "created_at": "2025-06-05T14:22:38Z"
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "name": "dev-worker-01.internal.lab",
+      "uid": "c9d4e5f6-1a2b-4c3d-8e7f-9a0b1c2d3e4f",
+      "labels": {
+        "kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "kubernetes.io/hostname": "dev-worker-01",
+        "node-role.kubernetes.io/worker": "",
+        "topology.kubernetes.io/zone": "rack-2",
+        "topology.kubernetes.io/region": "dc-central"
+      },
+      "annotations": {
+        "kubeadm.alpha.kubernetes.io/cri-socket": "unix:///var/run/containerd/containerd.sock",
+        "node.alpha.kubernetes.io/ttl": "0",
+        "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+      },
+      "taints": [],
+      "phase": "Running",
+      "allocatable_cpu_millicores": 3800,
+      "allocatable_memory_bytes": 7948206080,
+      "allocatable_pods": 110,
+      "capacity_cpu_millicores": 4000,
+      "capacity_memory_bytes": 8589934592,
+      "capacity_pods": 110,
+      "os_image": "Ubuntu 22.04.4 LTS",
+      "kernel_version": "5.15.0-112-generic",
+      "kubelet_version": "v1.30.2",
+      "container_runtime": "containerd://1.7.18",
+      "architecture": "amd64",
+      "created_at": "2025-06-12T19:52:17Z"
+    }
+  ],
+  "silences": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "silence_id": "a3b8d2e4-7f1c-4a9e-b6d5-1c8e3f9a2b70",
+      "state": "active",
+      "starts_at": "2025-06-18T02:00:00Z",
+      "ends_at": "2025-06-18T06:00:00Z",
+      "created_by": "sre-jmorales@example.com",
+      "comment": "Silencing KubePodCrashLooping and KubePodNotReady for namespace openshift-monitoring during scheduled etcd maintenance window (CHG0043891)"
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "silence_id": "f7c91a56-2e3d-48b1-9c04-de5a67b831f2",
+      "state": "expired",
+      "starts_at": "2025-06-10T14:30:00Z",
+      "ends_at": "2025-06-11T14:30:00Z",
+      "created_by": "platform-team@example.com",
+      "comment": "Muting ClusterOperatorDegraded for image-registry operator \u2014 known issue with S3 bucket policy in eu-west-1, fix rolling out via OCPBUGS-48210"
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "silence_id": "1d4e5f6a-89b2-4c3d-a0e7-5f6b7c8d9e10",
+      "state": "pending",
+      "starts_at": "2025-06-20T22:00:00Z",
+      "ends_at": "2025-06-21T04:00:00Z",
+      "created_by": "devops-kchen@example.com",
+      "comment": "Pre-scheduled silence for Watchdog and CPUThrottlingHigh alerts during upcoming Kubernetes 1.30 -> 1.31 upgrade on dev-k8s-central"
+    }
+  ],
+  "alert_labels": [
+    {
+      "id": 1,
+      "alert_id": 1,
+      "label_key": "alertname",
+      "label_value": "KubePodCrashLooping"
+    },
+    {
+      "id": 2,
+      "alert_id": 1,
+      "label_key": "severity",
+      "label_value": "critical"
+    },
+    {
+      "id": 3,
+      "alert_id": 1,
+      "label_key": "namespace",
+      "label_value": "ecommerce-prod"
+    }
+  ],
+  "metric_labels": [
+    {
+      "id": 1,
+      "metric_id": 1,
+      "label_name": "namespace"
+    },
+    {
+      "id": 2,
+      "metric_id": 2,
+      "label_name": "phase"
+    },
+    {
+      "id": 3,
+      "metric_id": 3,
+      "label_name": "verb"
+    }
+  ],
+  "metric_series": [
+    {
+      "id": 1,
+      "metric_id": 1,
+      "label_fingerprint": "a3f1c9b8e47d2a6054e1f3dc890b7c23d4e5f6a1b2c3d4e5f6a7b8c9d0e1f2a3",
+      "labels": {
+        "namespace": "openshift-monitoring",
+        "pod": "prometheus-k8s-0",
+        "container": "prometheus",
+        "cpu": "total",
+        "id": "/kubepods.slice/kubepods-burstable.slice/crio-8a4f2e1b3c5d7e9f0a1b2c3d4e5f6a7b8c9d0e1f.scope",
+        "image": "quay.io/openshift-release-dev/ocp-v4.14-art-dev@sha256:b9c3e4f5a6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1",
+        "endpoint": "https-metrics",
+        "node": "ip-10-0-142-87.ec2.internal",
+        "service": "prometheus-k8s",
+        "instance": "10.0.142.87:9090"
+      }
+    },
+    {
+      "id": 2,
+      "metric_id": 2,
+      "label_fingerprint": "d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8",
+      "labels": {
+        "namespace": "myapp-production",
+        "pod": "api-gateway-deployment-7b9f4c6d58-xk2mv",
+        "uid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        "phase": "Running",
+        "host_ip": "10.0.153.22",
+        "pod_ip": "10.128.4.137",
+        "node": "ip-10-0-153-22.ec2.internal"
+      }
+    },
+    {
+      "id": 3,
+      "metric_id": 3,
+      "label_fingerprint": "1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c",
+      "labels": {
+        "verb": "GET",
+        "resource": "pods",
+        "subresource": "",
+        "scope": "namespace",
+        "component": "apiserver",
+        "group": "",
+        "version": "v1",
+        "le": "0.5",
+        "dry_run": "",
+        "content_type": "application/json",
+        "code": "200",
+        "instance": "10.0.131.5:6443"
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "b8c4e2a1-7f63-4d19-ae5b-2c91d0f84e37",
+      "event_time": "2025-06-18T14:22:08Z",
+      "first_timestamp": "2025-06-18T14:22:08Z",
+      "last_timestamp": "2025-06-18T14:25:41Z",
+      "series_last_observed": "2025-06-18T14:25:41Z",
+      "resolved_timestamp": "2025-06-18T14:25:41Z",
+      "event_type": "Warning",
+      "reason": "OOMKilling",
+      "message": "Memory cgroup out of memory: Killed process 48201 (prometheus) total-vm:3284512kB, anon-rss:2097152kB, file-rss:0kB, shmem-rss:0kB, UID:1000540001 pgtables:5124kB oom_score_adj:999",
+      "involved_object_api_version": "v1",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_namespace": "openshift-monitoring",
+      "involved_object_uid": "e6f31ba9-504c-4a07-9c38-71de4a5b08c2",
+      "involved_object_field_path": "spec.containers{prometheus}",
+      "involved_object_resource_version": "184920",
+      "source_component": "kubelet",
+      "source_host": "ip-10-0-142-37.ec2.internal",
+      "reporting_component": "kubelet",
+      "count": 3,
+      "created_at": "2025-06-18T14:22:10Z"
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "namespace_id": 2,
+      "uid": "4a07c9d3-1ef5-42b8-b7a6-8d3f5e19c0b4",
+      "event_time": "2025-06-20T09:47:33Z",
+      "first_timestamp": "2025-06-20T09:31:05Z",
+      "last_timestamp": "2025-06-20T09:47:33Z",
+      "series_last_observed": "2025-06-20T09:47:33Z",
+      "resolved_timestamp": "2025-06-20T09:47:33Z",
+      "event_type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container payment-gateway in pod payments-gateway-6b8d4f7c95-xk2rm_payments-api-staging(d9e82f14-3b67-4c10-a5d8-91cf6e0b72a3)",
+      "involved_object_api_version": "v1",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "payments-gateway-6b8d4f7c95-xk2rm",
+      "involved_object_namespace": "payments-api-staging",
+      "involved_object_uid": "d9e82f14-3b67-4c10-a5d8-91cf6e0b72a3",
+      "involved_object_field_path": "spec.containers{payment-gateway}",
+      "involved_object_resource_version": "307412",
+      "source_component": "kubelet",
+      "source_host": "worker-eu-west-1a-02.staging.openshift.example.com",
+      "reporting_component": "kubelet",
+      "count": 12,
+      "created_at": "2025-06-20T09:31:07Z"
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "namespace_id": 3,
+      "uid": "71f8a5c0-d34e-4b92-8c17-0ab9e6f2d581",
+      "event_time": "2025-06-22T16:05:19Z",
+      "first_timestamp": "2025-06-22T16:05:19Z",
+      "last_timestamp": "2025-06-22T16:05:19Z",
+      "series_last_observed": null,
+      "resolved_timestamp": "2025-06-22T16:05:19Z",
+      "event_type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned dev-sandbox/nginx-test-7d4b8f6c4a-p9mnw to node-central-worker-03",
+      "involved_object_api_version": "v1",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "nginx-test-7d4b8f6c4a-p9mnw",
+      "involved_object_namespace": "dev-sandbox",
+      "involved_object_uid": "c24d9e83-6af1-4720-b0d5-3e87fa41c956",
+      "involved_object_field_path": null,
+      "involved_object_resource_version": "52081",
+      "source_component": "default-scheduler",
+      "source_host": null,
+      "reporting_component": "default-scheduler",
+      "count": 1,
+      "created_at": "2025-06-22T16:05:20Z"
+    }
+  ],
+  "resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "api_resource_id": 1,
+      "namespace_id": 1,
+      "name": "prometheus-operator",
+      "uid": "b74c2e19-83a5-4f07-9631-dc84a0ef72b3",
+      "manifest": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+          "name": "prometheus-operator",
+          "namespace": "openshift-monitoring",
+          "uid": "b74c2e19-83a5-4f07-9631-dc84a0ef72b3",
+          "labels": {
+            "app.kubernetes.io/component": "controller",
+            "app.kubernetes.io/name": "prometheus-operator",
+            "app.kubernetes.io/part-of": "openshift-monitoring",
+            "app.kubernetes.io/version": "0.73.2",
+            "app.kubernetes.io/managed-by": "cluster-monitoring-operator"
+          },
+          "annotations": {
+            "deployment.kubernetes.io/revision": "3",
+            "kubectl.kubernetes.io/last-applied-configuration": ""
+          },
+          "creationTimestamp": "2025-06-01T08:35:44Z"
+        },
+        "spec": {
+          "replicas": 1,
+          "selector": {
+            "matchLabels": {
+              "app.kubernetes.io/component": "controller",
+              "app.kubernetes.io/name": "prometheus-operator",
+              "app.kubernetes.io/part-of": "openshift-monitoring"
+            }
+          },
+          "strategy": {
+            "type": "RollingUpdate",
+            "rollingUpdate": {
+              "maxUnavailable": 1,
+              "maxSurge": 1
+            }
+          },
+          "template": {
+            "metadata": {
+              "labels": {
+                "app.kubernetes.io/component": "controller",
+                "app.kubernetes.io/name": "prometheus-operator",
+                "app.kubernetes.io/part-of": "openshift-monitoring",
+                "app.kubernetes.io/version": "0.73.2"
+              }
+            },
+            "spec": {
+              "serviceAccountName": "prometheus-operator",
+              "priorityClassName": "system-cluster-critical",
+              "nodeSelector": {
+                "kubernetes.io/os": "linux"
+              },
+              "containers": [
+                {
+                  "name": "prometheus-operator",
+                  "image": "registry.redhat.io/openshift4/ose-prometheus-operator@sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0",
+                  "args": [
+                    "--kubelet-service=kube-system/kubelet",
+                    "--prometheus-config-reloader=registry.redhat.io/openshift4/ose-prometheus-config-reloader@sha256:d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3"
+                  ],
+                  "ports": [
+                    {
+                      "name": "https",
+                      "containerPort": 8443,
+                      "protocol": "TCP"
+                    }
+                  ],
+                  "resources": {
+                    "requests": {
+                      "cpu": "50m",
+                      "memory": "128Mi"
+                    },
+                    "limits": {
+                      "cpu": "200m",
+                      "memory": "256Mi"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "status": {
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
+          "observedGeneration": 3,
+          "conditions": [
+            {
+              "type": "Available",
+              "status": "True",
+              "lastTransitionTime": "2025-06-01T08:36:21Z",
+              "reason": "MinimumReplicasAvailable"
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "lastTransitionTime": "2025-06-14T02:10:05Z",
+              "reason": "NewReplicaSetAvailable"
+            }
+          ]
+        }
+      },
+      "replicas": 1,
+      "created_at": "2025-06-01T08:35:44Z",
+      "deleted_at": null
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "api_resource_id": 2,
+      "namespace_id": 2,
+      "name": "payments-gateway",
+      "uid": "e92d4f18-6ba3-41ce-aef7-5c10d83b6a92",
+      "manifest": {
+        "apiVersion": "route.openshift.io/v1",
+        "kind": "Route",
+        "metadata": {
+          "name": "payments-gateway",
+          "namespace": "payments-api-staging",
+          "uid": "e92d4f18-6ba3-41ce-aef7-5c10d83b6a92",
+          "labels": {
+            "app.kubernetes.io/name": "payments-gateway",
+            "app.kubernetes.io/part-of": "payments-platform",
+            "app.kubernetes.io/managed-by": "argocd",
+            "team": "fintech-backend",
+            "environment": "staging"
+          },
+          "annotations": {
+            "haproxy.router.openshift.io/timeout": "60s",
+            "haproxy.router.openshift.io/rate-limit-connections": "true",
+            "haproxy.router.openshift.io/rate-limit-connections.rate-http": "100",
+            "argocd.argoproj.io/sync-wave": "3",
+            "openshift.io/host.generated": "false"
+          },
+          "creationTimestamp": "2025-06-06T10:45:19Z"
+        },
+        "spec": {
+          "host": "payments-gateway-staging.apps.staging-eu-west-1.openshift.example.com",
+          "path": "/",
+          "to": {
+            "kind": "Service",
+            "name": "payments-gateway-svc",
+            "weight": 100
+          },
+          "port": {
+            "targetPort": "https"
+          },
+          "tls": {
+            "termination": "edge",
+            "insecureEdgeTerminationPolicy": "Redirect",
+            "certificate": "",
+            "key": ""
+          },
+          "wildcardPolicy": "None"
+        },
+        "status": {
+          "ingress": [
+            {
+              "host": "payments-gateway-staging.apps.staging-eu-west-1.openshift.example.com",
+              "routerName": "default",
+              "routerCanonicalHostname": "router-default.apps.staging-eu-west-1.openshift.example.com",
+              "conditions": [
+                {
+                  "type": "Admitted",
+                  "status": "True",
+                  "lastTransitionTime": "2025-06-06T10:45:22Z"
+                }
+              ],
+              "wildcardPolicy": "None"
+            }
+          ]
+        }
+      },
+      "replicas": null,
+      "created_at": "2025-06-06T10:45:19Z",
+      "deleted_at": null
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "api_resource_id": 3,
+      "namespace_id": null,
+      "name": "worker-01.dev-k8s-central.internal",
+      "uid": "c5a839f7-2e14-4d6b-b0a1-7fe4d629c8e5",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Node",
+        "metadata": {
+          "name": "worker-01.dev-k8s-central.internal",
+          "uid": "c5a839f7-2e14-4d6b-b0a1-7fe4d629c8e5",
+          "labels": {
+            "kubernetes.io/hostname": "worker-01.dev-k8s-central.internal",
+            "kubernetes.io/os": "linux",
+            "kubernetes.io/arch": "amd64",
+            "node-role.kubernetes.io/worker": "",
+            "topology.kubernetes.io/zone": "us-central1-a",
+            "topology.kubernetes.io/region": "us-central1",
+            "node.kubernetes.io/instance-type": "e2-standard-4"
+          },
+          "annotations": {
+            "kubeadm.alpha.kubernetes.io/cri-socket": "unix:///var/run/containerd/containerd.sock",
+            "node.alpha.kubernetes.io/ttl": "0",
+            "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+          },
+          "creationTimestamp": "2025-06-12T19:48:30Z"
+        },
+        "spec": {
+          "podCIDR": "10.244.1.0/24",
+          "podCIDRs": [
+            "10.244.1.0/24"
+          ],
+          "providerID": "gce://myproject-dev/us-central1-a/worker-01-dev-k8s-central"
+        },
+        "status": {
+          "capacity": {
+            "cpu": "4",
+            "memory": "16384Mi",
+            "ephemeral-storage": "103079215Ki",
+            "pods": "110"
+          },
+          "allocatable": {
+            "cpu": "3800m",
+            "memory": "15168Mi",
+            "ephemeral-storage": "95016665930",
+            "pods": "110"
+          },
+          "conditions": [
+            {
+              "type": "Ready",
+              "status": "True",
+              "lastHeartbeatTime": "2025-06-18T14:22:08Z",
+              "lastTransitionTime": "2025-06-12T19:49:15Z",
+              "reason": "KubeletReady",
+              "message": "kubelet is posting ready status"
+            },
+            {
+              "type": "MemoryPressure",
+              "status": "False",
+              "lastHeartbeatTime": "2025-06-18T14:22:08Z",
+              "lastTransitionTime": "2025-06-12T19:48:30Z",
+              "reason": "KubeletHasSufficientMemory"
+            },
+            {
+              "type": "DiskPressure",
+              "status": "False",
+              "lastHeartbeatTime": "2025-06-18T14:22:08Z",
+              "lastTransitionTime": "2025-06-12T19:48:30Z",
+              "reason": "KubeletHasNoDiskPressure"
+            },
+            {
+              "type": "PIDPressure",
+              "status": "False",
+              "lastHeartbeatTime": "2025-06-18T14:22:08Z",
+              "lastTransitionTime": "2025-06-12T19:48:30Z",
+              "reason": "KubeletHasSufficientPID"
+            }
+          ],
+          "addresses": [
+            {
+              "type": "InternalIP",
+              "address": "10.120.5.51"
+            },
+            {
+              "type": "Hostname",
+              "address": "worker-01.dev-k8s-central.internal"
+            }
+          ],
+          "nodeInfo": {
+            "kubeletVersion": "v1.30.2",
+            "containerRuntimeVersion": "containerd://1.7.18",
+            "osImage": "Ubuntu 22.04.4 LTS",
+            "operatingSystem": "linux",
+            "architecture": "amd64",
+            "kernelVersion": "5.15.0-112-generic"
+          }
+        }
+      },
+      "replicas": null,
+      "created_at": "2025-06-12T19:48:30Z",
+      "deleted_at": null
+    }
+  ],
+  "node_logs": [
+    {
+      "id": 1,
+      "node_id": 1,
+      "source": "kubelet",
+      "line_number": 14823,
+      "timestamp": "2025-06-18T11:04:37.482913+00:00",
+      "message": "I0618 11:04:37.482913   1492 kuberuntime_manager.go:1148] \"Container runtime status check passed\" runtimeReady=\"true\" networkReady=\"true\" node=\"ip-10-0-142-87.ec2.internal\""
+    },
+    {
+      "id": 2,
+      "node_id": 2,
+      "source": "crio",
+      "line_number": 7291,
+      "timestamp": "2025-06-17T09:31:05.119440+00:00",
+      "message": "W0617 09:31:05.119440    1138 container_gc.go:92] Failed to delete container \"a4e8c91b3d07f\" from pod \"metrics-exporter-6b8f4d9c77-x2ktv\" (namespace: openshift-monitoring): container still running, will retry"
+    },
+    {
+      "id": 3,
+      "node_id": 3,
+      "source": "kernel",
+      "line_number": 53402,
+      "timestamp": "2025-06-19T02:17:44.000000+00:00",
+      "message": "Jun 19 02:17:44 dev-worker-01 kernel: [2894631.224018] nf_conntrack: nf_conntrack: table full, dropping packet; src=10.244.2.38 dst=10.96.0.1 sport=48220 dport=443"
+    }
+  ],
+  "node_metrics": [
+    {
+      "id": 1,
+      "node_id": 1,
+      "timestamp": "2025-06-18T14:30:05Z",
+      "cpu_usage_millicores": 6237,
+      "memory_usage_bytes": 45438926848,
+      "fs_capacity_bytes": 214748364800,
+      "fs_used_bytes": 128849018880,
+      "fs_available_bytes": 85899345920,
+      "network_rx_bytes": 912680550400,
+      "network_tx_bytes": 343597383680,
+      "psi_cpu_some_avg10": 1.34,
+      "psi_memory_some_avg10": 0.07,
+      "psi_io_some_avg10": 0.52,
+      "stats_summary_json": {
+        "node": {
+          "nodeName": "ip-10-0-142-87.ec2.internal",
+          "startTime": "2025-06-01T08:45:12Z",
+          "cpu": {
+            "time": "2025-06-18T14:30:05Z",
+            "usageNanoCores": 6237000000,
+            "usageCoreNanoSeconds": 8941527384000000
+          },
+          "memory": {
+            "time": "2025-06-18T14:30:05Z",
+            "usageBytes": 45438926848,
+            "workingSetBytes": 42312540160,
+            "rssBytes": 38654705664,
+            "pageFaults": 2841930,
+            "majorPageFaults": 142,
+            "availableBytes": 20059324416
+          },
+          "fs": {
+            "time": "2025-06-18T14:30:05Z",
+            "availableBytes": 85899345920,
+            "capacityBytes": 214748364800,
+            "usedBytes": 128849018880,
+            "inodesFree": 12845210,
+            "inodes": 13926400,
+            "inodesUsed": 1081190
+          },
+          "network": {
+            "time": "2025-06-18T14:30:05Z",
+            "interfaces": [
+              {
+                "name": "ens5",
+                "rxBytes": 912680550400,
+                "txBytes": 343597383680,
+                "rxErrors": 0,
+                "txErrors": 0
+              },
+              {
+                "name": "ovn-k8s-mp0",
+                "rxBytes": 487291648000,
+                "txBytes": 201438003200,
+                "rxErrors": 0,
+                "txErrors": 0
+              }
+            ]
+          },
+          "systemContainers": [
+            {
+              "name": "kubelet",
+              "cpu": {
+                "usageNanoCores": 187000000
+              },
+              "memory": {
+                "workingSetBytes": 314572800
+              }
+            },
+            {
+              "name": "runtime",
+              "cpu": {
+                "usageNanoCores": 241000000
+              },
+              "memory": {
+                "workingSetBytes": 629145600
+              }
+            }
+          ]
+        },
+        "pods": [
+          {
+            "podRef": {
+              "name": "openshift-monitoring-prometheus-0",
+              "namespace": "openshift-monitoring"
+            },
+            "cpu": {
+              "usageNanoCores": 832000000
+            },
+            "memory": {
+              "workingSetBytes": 4294967296
+            }
+          },
+          {
+            "podRef": {
+              "name": "coredns-7f89b7bc75-x4k2n",
+              "namespace": "openshift-dns"
+            },
+            "cpu": {
+              "usageNanoCores": 12000000
+            },
+            "memory": {
+              "workingSetBytes": 52428800
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "node_id": 2,
+      "timestamp": "2025-06-18T14:30:11Z",
+      "cpu_usage_millicores": 5142,
+      "memory_usage_bytes": 22548578304,
+      "fs_capacity_bytes": 107374182400,
+      "fs_used_bytes": 66571993088,
+      "fs_available_bytes": 40802189312,
+      "network_rx_bytes": 128849018880,
+      "network_tx_bytes": 101996052480,
+      "psi_cpu_some_avg10": 4.87,
+      "psi_memory_some_avg10": 1.23,
+      "psi_io_some_avg10": 2.15,
+      "stats_summary_json": {
+        "node": {
+          "nodeName": "ip-10-1-53-214.eu-west-1.compute.internal",
+          "startTime": "2025-06-05T14:22:38Z",
+          "cpu": {
+            "time": "2025-06-18T14:30:11Z",
+            "usageNanoCores": 5142000000,
+            "usageCoreNanoSeconds": 4587219000000000
+          },
+          "memory": {
+            "time": "2025-06-18T14:30:11Z",
+            "usageBytes": 22548578304,
+            "workingSetBytes": 20971520000,
+            "rssBytes": 18253611008,
+            "pageFaults": 1593720,
+            "majorPageFaults": 87,
+            "availableBytes": 11663676416
+          },
+          "fs": {
+            "time": "2025-06-18T14:30:11Z",
+            "availableBytes": 40802189312,
+            "capacityBytes": 107374182400,
+            "usedBytes": 66571993088,
+            "inodesFree": 6128490,
+            "inodes": 6553600,
+            "inodesUsed": 425110
+          },
+          "network": {
+            "time": "2025-06-18T14:30:11Z",
+            "interfaces": [
+              {
+                "name": "ens5",
+                "rxBytes": 128849018880,
+                "txBytes": 101996052480,
+                "rxErrors": 3,
+                "txErrors": 0
+              },
+              {
+                "name": "ovn-k8s-mp0",
+                "rxBytes": 73014444032,
+                "txBytes": 58720256000,
+                "rxErrors": 0,
+                "txErrors": 0
+              }
+            ]
+          },
+          "systemContainers": [
+            {
+              "name": "kubelet",
+              "cpu": {
+                "usageNanoCores": 145000000
+              },
+              "memory": {
+                "workingSetBytes": 268435456
+              }
+            },
+            {
+              "name": "runtime",
+              "cpu": {
+                "usageNanoCores": 198000000
+              },
+              "memory": {
+                "workingSetBytes": 503316480
+              }
+            }
+          ]
+        },
+        "pods": [
+          {
+            "podRef": {
+              "name": "staging-api-deploy-6c8f9d4b7-m2p9v",
+              "namespace": "staging-app"
+            },
+            "cpu": {
+              "usageNanoCores": 1840000000
+            },
+            "memory": {
+              "workingSetBytes": 6442450944
+            }
+          },
+          {
+            "podRef": {
+              "name": "node-exporter-wk7xt",
+              "namespace": "openshift-monitoring"
+            },
+            "cpu": {
+              "usageNanoCores": 18000000
+            },
+            "memory": {
+              "workingSetBytes": 41943040
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "node_id": 3,
+      "timestamp": "2025-06-18T14:30:18Z",
+      "cpu_usage_millicores": 823,
+      "memory_usage_bytes": 3489660928,
+      "fs_capacity_bytes": 53687091200,
+      "fs_used_bytes": 19327352832,
+      "fs_available_bytes": 34359738368,
+      "network_rx_bytes": 16106127360,
+      "network_tx_bytes": 8589934592,
+      "psi_cpu_some_avg10": 0.18,
+      "psi_memory_some_avg10": 0.0,
+      "psi_io_some_avg10": 0.09,
+      "stats_summary_json": {
+        "node": {
+          "nodeName": "dev-worker-01.internal.lab",
+          "startTime": "2025-06-12T19:52:17Z",
+          "cpu": {
+            "time": "2025-06-18T14:30:18Z",
+            "usageNanoCores": 823000000,
+            "usageCoreNanoSeconds": 389412750000000
+          },
+          "memory": {
+            "time": "2025-06-18T14:30:18Z",
+            "usageBytes": 3489660928,
+            "workingSetBytes": 3221225472,
+            "rssBytes": 2684354560,
+            "pageFaults": 472891,
+            "majorPageFaults": 12,
+            "availableBytes": 4458545152
+          },
+          "fs": {
+            "time": "2025-06-18T14:30:18Z",
+            "availableBytes": 34359738368,
+            "capacityBytes": 53687091200,
+            "usedBytes": 19327352832,
+            "inodesFree": 3284710,
+            "inodes": 3440640,
+            "inodesUsed": 155930
+          },
+          "network": {
+            "time": "2025-06-18T14:30:18Z",
+            "interfaces": [
+              {
+                "name": "eth0",
+                "rxBytes": 16106127360,
+                "txBytes": 8589934592,
+                "rxErrors": 0,
+                "txErrors": 0
+              },
+              {
+                "name": "cni0",
+                "rxBytes": 9126805504,
+                "txBytes": 5368709120,
+                "rxErrors": 0,
+                "txErrors": 0
+              }
+            ]
+          },
+          "systemContainers": [
+            {
+              "name": "kubelet",
+              "cpu": {
+                "usageNanoCores": 62000000
+              },
+              "memory": {
+                "workingSetBytes": 157286400
+              }
+            },
+            {
+              "name": "runtime",
+              "cpu": {
+                "usageNanoCores": 84000000
+              },
+              "memory": {
+                "workingSetBytes": 209715200
+              }
+            }
+          ]
+        },
+        "pods": [
+          {
+            "podRef": {
+              "name": "nginx-test-7d4f8c9a2b-qr5st",
+              "namespace": "dev-sandbox"
+            },
+            "cpu": {
+              "usageNanoCores": 8000000
+            },
+            "memory": {
+              "workingSetBytes": 67108864
+            }
+          },
+          {
+            "podRef": {
+              "name": "local-path-provisioner-7ff9579c6-lh2kn",
+              "namespace": "kube-system"
+            },
+            "cpu": {
+              "usageNanoCores": 3000000
+            },
+            "memory": {
+              "workingSetBytes": 20971520
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "pods": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "node_id": 1,
+      "name": "prometheus-k8s-0",
+      "uid": "e4a7c1b3-9f28-4d6e-b5a0-7c3d8e12f490",
+      "labels": {
+        "app.kubernetes.io/component": "prometheus",
+        "app.kubernetes.io/instance": "k8s",
+        "app.kubernetes.io/managed-by": "prometheus-operator",
+        "app.kubernetes.io/name": "prometheus",
+        "app.kubernetes.io/part-of": "openshift-monitoring",
+        "app.kubernetes.io/version": "2.48.1",
+        "operator.prometheus.io/name": "k8s",
+        "operator.prometheus.io/shard": "0",
+        "prometheus": "k8s",
+        "statefulset.kubernetes.io/pod-name": "prometheus-k8s-0"
+      },
+      "annotations": {
+        "kubectl.kubernetes.io/default-container": "prometheus",
+        "openshift.io/scc": "nonroot-v2",
+        "target.workload.openshift.io/management": "{\"effect\": \"PreferredDuringScheduling\"}",
+        "k8s.v1.cni.cncf.io/network-status": "[{\"name\":\"ovn-kubernetes\",\"interface\":\"eth0\",\"ips\":[\"10.128.2.47\"],\"default\":true}]"
+      },
+      "restart_policy": "Always",
+      "scheduler_name": "default-scheduler",
+      "service_account_name": "prometheus-k8s",
+      "phase": "Running",
+      "pod_ip": "10.128.2.47",
+      "host_ip": "10.0.142.87",
+      "nominated_node_name": null,
+      "qos_class": "Burstable",
+      "start_time": "2025-06-01T08:52:34Z",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastTransitionTime": "2025-06-01T08:52:38Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2025-06-01T08:52:34Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2025-06-01T08:53:19Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2025-06-01T08:53:19Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2025-06-01T08:52:34Z"
+        }
+      ],
+      "spec_json": {
+        "containers": [
+          {
+            "name": "prometheus",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a1b2c3d4e5f6789012345abcdef67890abcdef12",
+            "ports": [
+              {
+                "name": "web",
+                "containerPort": 9090,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "70m",
+                "memory": "1Gi"
+              },
+              "limits": {
+                "cpu": "2",
+                "memory": "4Gi"
+              }
+            },
+            "volumeMounts": [
+              {
+                "name": "prometheus-k8s-db",
+                "mountPath": "/prometheus"
+              },
+              {
+                "name": "config-out",
+                "mountPath": "/etc/prometheus/config_out",
+                "readOnly": true
+              },
+              {
+                "name": "tls-assets",
+                "mountPath": "/etc/prometheus/certs",
+                "readOnly": true
+              }
+            ],
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/-/healthy",
+                "port": "web",
+                "scheme": "HTTP"
+              },
+              "failureThreshold": 6,
+              "periodSeconds": 5
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/-/ready",
+                "port": "web",
+                "scheme": "HTTP"
+              },
+              "failureThreshold": 3,
+              "periodSeconds": 5
+            }
+          },
+          {
+            "name": "config-reloader",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b2c3d4e5f67890abcdef12345678901234567890",
+            "resources": {
+              "requests": {
+                "cpu": "1m",
+                "memory": "15Mi"
+              },
+              "limits": {
+                "cpu": "10m",
+                "memory": "50Mi"
+              }
+            }
+          }
+        ],
+        "nodeSelector": {
+          "kubernetes.io/os": "linux"
+        },
+        "tolerations": [
+          {
+            "key": "node.kubernetes.io/memory-pressure",
+            "operator": "Exists",
+            "effect": "NoSchedule"
+          }
+        ],
+        "priorityClassName": "system-cluster-critical",
+        "securityContext": {
+          "runAsNonRoot": true,
+          "fsGroup": 1000540000,
+          "runAsUser": 1000540000
+        }
+      },
+      "status_json": {
+        "containerStatuses": [
+          {
+            "name": "prometheus",
+            "state": {
+              "running": {
+                "startedAt": "2025-06-01T08:52:39Z"
+              }
+            },
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a1b2c3d4e5f6789012345abcdef67890abcdef12",
+            "containerID": "cri-o://3a8f4b2c1d9e07654321abcdef098765fedcba4321"
+          },
+          {
+            "name": "config-reloader",
+            "state": {
+              "running": {
+                "startedAt": "2025-06-01T08:52:41Z"
+              }
+            },
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:b2c3d4e5f67890abcdef12345678901234567890",
+            "containerID": "cri-o://7e6d5c4b3a2190fedcba098765432109abcdef87"
+          }
+        ],
+        "phase": "Running",
+        "hostIP": "10.0.142.87",
+        "podIP": "10.128.2.47"
+      },
+      "created_at": "2025-06-01T08:52:34Z",
+      "deleted_at": null
+    },
+    {
+      "id": 2,
+      "cluster_id": 2,
+      "namespace_id": 2,
+      "node_id": 2,
+      "name": "payments-api-d7f4b8c69-xk2qm",
+      "uid": "b92d4e6f-1a3c-4b58-97e2-d8f0a6c34b71",
+      "labels": {
+        "app.kubernetes.io/name": "payments-api",
+        "app.kubernetes.io/instance": "payments-api-staging",
+        "app.kubernetes.io/version": "2.14.3",
+        "app.kubernetes.io/component": "api-server",
+        "app.kubernetes.io/part-of": "payments-platform",
+        "app.kubernetes.io/managed-by": "argocd",
+        "team": "fintech-backend",
+        "environment": "staging",
+        "pod-template-hash": "d7f4b8c69"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2",
+        "argocd.argoproj.io/managed-by": "openshift-gitops",
+        "argocd.argoproj.io/tracking-id": "payments-api-staging:/apps/Deployment:payments-api-staging/payments-api",
+        "k8s.v1.cni.cncf.io/network-status": "[{\"name\":\"ovn-kubernetes\",\"interface\":\"eth0\",\"ips\":[\"10.129.4.118\"],\"default\":true}]",
+        "prometheus.io/scrape": "true",
+        "prometheus.io/port": "8080",
+        "prometheus.io/path": "/metrics",
+        "vault.hashicorp.com/agent-inject": "true",
+        "vault.hashicorp.com/role": "payments-api-staging"
+      },
+      "restart_policy": "Always",
+      "scheduler_name": "default-scheduler",
+      "service_account_name": "payments-api",
+      "phase": "Running",
+      "pod_ip": "10.129.4.118",
+      "host_ip": "10.1.53.214",
+      "nominated_node_name": null,
+      "qos_class": "Burstable",
+      "start_time": "2025-06-18T11:04:52Z",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "True",
+          "lastTransitionTime": "2025-06-18T11:04:56Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2025-06-18T11:04:52Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2025-06-18T11:05:28Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2025-06-18T11:05:28Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2025-06-18T11:04:52Z"
+        }
+      ],
+      "spec_json": {
+        "containers": [
+          {
+            "name": "payments-api",
+            "image": "registry.example.com/fintech/payments-api:2.14.3-rc1",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 8080,
+                "protocol": "TCP"
+              },
+              {
+                "name": "grpc",
+                "containerPort": 9090,
+                "protocol": "TCP"
+              }
+            ],
+            "env": [
+              {
+                "name": "SPRING_PROFILES_ACTIVE",
+                "value": "staging"
+              },
+              {
+                "name": "DB_HOST",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "payments-db-credentials",
+                    "key": "host"
+                  }
+                }
+              },
+              {
+                "name": "KAFKA_BOOTSTRAP_SERVERS",
+                "value": "kafka-cluster-kafka-bootstrap.payments-infra-staging.svc:9093"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "250m",
+                "memory": "512Mi"
+              },
+              "limits": {
+                "cpu": "1",
+                "memory": "1Gi"
+              }
+            },
+            "livenessProbe": {
+              "httpGet": {
+                "path": "/actuator/health/liveness",
+                "port": 8080,
+                "scheme": "HTTP"
+              },
+              "initialDelaySeconds": 30,
+              "periodSeconds": 10,
+              "failureThreshold": 3
+            },
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/actuator/health/readiness",
+                "port": 8080,
+                "scheme": "HTTP"
+              },
+              "initialDelaySeconds": 15,
+              "periodSeconds": 5,
+              "failureThreshold": 3
+            },
+            "volumeMounts": [
+              {
+                "name": "config",
+                "mountPath": "/app/config",
+                "readOnly": true
+              },
+              {
+                "name": "tmp",
+                "mountPath": "/tmp"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "name": "config",
+            "configMap": {
+              "name": "payments-api-config"
+            }
+          },
+          {
+            "name": "tmp",
+            "emptyDir": {}
+          }
+        ],
+        "nodeSelector": {
+          "kubernetes.io/os": "linux"
+        },
+        "tolerations": [
+          {
+            "key": "env",
+            "value": "staging",
+            "effect": "PreferNoSchedule",
+            "operator": "Equal"
+          }
+        ],
+        "securityContext": {
+          "runAsNonRoot": true,
+          "fsGroup": 1000680000,
+          "runAsUser": 1000680000
+        },
+        "topologySpreadConstraints": [
+          {
+            "maxSkew": 1,
+            "topologyKey": "topology.kubernetes.io/zone",
+            "whenUnsatisfiable": "DoNotSchedule",
+            "labelSelector": {
+              "matchLabels": {
+                "app.kubernetes.io/name": "payments-api"
+              }
+            }
+          }
+        ]
+      },
+      "status_json": {
+        "containerStatuses": [
+          {
+            "name": "payments-api",
+            "state": {
+              "running": {
+                "startedAt": "2025-06-18T11:04:58Z"
+              }
+            },
+            "ready": true,
+            "restartCount": 2,
+            "image": "registry.example.com/fintech/payments-api:2.14.3-rc1",
+            "containerID": "cri-o://8b7a6c5d4e3f2109aabbccddeeff00112233445566"
+          }
+        ],
+        "phase": "Running",
+        "hostIP": "10.1.53.214",
+        "podIP": "10.129.4.118"
+      },
+      "created_at": "2025-06-18T11:04:52Z",
+      "deleted_at": null
+    },
+    {
+      "id": 3,
+      "cluster_id": 3,
+      "namespace_id": 3,
+      "node_id": 3,
+      "name": "nginx-experiment-7b94f6d5c8-r9tnw",
+      "uid": "f6c8d2a1-4e70-43b9-a12f-8b3e5d9c07a4",
+      "labels": {
+        "app.kubernetes.io/name": "nginx-experiment",
+        "app.kubernetes.io/instance": "nginx-experiment",
+        "app.kubernetes.io/version": "1.27.0",
+        "app.kubernetes.io/managed-by": "helm",
+        "helm.sh/chart": "nginx-0.4.1",
+        "team": "platform-engineering",
+        "environment": "development",
+        "pod-template-hash": "7b94f6d5c8"
+      },
+      "annotations": {
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"name\":\"nginx-experiment\",\"namespace\":\"dev-sandbox\"}}",
+        "kubernetes.io/psp": "baseline"
+      },
+      "restart_policy": "Always",
+      "scheduler_name": "default-scheduler",
+      "service_account_name": "default",
+      "phase": "Pending",
+      "pod_ip": null,
+      "host_ip": "10.120.5.41",
+      "nominated_node_name": null,
+      "qos_class": "BestEffort",
+      "start_time": "2025-06-20T16:38:11Z",
+      "conditions": [
+        {
+          "type": "PodReadyToStartContainers",
+          "status": "False",
+          "lastTransitionTime": "2025-06-20T16:38:11Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2025-06-20T16:38:11Z"
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "lastTransitionTime": "2025-06-20T16:38:11Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [nginx]"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "lastTransitionTime": "2025-06-20T16:38:11Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [nginx]"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2025-06-20T16:38:11Z"
+        }
+      ],
+      "spec_json": {
+        "containers": [
+          {
+            "name": "nginx",
+            "image": "docker.io/library/nginx:1.27.0-alpine",
+            "ports": [
+              {
+                "name": "http",
+                "containerPort": 80,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {},
+            "volumeMounts": [
+              {
+                "name": "html",
+                "mountPath": "/usr/share/nginx/html"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "name": "html",
+            "persistentVolumeClaim": {
+              "claimName": "nginx-experiment-html"
+            }
+          }
+        ],
+        "nodeSelector": {
+          "kubernetes.io/os": "linux"
+        },
+        "tolerations": [
+          {
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          },
+          {
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists",
+            "effect": "NoExecute",
+            "tolerationSeconds": 300
+          }
+        ],
+        "securityContext": {}
+      },
+      "status_json": {
+        "containerStatuses": [
+          {
+            "name": "nginx",
+            "state": {
+              "waiting": {
+                "reason": "ContainerCreating",
+                "message": "waiting for PVC nginx-experiment-html to be bound"
+              }
+            },
+            "ready": false,
+            "restartCount": 0,
+            "image": "docker.io/library/nginx:1.27.0-alpine",
+            "containerID": null
+          }
+        ],
+        "phase": "Pending",
+        "hostIP": "10.120.5.41",
+        "podIP": null
+      },
+      "created_at": "2025-06-20T16:38:11Z",
+      "deleted_at": null
+    }
+  ],
+  "silence_matchers": [
+    {
+      "id": 1,
+      "silence_id": 1,
+      "name": "alertname",
+      "value": "KubePodCrashLooping|KubePodNotReady",
+      "is_regex": true,
+      "is_equal": true
+    },
+    {
+      "id": 2,
+      "silence_id": 2,
+      "name": "alertname",
+      "value": "ClusterOperatorDegraded",
+      "is_regex": false,
+      "is_equal": true
+    },
+    {
+      "id": 3,
+      "silence_id": 3,
+      "name": "alertname",
+      "value": "Watchdog|CPUThrottlingHigh",
+      "is_regex": true,
+      "is_equal": true
+    }
+  ],
+  "metric_label_values": [
+    {
+      "id": 1,
+      "metric_label_id": 1,
+      "label_value": "openshift-monitoring"
+    },
+    {
+      "id": 2,
+      "metric_label_id": 2,
+      "label_value": "Running"
+    },
+    {
+      "id": 3,
+      "metric_label_id": 3,
+      "label_value": "GET"
+    }
+  ],
+  "metric_samples": [
+    {
+      "id": 1,
+      "series_id": 1,
+      "timestamp": "2025-06-15T14:32:30.000Z",
+      "value": 48251.37
+    },
+    {
+      "id": 2,
+      "series_id": 2,
+      "timestamp": "2025-06-15T14:32:30.000Z",
+      "value": 1.0
+    },
+    {
+      "id": 3,
+      "series_id": 3,
+      "timestamp": "2025-06-15T14:32:30.000Z",
+      "value": 1528473.0
+    }
+  ],
+  "resource_labels": [
+    {
+      "id": 1,
+      "resource_id": 1,
+      "label_key": "app.kubernetes.io/name",
+      "label_value": "prometheus-operator"
+    },
+    {
+      "id": 2,
+      "resource_id": 2,
+      "label_key": "environment",
+      "label_value": "staging"
+    },
+    {
+      "id": 3,
+      "resource_id": 3,
+      "label_key": "topology.kubernetes.io/zone",
+      "label_value": "us-central1-a"
+    }
+  ],
+  "containers": [
+    {
+      "id": 1,
+      "pod_id": 1,
+      "name": "prometheus",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a1b2c3d4e5f6789012345abcdef67890abcdef12",
+      "request_cpu_millicores": 70,
+      "request_memory_bytes": 1073741824,
+      "limit_cpu_millicores": 2000,
+      "limit_memory_bytes": 4294967296,
+      "ports": [
+        {
+          "name": "web",
+          "containerPort": 9090,
+          "protocol": "TCP"
+        }
+      ],
+      "state": "running",
+      "state_reason": null,
+      "state_message": null,
+      "ready": true,
+      "restart_count": 0,
+      "started": true,
+      "filesystem_json": {
+        "/etc/prometheus/prometheus.yml": {
+          "content": "global:\n  scrape_interval: 30s\n  evaluation_interval: 30s\nscrape_configs:\n  - job_name: 'kubernetes-pods'\n    kubernetes_sd_configs:\n      - role: pod\n  - job_name: 'kubernetes-nodes'\n    kubernetes_sd_configs:\n      - role: node\n",
+          "is_directory": false,
+          "permissions": "-rw-r--r--",
+          "owner": "nobody",
+          "size_bytes": 218
+        },
+        "/etc/prometheus/rules": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxr-xr-x",
+          "owner": "nobody",
+          "size_bytes": 0
+        },
+        "/etc/prometheus/rules/alerts.yml": {
+          "content": "groups:\n  - name: node-alerts\n    rules:\n      - alert: HighMemoryUsage\n        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.1\n        for: 5m\n        labels:\n          severity: warning\n",
+          "is_directory": false,
+          "permissions": "-rw-r--r--",
+          "owner": "nobody",
+          "size_bytes": 193
+        },
+        "/prometheus": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxrwxrwx",
+          "owner": "nobody",
+          "size_bytes": 0
+        },
+        "/prometheus/wal": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxrwxrwx",
+          "owner": "nobody",
+          "size_bytes": 0
+        }
+      },
+      "network_json": {
+        "dns": {
+          "alertmanager-main.openshift-monitoring.svc.cluster.local": {
+            "ip": "172.30.12.88"
+          },
+          "kubernetes.default.svc.cluster.local": {
+            "ip": "172.30.0.1"
+          },
+          "thanos-querier.openshift-monitoring.svc.cluster.local": {
+            "ip": "172.30.33.41"
+          }
+        },
+        "http": {
+          "alertmanager-main.openshift-monitoring.svc.cluster.local:9093/-/healthy": {
+            "status_code": 200,
+            "body": "OK",
+            "headers": {
+              "Content-Type": "text/plain"
+            },
+            "error": null
+          },
+          "kubernetes.default.svc.cluster.local:443/api": {
+            "status_code": 200,
+            "body": "{\"kind\":\"APIVersions\",\"versions\":[\"v1\"]}",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "pod_id": 2,
+      "name": "payments-api",
+      "image": "registry.example.com/fintech/payments-api:2.14.3-rc1",
+      "request_cpu_millicores": 250,
+      "request_memory_bytes": 536870912,
+      "limit_cpu_millicores": 1000,
+      "limit_memory_bytes": 1073741824,
+      "ports": [
+        {
+          "name": "http",
+          "containerPort": 8080,
+          "protocol": "TCP"
+        },
+        {
+          "name": "grpc",
+          "containerPort": 9090,
+          "protocol": "TCP"
+        }
+      ],
+      "state": "running",
+      "state_reason": null,
+      "state_message": null,
+      "ready": true,
+      "restart_count": 2,
+      "started": true,
+      "filesystem_json": {
+        "/app": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxr-xr-x",
+          "owner": "appuser",
+          "size_bytes": 0
+        },
+        "/app/config.yaml": {
+          "content": "server:\n  port: 8443\n  tls: true\ndatabase:\n  host: postgres-primary.payments.svc.cluster.local\n  port: 5432\n  name: payments_db\n  pool_size: 20\n  ssl_mode: verify-full\nredis:\n  host: redis-master.payments.svc.cluster.local\n  port: 6379\n",
+          "is_directory": false,
+          "permissions": "-rw-------",
+          "owner": "appuser",
+          "size_bytes": 247
+        },
+        "/app/certs": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwx------",
+          "owner": "appuser",
+          "size_bytes": 0
+        },
+        "/var/log/payments": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxr-xr-x",
+          "owner": "appuser",
+          "size_bytes": 0
+        },
+        "/var/log/payments/app.log": {
+          "content": "2025-06-25T10:00:01Z INFO  server started on :8443\n2025-06-25T10:00:02Z INFO  connected to postgres-primary:5432\n2025-06-25T10:00:02Z INFO  redis connection pool ready\n2025-06-25T10:05:14Z WARN  slow query: SELECT * FROM transactions WHERE ... (1.2s)\n2025-06-25T10:12:33Z ERROR connection pool exhausted, 20/20 connections in use\n",
+          "is_directory": false,
+          "permissions": "-rw-r--r--",
+          "owner": "appuser",
+          "size_bytes": 312
+        }
+      },
+      "network_json": {
+        "dns": {
+          "postgres-primary.payments.svc.cluster.local": {
+            "ip": "172.30.55.10"
+          },
+          "redis-master.payments.svc.cluster.local": {
+            "ip": "172.30.55.20"
+          },
+          "payment-gateway.external.example.com": {
+            "ip": "203.0.113.50"
+          },
+          "reporting-svc.shared-services.svc.cluster.local": {
+            "ip": "172.30.60.15"
+          }
+        },
+        "http": {
+          "postgres-primary.payments.svc.cluster.local:5432": {
+            "status_code": 0,
+            "body": "",
+            "headers": {},
+            "error": "connection pool exhausted (20/20)"
+          },
+          "redis-master.payments.svc.cluster.local:6379": {
+            "status_code": 0,
+            "body": "",
+            "headers": {},
+            "error": null
+          },
+          "payment-gateway.external.example.com:443/v1/charge": {
+            "status_code": 200,
+            "body": "{\"status\":\"accepted\",\"txn_id\":\"txn_abc123\"}",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "error": null
+          },
+          "reporting-svc.shared-services.svc.cluster.local:8080/health": {
+            "status_code": 503,
+            "body": "{\"error\":\"service unavailable\"}",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "pod_id": 3,
+      "name": "nginx",
+      "image": "docker.io/library/nginx:1.27.0-alpine",
+      "request_cpu_millicores": null,
+      "request_memory_bytes": null,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [
+        {
+          "name": "http",
+          "containerPort": 80,
+          "protocol": "TCP"
+        }
+      ],
+      "state": "waiting",
+      "state_reason": "ContainerCreating",
+      "state_message": "waiting for PVC nginx-experiment-html to be bound",
+      "ready": false,
+      "restart_count": 0,
+      "started": false,
+      "filesystem_json": {
+        "/etc/nginx/nginx.conf": {
+          "content": "worker_processes auto;\nevents { worker_connections 1024; }\nhttp {\n  upstream backend {\n    server backend-svc:8080;\n  }\n  server {\n    listen 80;\n    location / {\n      proxy_pass http://backend;\n    }\n    location /health {\n      return 200 'ok';\n    }\n  }\n}\n",
+          "is_directory": false,
+          "permissions": "-rw-r--r--",
+          "owner": "root",
+          "size_bytes": 241
+        },
+        "/usr/share/nginx/html": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxr-xr-x",
+          "owner": "root",
+          "size_bytes": 0
+        },
+        "/usr/share/nginx/html/index.html": {
+          "content": "<html><body><h1>Welcome</h1></body></html>",
+          "is_directory": false,
+          "permissions": "-rw-r--r--",
+          "owner": "root",
+          "size_bytes": 42
+        },
+        "/var/log/nginx": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxr-xr-x",
+          "owner": "root",
+          "size_bytes": 0
+        },
+        "/var/cache/nginx": {
+          "content": null,
+          "is_directory": true,
+          "permissions": "drwxr-xr-x",
+          "owner": "nginx",
+          "size_bytes": 0
+        }
+      },
+      "network_json": {
+        "dns": {
+          "backend-svc": {
+            "ip": "172.30.45.12"
+          },
+          "backend-svc.default.svc.cluster.local": {
+            "ip": "172.30.45.12"
+          },
+          "external-api.example.com": {
+            "ip": null
+          }
+        },
+        "http": {
+          "backend-svc:8080/": {
+            "status_code": 0,
+            "body": "",
+            "headers": {},
+            "error": "Connection refused"
+          },
+          "backend-svc:8080/health": {
+            "status_code": 0,
+            "body": "",
+            "headers": {},
+            "error": "Connection refused"
+          }
+        }
+      }
+    }
+  ],
+  "pod_logs": [
+    {
+      "id": 1,
+      "pod_id": 1,
+      "container_name": "prometheus",
+      "is_previous": false,
+      "line_number": 1,
+      "timestamp": "2025-06-01T08:52:41.318Z",
+      "message": "ts=2025-06-01T08:52:41.318Z caller=main.go:601 level=info msg=\"Starting Prometheus Server\" mode=server version=\"(version=2.48.1, branch=HEAD, revision=63894216648e45b4133e981a171a4e1f65039918)\""
+    },
+    {
+      "id": 2,
+      "pod_id": 2,
+      "container_name": "payments-api",
+      "is_previous": true,
+      "line_number": 847,
+      "timestamp": "2025-06-18T10:58:33.104Z",
+      "message": "2025-06-18 10:58:33.104 ERROR [payments-api,6a3f2d1b8e9c4570,6a3f2d1b8e9c4570] --- [kafka-consumer-3] c.e.p.consumer.TransactionEventConsumer : Failed to process transaction event txn_id=TXN-9847201: org.apache.kafka.common.errors.SerializationException: Error deserializing Avro message for topic payments.transactions.v2 \u2014 Restarting consumer group"
+    },
+    {
+      "id": 3,
+      "pod_id": 3,
+      "container_name": "nginx",
+      "is_previous": false,
+      "line_number": 1,
+      "timestamp": "2025-06-20T16:38:14.702Z",
+      "message": "MountVolume.SetUp failed for volume \"html\" : persistentvolumeclaim \"nginx-experiment-html\" not found (bound claim not found; expected PVC in namespace \"dev-sandbox\")"
+    }
+  ],
+  "pod_metrics": [
+    {
+      "id": 1,
+      "pod_id": 1,
+      "container_name": "prometheus",
+      "timestamp": "2025-06-20T14:30:00Z",
+      "cpu_usage_millicores": 347,
+      "memory_usage_bytes": 2254857830
+    },
+    {
+      "id": 2,
+      "pod_id": 1,
+      "container_name": "config-reloader",
+      "timestamp": "2025-06-20T14:30:00Z",
+      "cpu_usage_millicores": 3,
+      "memory_usage_bytes": 23068672
+    },
+    {
+      "id": 3,
+      "pod_id": 2,
+      "container_name": "payments-api",
+      "timestamp": "2025-06-20T14:30:00Z",
+      "cpu_usage_millicores": 183,
+      "memory_usage_bytes": 720371712
+    }
+  ]
+}

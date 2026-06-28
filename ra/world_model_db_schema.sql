@@ -188,6 +188,9 @@ CREATE TABLE containers (
   ready           BOOLEAN NOT NULL DEFAULT FALSE,
   restart_count   INTEGER NOT NULL DEFAULT 0,
   started         BOOLEAN,
+  -- virtual shell backing data
+  filesystem_json JSONB NOT NULL DEFAULT '{}',
+  network_json    JSONB NOT NULL DEFAULT '{}',
   UNIQUE(pod_id, name)
 );
 
