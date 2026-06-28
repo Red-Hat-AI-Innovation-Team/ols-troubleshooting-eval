@@ -268,7 +268,7 @@ def test_pods_get_not_found(conn):
 def test_pods_log(conn):
     row = _fetch_one(
         conn,
-        "SELECT p.name FROM pod_logs pl JOIN pods p ON pl.pod_id = p.id LIMIT 1",
+        "SELECT p.name FROM pod_logs pl JOIN pods p ON pl.pod_id = p.id WHERE pl.is_previous = FALSE LIMIT 1",
     )
     if row:
         result = call_tool(conn, "pods_log", {"name": row["name"]})
