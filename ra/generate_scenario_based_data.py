@@ -1,7 +1,7 @@
-"""Generate dummy seed data for the world model DB using Anthropic Vertex AI.
+"""Generate scenario-based seed data for the world model DB using Anthropic Vertex AI.
 
 Usage:
-    uv run python generate_seed_data.py
+    uv run python generate_scenario_based_data.py "A 3-node OpenShift cluster experiencing memory pressure"
 
 Env vars:
     CLOUD_ML_REGION              - Vertex AI region (default: us-east5)
@@ -9,6 +9,7 @@ Env vars:
 """
 
 import json
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -47,14 +48,13 @@ class TableMeta:
     columns: list[ColumnMeta]
     primary_key: list[str]
     foreign_keys: list[ForeignKey]
-    unique_constraints: dict[str, list[str]]  # constraint_name -> columns
+    unique_constraints: dict[str, list[str]]
 
 
 def get_table_metadata(conn, table_name: str, schema: str = "public") -> TableMeta:
     params = {"schema": schema, "table": table_name}
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # Columns
     cur.execute(
         """
         SELECT column_name, data_type, udt_name,
@@ -77,7 +77,6 @@ def get_table_metadata(conn, table_name: str, schema: str = "public") -> TableMe
         for r in cur.fetchall()
     ]
 
-    # Primary key
     cur.execute(
         """
         SELECT kcu.column_name
@@ -94,7 +93,6 @@ def get_table_metadata(conn, table_name: str, schema: str = "public") -> TableMe
     )
     primary_key = [r["column_name"] for r in cur.fetchall()]
 
-    # Foreign keys
     cur.execute(
         """
         SELECT kcu.column_name,
@@ -122,7 +120,6 @@ def get_table_metadata(conn, table_name: str, schema: str = "public") -> TableMe
         for r in cur.fetchall()
     ]
 
-    # Unique constraints
     cur.execute(
         """
         SELECT tc.constraint_name, kcu.column_name
@@ -152,39 +149,73 @@ def get_table_metadata(conn, table_name: str, schema: str = "public") -> TableMe
 
 
 # ---------------------------------------------------------------------------
-# Dynamic JSON schema builder
+# Schema summary builder
+# ---------------------------------------------------------------------------
+
+
+def format_table_summary(meta: TableMeta) -> str:
+    """Format a single table's schema as a compact text block."""
+    lines = [f"TABLE: {meta.table_name}"]
+    lines.append("  Columns:")
+    for col in meta.columns:
+        parts = [f"    {col.name} {col.udt_name}"]
+        if not col.is_nullable:
+            parts.append("NOT NULL")
+        if col.column_default:
+            parts.append(f"DEFAULT {col.column_default}")
+        if col.name in meta.primary_key:
+            parts.append("[PK]")
+        lines.append(" ".join(parts))
+
+    if meta.foreign_keys:
+        lines.append("  Foreign keys:")
+        for fk in meta.foreign_keys:
+            lines.append(
+                f"    {fk.column_name} -> {fk.foreign_table}({fk.foreign_column})"
+            )
+
+    if meta.unique_constraints:
+        lines.append("  Unique constraints:")
+        for _name, cols in meta.unique_constraints.items():
+            lines.append(f"    ({', '.join(cols)})")
+
+    return "\n".join(lines)
+
+
+def build_full_schema_summary(all_metas: dict[str, TableMeta], seeding_order: list[str]) -> str:
+    """Build a complete schema summary for all tables in seeding order."""
+    sections: list[str] = []
+    for table_name in seeding_order:
+        if table_name in all_metas:
+            sections.append(format_table_summary(all_metas[table_name]))
+    return "\n\n".join(sections)
+
+
+# ---------------------------------------------------------------------------
+# JSON schema builder
 # ---------------------------------------------------------------------------
 
 PG_TO_JSON_TYPE: dict[str, dict] = {
-    # integers
     "int2": {"type": "integer"},
     "int4": {"type": "integer"},
     "int8": {"type": "integer"},
-    # floats
     "float4": {"type": "number"},
     "float8": {"type": "number"},
     "numeric": {"type": "number"},
-    # boolean
     "bool": {"type": "boolean"},
-    # strings
     "varchar": {"type": "string"},
     "text": {"type": "string"},
     "char": {"type": "string"},
     "bpchar": {"type": "string"},
     "name": {"type": "string"},
-    # uuid
     "uuid": {"type": "string"},
-    # timestamps
     "timestamptz": {"type": "string"},
     "timestamp": {"type": "string"},
     "date": {"type": "string"},
-    # network
     "inet": {"type": "string"},
     "cidr": {"type": "string"},
-    # json
     "json": {},
     "jsonb": {},
-    # arrays (pg prefixes with _)
     "_text": {"type": "array", "items": {"type": "string"}},
     "_int4": {"type": "array", "items": {"type": "integer"}},
     "_varchar": {"type": "array", "items": {"type": "string"}},
@@ -192,15 +223,13 @@ PG_TO_JSON_TYPE: dict[str, dict] = {
 
 
 def build_row_schema(meta: TableMeta) -> dict:
-    """Build a JSON schema for a single row of the table."""
     properties: dict[str, dict] = {}
     required: list[str] = []
 
     for col in meta.columns:
-        schema = PG_TO_JSON_TYPE.get(col.udt_name, {"type": "string"}).copy()
+        schema: dict = PG_TO_JSON_TYPE.get(col.udt_name, {"type": "string"}).copy()
 
-        # Description with pg type info
-        desc = f"pg type: {col.udt_name}"
+        desc: str = f"pg type: {col.udt_name}"
         if col.max_length:
             desc += f", max_length: {col.max_length}"
         if col.name in meta.primary_key:
@@ -209,15 +238,13 @@ def build_row_schema(meta: TableMeta) -> dict:
             desc += f", default: {col.column_default}"
         schema["description"] = desc
 
-        # Nullable: allow null
         if col.is_nullable and "type" in schema:
             t = schema["type"]
             schema["type"] = [t, "null"] if isinstance(t, str) else t + ["null"]
 
         properties[col.name] = schema
 
-        # Required: non-nullable without defaults, plus SERIAL PKs
-        has_serial_default = col.column_default and "nextval" in col.column_default
+        has_serial_default: bool = col.column_default is not None and "nextval" in col.column_default
         if not col.is_nullable and not col.column_default:
             required.append(col.name)
         elif has_serial_default:
@@ -231,8 +258,7 @@ def build_row_schema(meta: TableMeta) -> dict:
 
 
 def build_tool_schema(meta: TableMeta, rows_count: int) -> dict:
-    """Build the full tool input_schema: {rows: [...]}."""
-    row_schema = build_row_schema(meta)
+    row_schema: dict = build_row_schema(meta)
     return {
         "type": "object",
         "properties": {
@@ -248,49 +274,144 @@ def build_tool_schema(meta: TableMeta, rows_count: int) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# LLM call
+# System prompt
 # ---------------------------------------------------------------------------
 
 
-def build_prompt(meta: TableMeta, generated: dict[str, list[dict]]) -> str:
-    """Build the user prompt with table metadata and referenced data."""
-    col_lines = []
+def build_system_prompt(scenario: str, schema_summary: str) -> str:
+    return f"""You are a data generation engine for an OpenShift/Kubernetes cluster monitoring database.
+
+SCENARIO:
+{scenario}
+
+All data you generate must be consistent with this scenario. Every table's data should
+tell a coherent story that matches the scenario description.
+
+COMPLETE DATABASE SCHEMA (in dependency/seeding order):
+{schema_summary}
+
+General rules:
+- SERIAL/BIGSERIAL PKs: sequential integers starting from 1
+- UUID fields: valid v4 UUIDs
+- TIMESTAMPTZ: recent ISO-8601 timestamps (2025-06 timeframe)
+- Foreign keys MUST reference IDs that exist in previously generated data
+- JSONB fields: realistic JSON matching the column's semantic purpose
+- Array types (text[]): realistic arrays
+- Data should be internally consistent (e.g., used < capacity)
+- Use realistic OpenShift/Kubernetes values (names, IPs, versions, labels)
+- All data must serve the scenario narrative"""
+
+
+# ---------------------------------------------------------------------------
+# Planning step
+# ---------------------------------------------------------------------------
+
+
+def plan_row_counts(
+    client: AnthropicVertex,
+    scenario: str,
+    schema_summary: str,
+    seeding_order: list[str],
+) -> dict[str, int]:
+    """Ask the LLM to decide how many rows each table needs for the scenario."""
+    table_list: str = "\n".join(f"  - {t}" for t in seeding_order)
+
+    plan_tool_properties: dict[str, dict] = {}
+    for t in seeding_order:
+        plan_tool_properties[t] = {
+            "type": "integer",
+            "description": f"Number of rows to generate for table '{t}'",
+            "minimum": 0,
+        }
+
+    prompt: str = f"""Given this scenario:
+{scenario}
+
+And these tables (in seeding order):
+{table_list}
+
+Decide how many rows each table needs to realistically represent this scenario.
+Consider the relationships between tables. For example, if the scenario mentions
+3 nodes, the nodes table should have 3 rows, and dependent tables should have
+proportional amounts.
+
+Some tables might need 0 rows if they're not relevant to the scenario.
+Be reasonable — enough data to tell the story, but not excessive.
+
+Call the plan_rows tool with your decisions."""
+
+    response = client.messages.create(
+        model="claude-opus-4-6@default",
+        max_tokens=16_000,
+        thinking={
+            "type": "enabled",
+            "budget_tokens": 10_000,
+        },
+        system=f"""You are planning data generation for an OpenShift monitoring database.
+
+COMPLETE DATABASE SCHEMA:
+{schema_summary}""",
+        tools=[
+            {
+                "name": "plan_rows",
+                "description": "Specify how many rows to generate for each table",
+                "input_schema": {
+                    "type": "object",
+                    "properties": plan_tool_properties,
+                    "required": seeding_order,
+                },
+            }
+        ],
+        tool_choice={"type": "auto"},
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    tool_block = next(b for b in response.content if b.type == "tool_use")
+    return {k: int(v) for k, v in tool_block.input.items()}
+
+
+# ---------------------------------------------------------------------------
+# Row generation
+# ---------------------------------------------------------------------------
+
+
+def build_user_prompt(
+    meta: TableMeta,
+    rows_count: int,
+    generated: dict[str, list[dict]],
+) -> str:
+    """Build the user prompt for generating a specific table's rows."""
+    col_lines: list[str] = []
     for col in meta.columns:
-        parts = [col.name, col.udt_name]
+        parts: list[str] = [col.name, col.udt_name]
         if not col.is_nullable:
             parts.append("NOT NULL")
         if col.column_default:
             parts.append(f"DEFAULT {col.column_default}")
         col_lines.append(" | ".join(parts))
 
-    pk_str = ", ".join(meta.primary_key) if meta.primary_key else "none"
+    pk_str: str = ", ".join(meta.primary_key) if meta.primary_key else "none"
 
-    fk_lines = []
+    fk_lines: list[str] = []
     for fk in meta.foreign_keys:
         fk_lines.append(
             f"  {fk.column_name} -> {fk.foreign_table}({fk.foreign_column})"
         )
-    fk_str = "\n".join(fk_lines) if fk_lines else "  none"
+    fk_str: str = "\n".join(fk_lines) if fk_lines else "  none"
 
-    unique_lines = []
+    unique_lines: list[str] = []
     for _name, cols in meta.unique_constraints.items():
         unique_lines.append(f"  ({', '.join(cols)})")
-    unique_str = "\n".join(unique_lines) if unique_lines else "  none"
+    unique_str: str = "\n".join(unique_lines) if unique_lines else "  none"
 
-    # Referenced data
-    ref_context = ""
-    if meta.foreign_keys:
-        seen = set()
-        for fk in meta.foreign_keys:
-            if fk.foreign_table in generated and fk.foreign_table not in seen:
-                ref_context += (
-                    f"\nExisting rows in '{fk.foreign_table}':\n"
-                    f"{json.dumps(generated[fk.foreign_table], indent=2)}\n"
-                )
-                seen.add(fk.foreign_table)
+    prev_context: str = ""
+    if generated:
+        prev_context = "\n\nPREVIOUSLY GENERATED DATA (use these for foreign key references and consistency):\n"
+        for table_name, rows in generated.items():
+            prev_context += f"\n--- {table_name} ({len(rows)} rows) ---\n"
+            prev_context += json.dumps(rows, indent=2) + "\n"
 
-    return f"""Generate realistic dummy data for this PostgreSQL table.
-This is part of an OpenShift/Kubernetes cluster monitoring system.
+    return f"""Generate exactly {rows_count} rows for table '{meta.table_name}'.
 
 Table: {meta.table_name}
 
@@ -302,18 +423,9 @@ Foreign keys:
 {fk_str}
 Unique constraints:
 {unique_str}
-{ref_context}
-Requirements:
-- Realistic OpenShift/Kubernetes values (names, IPs, versions, labels)
-- SERIAL/BIGSERIAL PKs: sequential integers starting from 1
-- UUID fields: valid v4 UUIDs
-- TIMESTAMPTZ: recent ISO-8601 timestamps (2025-06 timeframe)
-- Foreign keys MUST reference IDs from the referenced table data above
-- JSONB fields: realistic JSON matching the column's semantic purpose
-- Array types (text[]): realistic arrays
-- Data should be internally consistent (e.g., used < capacity)
+{prev_context}
 
-Call the insert_rows tool with the generated rows."""
+Generate data that fits the scenario. Call the insert_rows tool with the generated rows."""
 
 
 def generate_rows(
@@ -321,10 +433,11 @@ def generate_rows(
     meta: TableMeta,
     generated: dict[str, list[dict]],
     rows_count: int,
+    system_prompt: str,
 ) -> list[dict]:
     """Generate seed data for one table via structured LLM call."""
-    tool_schema = build_tool_schema(meta, rows_count)
-    prompt = build_prompt(meta, generated)
+    tool_schema: dict = build_tool_schema(meta, rows_count)
+    user_prompt: str = build_user_prompt(meta, rows_count, generated)
 
     with client.messages.stream(
         model="claude-opus-4-6@default",
@@ -333,6 +446,7 @@ def generate_rows(
             "type": "enabled",
             "budget_tokens": 30_000,
         },
+        system=system_prompt,
         tools=[
             {
                 "name": "insert_rows",
@@ -340,9 +454,8 @@ def generate_rows(
                 "input_schema": tool_schema,
             }
         ],
-        # tool_choice={"type": "tool", "name": "insert_rows"},
         tool_choice={"type": "auto"},
-        messages=[{"role": "user", "content": prompt}],
+        messages=[{"role": "user", "content": user_prompt}],
     ) as stream:
         response = stream.get_final_message()
 
@@ -351,86 +464,73 @@ def generate_rows(
 
 
 # ---------------------------------------------------------------------------
-# Insert into PG
-# ---------------------------------------------------------------------------
-
-# udt_names that should be wrapped with psycopg2.extras.Json
-JSONB_TYPES = {"json", "jsonb"}
-
-
-def insert_rows(conn, meta: TableMeta, rows: list[dict]) -> None:
-    """Insert generated rows into the database."""
-    if not rows:
-        return
-
-    cur = conn.cursor()
-    # Build a set of jsonb column names for this table
-    jsonb_cols = {col.name for col in meta.columns if col.udt_name in JSONB_TYPES}
-
-    for row in rows:
-        cols = list(row.keys())
-        placeholders = []
-        values = []
-        for col_name in cols:
-            v = row[col_name]
-            if col_name in jsonb_cols and v is not None:
-                placeholders.append("%s")
-                values.append(psycopg2.extras.Json(v))
-            else:
-                placeholders.append("%s")
-                values.append(v)
-
-        sql = (
-            f"INSERT INTO {meta.table_name} ({', '.join(cols)}) "
-            f"VALUES ({', '.join(placeholders)})"
-        )
-        cur.execute(sql, values)
-
-    conn.commit()
-    cur.close()
-
-
-# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
-ROWS_PER_TABLE = 3
-DB_DSN = "host=127.0.0.1 port=5433 dbname=openshift_cluster user=postgres"
+DB_DSN: str = "host=127.0.0.1 port=5433 dbname=openshift_cluster user=postgres"
+
+DEFAULT_SCENARIO: str = (
+    "A 3-node OpenShift 4.14 cluster running a mix of web application and "
+    "database workloads. One node is experiencing memory pressure with several "
+    "pods in CrashLoopBackOff state. There are active alerts for high memory "
+    "usage and pod restart counts."
+)
 
 
 def generate_seed_data(
+    scenario: str = DEFAULT_SCENARIO,
     db_dsn: str = DB_DSN,
-    rows_per_table: int = ROWS_PER_TABLE,
-):
+) -> None:
     conn = psycopg2.connect(db_dsn)
     tables = get_seeding_order(conn)
+    seeding_order: list[str] = [t.table_name for t in tables]
 
-    client = AnthropicVertex()
-
-    generated: dict[str, list[dict]] = {}
-
-    for i, table in enumerate(tables):
-        print(
-            f"[{i + 1}/{len(tables)}] Generating {rows_per_table} rows "
-            f"for: {table.table_name} ..."
-        )
-
-        meta = get_table_metadata(conn, table.table_name)
-        print('Table metadata')
-        print(meta)
-        print('\n---\n')
-        rows = generate_rows(client, meta, generated, rows_per_table)
-        generated[table.table_name] = rows
-
-        insert_rows(conn, meta, rows)
-        print(f"  -> {len(rows)} rows generated and inserted")
+    all_metas: dict[str, TableMeta] = {}
+    for table_name in seeding_order:
+        all_metas[table_name] = get_table_metadata(conn, table_name)
 
     conn.close()
 
-    out_path = Path(__file__).parent / "seed_data.json"
+    schema_summary: str = build_full_schema_summary(all_metas, seeding_order)
+
+    client: AnthropicVertex = AnthropicVertex()
+
+    print(f"Scenario: {scenario}\n")
+    print("Planning row counts...")
+    row_counts: dict[str, int] = plan_row_counts(client, scenario, schema_summary, seeding_order)
+    print("\nPlanned row counts:")
+    for table_name, count in row_counts.items():
+        print(f"  {table_name}: {count}")
+    print()
+
+    system_prompt: str = build_system_prompt(scenario, schema_summary)
+
+    generated: dict[str, list[dict]] = {}
+
+    for i, table_name in enumerate(seeding_order):
+        count: int = row_counts.get(table_name, 0)
+        if count == 0:
+            print(f"[{i + 1}/{len(seeding_order)}] Skipping {table_name} (0 rows)")
+            generated[table_name] = []
+            continue
+
+        print(
+            f"[{i + 1}/{len(seeding_order)}] Generating {count} rows "
+            f"for: {table_name} ..."
+        )
+
+        meta: TableMeta = all_metas[table_name]
+        rows: list[dict] = generate_rows(client, meta, generated, count, system_prompt)
+        generated[table_name] = rows
+
+        print(f"  -> {len(rows)} rows generated")
+
+    out_path: Path = Path(__file__).parent / "seed_data.json"
     out_path.write_text(json.dumps(generated, indent=2) + "\n")
     print(f"\nWrote seed data to {out_path}")
 
 
 if __name__ == "__main__":
-    generate_seed_data()
+    scenario: str = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SCENARIO
+    generate_seed_data(scenario=scenario)
+
