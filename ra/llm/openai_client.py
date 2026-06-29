@@ -22,7 +22,7 @@ class OpenAIClient(LLMClient):
         # SDK reads OPENAI_API_KEY from env when api_key is None
         self._client = openai.OpenAI(api_key=api_key, base_url=base_url)
 
-    def chat(
+    def _chat_impl(
         self,
         model: str,
         messages: list[Message],

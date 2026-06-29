@@ -9,6 +9,7 @@ dependencies = [
     "pyyaml",
     "scikit-learn>=1.9.0",
     "plotly>=6.8.0",
+    "tenacity>=9.1.4",
 ]
 
 [tool.hatch.build.targets.wheel]

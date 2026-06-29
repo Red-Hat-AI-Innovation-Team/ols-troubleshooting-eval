@@ -22,7 +22,7 @@ class AnthropicVertexClient(LLMClient):
         # SDK reads ANTHROPIC_VERTEX_PROJECT_ID and CLOUD_ML_REGION from env
         self._client = anthropic.AnthropicVertex()
 
-    def chat(
+    def _chat_impl(
         self,
         model: str,
         messages: list[Message],
