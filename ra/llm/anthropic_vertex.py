@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import anthropic
@@ -109,7 +110,12 @@ def _parse_response(response: anthropic.types.Message) -> LLMResponse:
 
     for block in response.content:
         if isinstance(block, ToolUseBlock):
-            arguments = block.input if isinstance(block.input, dict) else {}
+            if isinstance(block.input, dict):
+                arguments = block.input
+            elif isinstance(block.input, str):
+                arguments = json.loads(block.input)
+            else:
+                arguments = {}
             tool_calls.append(ToolCall(
                 id=block.id,
                 name=block.name,
