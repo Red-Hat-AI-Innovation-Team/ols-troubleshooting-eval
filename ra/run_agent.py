@@ -100,7 +100,7 @@ def run(seed_data: dict[str, list[dict]]) -> list[dict]:
         # --- Troubleshooting agent (has tools, no seed data) ---
         troubleshooter = Agent(
             system_prompt=SYSTEM_PROMPT,
-            model="claude-opus-4-6@default",
+            model="claude-haiku-4-5@20251001",
             tool_defs=mock_tools.load_tool_defs(),
             tool_handler=mock_tools.make_tool_handler(conn),
             client=client,
