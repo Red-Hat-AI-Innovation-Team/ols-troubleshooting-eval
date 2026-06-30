@@ -6,21 +6,30 @@ Mock MCP tool environment + LLM agent loop for evaluating OpenShift troubleshoot
 
 ```
 ra/
-  agent.py                  # Generic LLM agent loop with tool calling (dataclass)
-  run_agent.py              # Entry point: user-sim SRE + troubleshooter Socratic conversation loop
+  main.py                   # Pipeline orchestrator: seed generation + agent eval (ThreadPoolExecutor)
+  run_agent.py              # Single-run entry: user-sim SRE + troubleshooter Socratic conversation
+  agent.py                  # Generic LLM agent loop with tool calling (@dataclass)
   mock_tools.py             # 30 PostgreSQL-backed mock MCP tools (openshift-mcp + obs-mcp)
   vshell.py                 # In-memory virtual shell for pods_exec (fs + network sim)
   db.py                     # DB connection/schema/seed/teardown + seeding order (topo sort by FK)
   generate_scenario_based_data.py  # Scenario-driven seed data generation (with JSONB schemas)
+  dedup_scenarios.py        # Embed scenarios + cosine dedup via local embedding server
   llm/                      # Provider-agnostic LLM client abstraction
     base.py                 #   ABC: LLMClient.chat() interface
-    types.py                #   Dataclasses: LLMResponse, ToolCall, Message, ToolDef, ToolResult
+    types.py                #   Pydantic models: LLMResponse, ToolCall, Message, ToolDef, ToolResult
     anthropic_vertex.py     #   Anthropic Vertex AI implementation (streaming + extended thinking)
     openai_client.py        #   OpenAI-compatible implementation (+ custom base_url)
+    config/                 #   Pydantic config models per provider
+      base.py               #     LLMConfig (max_concurrency)
+      anthropic_vertex.py   #     AnthropicVertexConfig
+      openai.py             #     OpenAIConfig
+  scenarios.txt             # One scenario description per line (input to main.py)
+  sdg/v1/                   # Generated artifacts: seed JSON + agent run conversations per scenario
   world_model_db_schema.sql # 20+ tables modeling K8s/OpenShift cluster state
   raw_tool_defs.json        # MCP tool definitions (Anthropic format source)
-  seed_data.json            # Generated cluster seed data (used by agent)
+  seed_data.json            # Example cluster seed data (used by run_agent.py standalone)
   test_data.json            # Seed data for tests (separate from agent seed data)
+  test_mock_tool.py         # Custom test runner (not pytest)
   MCP_TOOLS.md              # Full MCP tool schema documentation (30 tools)
 ```
 
@@ -37,14 +46,26 @@ podman run -d --name world-model-pg -p 127.0.0.1:5433:5432 \
 uv run python db.py init seed_data.json    # create DB + schema + seed
 uv run python db.py teardown                # drop DB
 
-# Seed data generation
-uv run python generate_scenario_based_data.py "A 3-node cluster with memory pressure"
+# Pipeline (primary entry point)
+uv run python main.py                          # both stages: seed gen + agent runs
+uv run python main.py --stage seed             # seed generation only
+uv run python main.py --stage run              # agent runs only (seeds must exist)
+uv run python main.py --seeds 3 --runs 2       # override counts (default: 5 seeds × 5 runs)
 
-# Run agent loop
+# Single-run (interactive / debugging)
 uv run python run_agent.py
 
-# Run tests (custom runner, not pytest)
+# Seed data generation (single scenario)
+uv run python generate_scenario_based_data.py "A 3-node cluster with memory pressure"
+
+# Scenario dedup
+uv run python dedup_scenarios.py --threshold 0.80
+
+# Tests (custom runner, not pytest)
 uv run python test_mock_tool.py
+
+# Type check
+uv run mypy .
 ```
 
 ## Environment variables
@@ -55,34 +76,31 @@ uv run python test_mock_tool.py
 | `ANTHROPIC_VERTEX_PROJECT_ID` | GCP project ID for Anthropic Vertex |
 | `OPENAI_API_KEY` | API key for OpenAIClient (read by SDK if not passed) |
 
-## Dependencies
-
-- `psycopg2-binary` — PostgreSQL client
-- `anthropic[vertex]` — Anthropic SDK with Vertex AI support
-- `openai` — OpenAI SDK (for OpenAIClient + custom base_url endpoints)
-- `pyyaml` — YAML serialization for tool outputs
-
 ## Architecture
 
-**Data flow**: `run_agent.py` creates two Agent instances — a user-simulator (SRE with full DB knowledge) and a troubleshooter (has MCP tools, no DB access). The user-sim generates an initial question from seed data, then they converse Socratically for up to 5 rounds until the SRE says "DONE". The user-sim nudges the troubleshooter toward root cause without giving the answer.
+**Pipeline** (`main.py`): Two-stage pipeline. Stage 1 generates N seed data variants per scenario (from `scenarios.txt`) using `ThreadPoolExecutor`. Stage 2 runs the agent loop N times per seed. All results cached to `sdg/v1/<scenario_idx>/`. Concurrency controlled by `AnthropicVertexConfig.max_concurrency` (default 50).
 
-**Mock tools** (`mock_tools.py`): Each tool function takes `(conn, *, param=...) -> str`. The `TOOLS` dict maps tool names to functions. `call_tool()` dispatches by name. `load_tool_defs()` reads `raw_tool_defs.json` and converts to Anthropic tool format.
+**Data flow** (`run_agent.py`): Creates two Agent instances — a user-simulator (SRE with full DB knowledge, claude-opus-4-6) and a troubleshooter (has MCP tools, no DB access, claude-haiku-4-5). They converse Socratically for up to 5 rounds until the SRE says "DONE".
 
-**Virtual shell** (`vshell.py`): Backs `pods_exec`. Supports cat, ls, grep, curl, nslookup, dig, and ~20 other commands against an in-memory `dict[str, VFile]` filesystem and `VNet` (DNS + HTTP endpoints).
+**Mock tools** (`mock_tools.py`): Each tool function: `def tool_name(conn, *, param=...) -> str`. `TOOLS` dict maps names to functions. `call_tool()` dispatches. `load_tool_defs()` reads `raw_tool_defs.json`.
 
-**LLM abstraction** (`llm/`): `LLMClient` ABC with single `chat()` method. `AnthropicVertexClient` uses streaming + extended thinking. Returns normalized `LLMResponse` with `ToolCall` list.
+**Virtual shell** (`vshell.py`): Backs `pods_exec`. Supports cat, ls, grep, curl, nslookup, dig, ~20 commands against in-memory `dict[str, VFile]` filesystem and `VNet` (DNS + HTTP endpoints).
+
+**LLM abstraction** (`llm/`): `LLMClient` ABC with `chat()` method. `AnthropicVertexClient` (streaming + extended thinking) and `OpenAIClient` (custom base_url). Returns normalized `LLMResponse`. Config via pydantic models in `llm/config/`.
 
 ## Code style
 
 - Module-level docstrings on every file
 - `from __future__ import annotations` in `llm/` package
-- Dataclasses for state containers (`Agent`, `Table`, `ToolCall`, `LLMResponse`, `VFile`, `VNet`)
-- ABC for `LLMClient` interface, concrete impl in separate module
+- Pydantic `BaseModel` for LLM types (`ToolCall`, `LLMResponse`, `Message`, `ToolDef`, `LLMConfig`)
+- `@dataclass` for runtime state (`Agent`, `Table`, `VFile`, `VNet`, `VDNSRecord`, `VHTTPEndpoint`)
+- ABC for `LLMClient` interface, concrete impl in separate modules
 - Type hints throughout: `str | None`, `list[dict]`, `Callable[[str, dict], str]`
 - Keyword-only args for tool functions (using `*` separator)
-- Mixed indentation: `db.py` and `vshell.py` use 2-space indent; all other files use 4-space
-- `db.connect()` is a context manager (`with db.connect() as conn:`)
-- No linter/formatter config in pyproject.toml (no ruff, no mypy configured)
+- Mixed indentation: `db.py` and `vshell.py` use 2-space; all other files use 4-space
+- `db.connect()` is a context manager (`with db.connect(dsn) as conn:`)
+- mypy configured in pyproject.toml: `warn_return_any`, `check_untyped_defs`, `ignore_missing_imports`
+- No linter/formatter (no ruff, black, isort)
 
 ## Testing
 
@@ -95,7 +113,7 @@ uv run python test_mock_tool.py
 ## Database
 
 - PostgreSQL 17 via Podman, port 5433, user `postgres`, no password (trust auth)
-- DB name: `openshift_cluster` (production), `test_openshift_cluster` (tests)
-- Schema covers: clusters, nodes, namespaces, pods, containers, events, resources, metrics, alerts, silences
+- DB name: `openshift_cluster` (production), `test_openshift_cluster` (tests), `ols_run_<idx>` (pipeline per-run)
+- Schema: clusters, nodes, namespaces, pods, containers, events, resources, metrics, alerts, silences
 - JSONB columns for labels, annotations, manifests, filesystem/network state
 - GIN indexes on JSONB columns, trigram index on metric names
