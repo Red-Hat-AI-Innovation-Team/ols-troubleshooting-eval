@@ -234,12 +234,6 @@ def build_row_schema(meta: db.TableMeta) -> dict:
         "required": required,
     }
 
-
-def build_tool_schema(meta: db.TableMeta) -> dict:
-    """Flat per-column schema — one tool call = one row."""
-    return build_row_schema(meta)
-
-
 # ---------------------------------------------------------------------------
 # System prompt
 # ---------------------------------------------------------------------------
@@ -341,9 +335,15 @@ Call the plan_rows tool with your decisions."""
 def build_user_prompt(
     meta: db.TableMeta,
     rows_count: int,
-    generated: dict[str, list[dict]],
+    prev_table_rows: dict[str, list[dict]],
+    generated: list[dict] | None = None,
 ) -> str:
-    """Build the user prompt for generating a specific table's rows."""
+    """Build the user prompt for generating a specific table's rows.
+
+    Args:
+        generated: rows already generated for THIS table on a prior attempt.
+                   When present, the prompt asks for only the remaining rows.
+    """
     col_lines: list[str] = []
     for col in meta.columns:
         parts: list[str] = [col.name, col.udt_name]
@@ -368,13 +368,23 @@ def build_user_prompt(
     unique_str: str = "\n".join(unique_lines) if unique_lines else "  none"
 
     prev_context: str = ""
-    if generated:
-        prev_context = "\n\nPREVIOUSLY GENERATED DATA (use these for foreign key references and consistency):\n"
-        for table_name, rows in generated.items():
+    if prev_table_rows:
+        prev_context = "\n\nPREVIOUSLY GENERATED DATA FOR OTHER TABLES (use these for foreign key references and consistency):\n"
+        for table_name, rows in prev_table_rows.items():
             prev_context += f"\n--- {table_name} ({len(rows)} rows) ---\n"
             prev_context += json.dumps(rows, indent=2) + "\n"
 
-    return f"""Generate exactly {rows_count} rows for table '{meta.table_name}'.
+    already_generated: str = ""
+    if generated:
+        remaining: int = rows_count - len(generated)
+        already_generated = (
+            f"\n\nALREADY GENERATED ROWS FOR THIS TABLE ({len(generated)}/{rows_count}):\n"
+            f"{json.dumps(generated, indent=2)}\n\n"
+            f"Generate {remaining} more row(s). Do NOT repeat any row above."
+        )
+
+    target: int = rows_count - len(generated) if generated else rows_count
+    return f"""Generate exactly {target} rows for table '{meta.table_name}'.
 
 Table: {meta.table_name}
 
@@ -386,24 +396,23 @@ Foreign keys:
 {fk_str}
 Unique constraints:
 {unique_str}
-{prev_context}
+{prev_context}{already_generated}
 
-Generate data that fits the scenario. Call the insert_row tool once per row, using parallel tool calls. You must produce exactly {rows_count} insert_row calls."""
-
+Generate data that fits the scenario. Call the insert_row tool once per row, using parallel tool calls. You must produce exactly {target} insert_row calls."""
 
 def generate_rows(
     client: LLMClient,
     meta: db.TableMeta,
-    generated: dict[str, list[dict]],
+    prev_table_rows: dict[str, list[dict]],
     rows_count: int,
     system_prompt: str,
 ) -> list[dict]:
     """Generate seed data for one table via parallel tool calls (one per row).
 
-    If the LLM returns fewer rows than requested, follow up with the existing
-    rows as context and ask for the remainder.
+    If the LLM returns fewer rows than requested, rebuild a fresh user message
+    with the already-generated rows baked in and retry.
     """
-    tool_schema: dict = build_tool_schema(meta)
+    tool_schema: dict = build_row_schema(meta)
     tool = ToolDef(
         name="insert_row",
         description=f"Insert one generated seed row for table '{meta.table_name}'",
@@ -411,11 +420,12 @@ def generate_rows(
     )
 
     rows: list[dict] = []
-    messages: list[Message] = [
-        Message(role="user", content=build_user_prompt(meta, rows_count, generated)),
-    ]
 
     while len(rows) < rows_count:
+        messages: list[Message] = [
+            Message(role="user", content=build_user_prompt(meta, rows_count, prev_table_rows, rows or None)),
+        ]
+
         response: LLMResponse = client.chat(
             model=MODEL,
             messages=messages,
@@ -427,21 +437,6 @@ def generate_rows(
 
         new_rows: list[dict] = [tc.arguments for tc in response.tool_calls]
         rows.extend(new_rows)
-
-        if len(rows) >= rows_count:
-            break
-
-        remaining: int = rows_count - len(rows)
-        messages.append(Message(role="assistant", content=json.dumps(new_rows)))
-        messages.append(Message(
-            role="user",
-            content=(
-                f"Generated {len(rows)}/{rows_count} rows so far. "
-                f"Here are the existing rows:\n{json.dumps(rows, indent=2)}\n\n"
-                f"Generate {remaining} more row(s). Do NOT repeat any existing row. "
-                f"Call insert_row once per row using parallel tool calls."
-            ),
-        ))
 
     return rows[:rows_count]
 
