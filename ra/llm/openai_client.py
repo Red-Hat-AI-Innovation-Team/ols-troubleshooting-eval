@@ -9,6 +9,7 @@ import openai
 from openai.types.chat.chat_completion_message_tool_call import ChatCompletionMessageToolCall
 
 from llm.base import LLMClient
+from llm.config.openai import OpenAIConfig
 from llm.types import LLMResponse, Message, ToolCall, ToolDef
 
 
@@ -18,9 +19,10 @@ class OpenAIClient(LLMClient):
     thinking_budget is ignored (not supported by OpenAI).
     """
 
-    def __init__(self, api_key: str | None = None, base_url: str | None = None) -> None:
-        # SDK reads OPENAI_API_KEY from env when api_key is None
-        self._client = openai.OpenAI(api_key=api_key, base_url=base_url)
+    def __init__(self, config: OpenAIConfig | None = None) -> None:
+        config = config or OpenAIConfig()
+        super().__init__(config)
+        self._client = openai.OpenAI(api_key=config.api_key, base_url=config.base_url)
 
     def _chat_impl(
         self,

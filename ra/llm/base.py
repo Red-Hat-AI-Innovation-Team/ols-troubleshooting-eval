@@ -17,6 +17,7 @@ from tenacity import (
     before_sleep_log,
 )
 
+from llm.config.base import LLMConfig
 from llm.types import LLMResponse, Message, ToolDef
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,9 @@ class LLMClient(ABC):
     The public chat() method wraps _chat_impl() with tenacity retry
     (exponential backoff + jitter, max 10 attempts).
     """
+
+    def __init__(self, config: LLMConfig) -> None:
+        self.config = config
 
     @_chat_retry
     def chat(

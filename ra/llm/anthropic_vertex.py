@@ -9,6 +9,7 @@ import anthropic
 from anthropic.types import ToolUseBlock
 
 from llm.base import LLMClient
+from llm.config.anthropic_vertex import AnthropicVertexConfig
 from llm.types import LLMResponse, Message, ToolCall, ToolDef
 
 
@@ -19,9 +20,13 @@ class AnthropicVertexClient(LLMClient):
     and extended thinking.
     """
 
-    def __init__(self) -> None:
-        # SDK reads ANTHROPIC_VERTEX_PROJECT_ID and CLOUD_ML_REGION from env
-        self._client = anthropic.AnthropicVertex()
+    def __init__(self, config: AnthropicVertexConfig | None = None) -> None:
+        config = config or AnthropicVertexConfig()
+        super().__init__(config)
+        self._client = anthropic.AnthropicVertex(
+            project_id=config.project_id or None,
+            region=config.region,
+        )
 
     def _chat_impl(
         self,
