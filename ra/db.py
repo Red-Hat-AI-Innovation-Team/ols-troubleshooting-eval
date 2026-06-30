@@ -26,6 +26,10 @@ DB_NAME: str = "openshift_cluster"
 ADMIN_DSN: str = f"host={PG_HOST} port={PG_PORT} dbname=postgres user={PG_USER}"
 DB_DSN: str = f"host={PG_HOST} port={PG_PORT} dbname={DB_NAME} user={PG_USER}"
 
+
+def _dsn_for(db_name: str) -> str:
+  return f"host={PG_HOST} port={PG_PORT} dbname={db_name} user={PG_USER}"
+
 SCHEMA_PATH: Path = Path(__file__).parent / "world_model_db_schema.sql"
 
 _IDENTIFIER_RE: re.Pattern[str] = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -68,13 +72,14 @@ def _get_jsonb_columns(conn: psycopg2.extensions.connection, table_name: str) ->
 # ---------------------------------------------------------------------------
 
 
-def _create_database() -> None:
-  safe_name: str = _validate_identifier(DB_NAME)
+def _create_database(db_name: str | None = None) -> None:
+  name: str = db_name or DB_NAME
+  safe_name: str = _validate_identifier(name)
   with connect(ADMIN_DSN, autocommit=True) as admin:
     with admin.cursor() as cur:
       cur.execute(f"DROP DATABASE IF EXISTS {safe_name}")
       cur.execute(f"CREATE DATABASE {safe_name}")
-  print(f"Created database: {DB_NAME}")
+  print(f"Created database: {name}")
 
 
 def _apply_schema(conn: psycopg2.extensions.connection) -> None:
@@ -152,16 +157,17 @@ def _advance_sequences(conn: psycopg2.extensions.connection) -> None:
 # ---------------------------------------------------------------------------
 
 
-def init_db(seed: dict[str, list[dict]]) -> None:
+def init_db(seed: dict[str, list[dict]], db_name: str | None = None) -> None:
   """Create DB, apply schema, load seed data, advance sequences."""
-  _create_database()
+  name: str = db_name or DB_NAME
+  _create_database(name)
 
-  with connect(DB_DSN) as conn:
+  with connect(_dsn_for(name)) as conn:
     _apply_schema(conn)
     total_rows: int = _insert_seed_data(conn, seed)
     _advance_sequences(conn)
 
-  print(f"\nDone: {total_rows} total rows inserted into {DB_NAME}")
+  print(f"\nDone: {total_rows} total rows inserted into {name}")
 
 
 # ---------------------------------------------------------------------------
@@ -405,13 +411,14 @@ def get_seeding_order(conn: psycopg2.extensions.connection) -> list[Table]:
 # ---------------------------------------------------------------------------
 
 
-def teardown_db() -> None:
+def teardown_db(db_name: str | None = None) -> None:
   """Drop the database entirely."""
-  safe_name: str = _validate_identifier(DB_NAME)
+  name: str = db_name or DB_NAME
+  safe_name: str = _validate_identifier(name)
   with connect(ADMIN_DSN, autocommit=True) as admin:
     with admin.cursor() as cur:
       cur.execute(f"DROP DATABASE IF EXISTS {safe_name}")
-  print(f"Dropped database: {DB_NAME}")
+  print(f"Dropped database: {name}")
 
 
 if __name__ == "__main__":

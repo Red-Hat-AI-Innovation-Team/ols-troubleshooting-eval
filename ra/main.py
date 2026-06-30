@@ -17,7 +17,6 @@ Usage:
 
 import argparse
 import json
-import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -103,6 +102,11 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
     print(f"STAGE 2: AGENT RUNS ({len(scenarios)} scenarios × {n_seeds} seeds × {n_runs} runs)")
     print(f"{'=' * 70}\n")
 
+    config = AnthropicVertexConfig(max_concurrency=50)
+    llm_client = AnthropicVertexClient(config)
+
+    # Build flat work list
+    work_items: list[tuple[int, str, int, dict, int, Path]] = []
     for sc_idx, scenario in enumerate(scenarios):
         sc_dir = OUTPUT_DIR / f"{sc_idx:04d}"
         runs_dir = sc_dir / "runs"
@@ -121,26 +125,35 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
                 if run_path.exists():
                     print(f"[{sc_idx}/{seed_idx}/{run_idx}] cached: {run_path}")
                     continue
+                work_items.append((sc_idx, scenario, seed_idx, seed_data, run_idx, run_path))
 
-                print(f"[{sc_idx}/{seed_idx}/{run_idx}] running agent...")
-                print(f"  scenario: {scenario[:80]}...")
+    print(f"\n{len(work_items)} run(s) to execute (pool size: {config.max_concurrency})\n")
 
-                # init DB with seed data, run agent, teardown
-                db.init_db(seed_data)
-                conversation = run(seed_data)
-                db.teardown_db()
+    def _run_agent(item: tuple[int, str, int, dict, int, Path]) -> str:
+        sc_idx, scenario, seed_idx, seed_data, run_idx, run_path = item
+        db_name = f"ols_run_{sc_idx}_{seed_idx}_{run_idx}"
+        print(f"[{sc_idx}/{seed_idx}/{run_idx}] running agent (db: {db_name})...")
 
-                result = {
-                    "scenario_idx": sc_idx,
-                    "seed_idx": seed_idx,
-                    "run_idx": run_idx,
-                    "run_id": str(uuid.uuid4()),
-                    "scenario": scenario,
-                    "conversation": conversation,
-                }
+        db.init_db(seed_data, db_name=db_name)
+        conversation = run(seed_data, db_name=db_name, client=llm_client)
+        db.teardown_db(db_name=db_name)
 
-                run_path.write_text(json.dumps(result, indent=2))
-                print(f"  -> saved: {run_path}")
+        result = {
+            "scenario_idx": sc_idx,
+            "seed_idx": seed_idx,
+            "run_idx": run_idx,
+            "run_id": str(uuid.uuid4()),
+            "scenario": scenario,
+            "conversation": conversation,
+        }
+
+        run_path.write_text(json.dumps(result, indent=2))
+        return f"[{sc_idx}/{seed_idx}/{run_idx}] -> saved: {run_path}"
+
+    with ThreadPoolExecutor(max_workers=config.max_concurrency) as pool:
+        futures = [pool.submit(_run_agent, item) for item in work_items]
+        for future in as_completed(futures):
+            print(future.result())
 
 
 # ---------------------------------------------------------------------------

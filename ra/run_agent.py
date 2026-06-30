@@ -10,6 +10,7 @@ from pathlib import Path
 from agent import Agent
 import db
 from llm import AnthropicVertexClient
+from llm.base import LLMClient
 import mock_tools
 
 # ---------------------------------------------------------------------------
@@ -79,11 +80,15 @@ drill into specific issues you discover."""
 MAX_CONVERSATION_ROUNDS = 5
 
 
-def run(seed_data: dict[str, list[dict]]) -> list[dict]:
+def run(
+    seed_data: dict[str, list[dict]],
+    client: LLMClient,
+    db_name: str | None = None,
+) -> list[dict]:
     """Run the troubleshooting agent loop. Returns the troubleshooter's conversation history."""
-    client = AnthropicVertexClient()
+    dsn = db._dsn_for(db_name) if db_name else db.DB_DSN
 
-    with db.connect() as conn:
+    with db.connect(dsn) as conn:
         # --- User simulator agent (has seed data, acts as SRE) ---
         seed_data_str = json.dumps(seed_data, indent=2)
         user_sim = Agent(
@@ -140,4 +145,4 @@ def run(seed_data: dict[str, list[dict]]) -> list[dict]:
 if __name__ == "__main__":
   seed_data_path = Path(__file__).parent / "seed_data.json"
   seed_data = json.loads(seed_data_path.read_text())
-  run(seed_data)
+  run(seed_data, client=AnthropicVertexClient())
