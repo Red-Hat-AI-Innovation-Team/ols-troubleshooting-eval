@@ -19,10 +19,13 @@ import argparse
 import json
 import sys
 import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import db
 from generate_scenario_based_data import generate_seed_data
+from llm import AnthropicVertexClient
+from llm.config.anthropic_vertex import AnthropicVertexConfig
 from run_agent import run
 
 # ---------------------------------------------------------------------------
@@ -51,11 +54,17 @@ def stage_seed(scenarios: list[str], n_seeds: int) -> None:
     print(f"STAGE 1: SEED DATA GENERATION ({len(scenarios)} scenarios × {n_seeds} seeds)")
     print(f"{'=' * 70}\n")
 
+    # init empty DB for schema introspection
+    db.init_db({})
+    config = AnthropicVertexConfig(max_concurrency=50)
+    llm_client = AnthropicVertexClient(config)
+
+    # Build flat work list, pre-create dirs + scenario.txt
+    work_items: list[tuple[int, str, int, Path]] = []
     for sc_idx, scenario in enumerate(scenarios):
         sc_dir = OUTPUT_DIR / f"{sc_idx:04d}"
         sc_dir.mkdir(parents=True, exist_ok=True)
 
-        # Cache scenario text
         scenario_path = sc_dir / "scenario.txt"
         if not scenario_path.exists():
             scenario_path.write_text(scenario)
@@ -65,17 +74,23 @@ def stage_seed(scenarios: list[str], n_seeds: int) -> None:
             if seed_path.exists():
                 print(f"[{sc_idx}/{seed_idx}] cached: {seed_path}")
                 continue
+            work_items.append((sc_idx, scenario, seed_idx, seed_path))
 
-            print(f"[{sc_idx}/{seed_idx}] generating seed data...")
-            print(f"  scenario: {scenario[:80]}...")
+    print(f"\n{len(work_items)} seed(s) to generate (pool size: {config.max_concurrency})\n")
 
-            # init empty DB for schema introspection, generate, teardown
-            db.init_db({})
-            seed_data = generate_seed_data(scenario)
-            db.teardown_db()
+    def _generate(item: tuple[int, str, int, Path]) -> str:
+        sc_idx, scenario, seed_idx, seed_path = item
+        print(f"[{sc_idx}/{seed_idx}] generating seed data...")
+        seed_data = generate_seed_data(scenario, llm_client)
+        seed_path.write_text(json.dumps(seed_data, indent=2))
+        return f"[{sc_idx}/{seed_idx}] -> saved: {seed_path}"
 
-            seed_path.write_text(json.dumps(seed_data, indent=2))
-            print(f"  -> saved: {seed_path}")
+    with ThreadPoolExecutor(max_workers=config.max_concurrency) as pool:
+        futures = [pool.submit(_generate, item) for item in work_items]
+        for future in as_completed(futures):
+            print(future.result())
+
+    db.teardown_db()
 
 
 # ---------------------------------------------------------------------------

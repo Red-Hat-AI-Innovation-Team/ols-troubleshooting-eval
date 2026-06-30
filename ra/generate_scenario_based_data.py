@@ -17,6 +17,7 @@ import psycopg2
 import db
 from llm import AnthropicVertexClient, LLMResponse, Message, ToolDef
 from llm.base import LLMClient
+from llm.config.base import LLMConfig
 
 
 # ---------------------------------------------------------------------------
@@ -456,7 +457,8 @@ DEFAULT_SCENARIO: str = (
 
 
 def generate_seed_data(
-    scenario: str = DEFAULT_SCENARIO,
+    scenario: str,
+    llm_client: LLMClient,
     db_dsn: str = DB_DSN,
 ) -> dict[str, list[dict]]:
     conn = psycopg2.connect(db_dsn)
@@ -471,11 +473,9 @@ def generate_seed_data(
 
     schema_summary: str = db.build_full_schema_summary(all_metas, seeding_order)
 
-    client: LLMClient = AnthropicVertexClient()
-
     print(f"Scenario: {scenario}\n")
     print("Planning row counts...")
-    row_counts: dict[str, int] = plan_row_counts(client, scenario, schema_summary, seeding_order)
+    row_counts: dict[str, int] = plan_row_counts(llm_client, scenario, schema_summary, seeding_order)
     print("\nPlanned row counts:")
     for table_name, count in row_counts.items():
         print(f"  {table_name}: {count}")
@@ -498,7 +498,7 @@ def generate_seed_data(
         )
 
         meta: db.TableMeta = all_metas[table_name]
-        rows: list[dict] = generate_rows(client, meta, generated, row_count, system_prompt)
+        rows: list[dict] = generate_rows(llm_client, meta, generated, row_count, system_prompt)
         generated[table_name] = rows
 
         print(f"  -> {len(rows)} rows generated")
@@ -508,7 +508,8 @@ def generate_seed_data(
 
 if __name__ == "__main__":
     scenario: str = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SCENARIO
-    seed_data: dict[str, list[dict]] = generate_seed_data(scenario=scenario)
+    client: LLMClient = AnthropicVertexClient()
+    seed_data: dict[str, list[dict]] = generate_seed_data(scenario=scenario, llm_client=client)
 
     out_path: Path = Path(__file__).parent / "seed_data.json"
     out_path.write_text(json.dumps(seed_data, indent=2) + "\n")
