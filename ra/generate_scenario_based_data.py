@@ -235,20 +235,9 @@ def build_row_schema(meta: db.TableMeta) -> dict:
     }
 
 
-def build_tool_schema(meta: db.TableMeta, rows_count: int) -> dict:
-    row_schema: dict = build_row_schema(meta)
-    return {
-        "type": "object",
-        "properties": {
-            "rows": {
-                "type": "array",
-                "items": row_schema,
-                "minItems": rows_count,
-                "maxItems": rows_count,
-            }
-        },
-        "required": ["rows"],
-    }
+def build_tool_schema(meta: db.TableMeta) -> dict:
+    """Flat per-column schema — one tool call = one row."""
+    return build_row_schema(meta)
 
 
 # ---------------------------------------------------------------------------
@@ -399,7 +388,7 @@ Unique constraints:
 {unique_str}
 {prev_context}
 
-Generate data that fits the scenario. Call the insert_rows tool with the generated rows."""
+Generate data that fits the scenario. Call the insert_row tool once per row, using parallel tool calls. You must produce exactly {rows_count} insert_row calls."""
 
 
 def generate_rows(
@@ -409,40 +398,52 @@ def generate_rows(
     rows_count: int,
     system_prompt: str,
 ) -> list[dict]:
-    """Generate seed data for one table via structured LLM call."""
-    tool_schema: dict = build_tool_schema(meta, rows_count)
-    user_prompt: str = build_user_prompt(meta, rows_count, generated)
+    """Generate seed data for one table via parallel tool calls (one per row).
 
-    response: LLMResponse = client.chat(
-        model=MODEL,
-        messages=[Message(role="user", content=user_prompt)],
-        tools=[
-            ToolDef(
-                name="insert_rows",
-                description=f"Insert generated seed rows for table '{meta.table_name}'",
-                parameters=tool_schema,
-            )
-        ],
-        max_tokens=100_000,
-        system=system_prompt,
-        thinking_budget=30_000,
+    If the LLM returns fewer rows than requested, follow up with the existing
+    rows as context and ask for the remainder.
+    """
+    tool_schema: dict = build_tool_schema(meta)
+    tool = ToolDef(
+        name="insert_row",
+        description=f"Insert one generated seed row for table '{meta.table_name}'",
+        parameters=tool_schema,
     )
 
-    tc = response.tool_calls[0]
-    rows = tc.arguments.get("rows", tc.arguments)
+    rows: list[dict] = []
+    messages: list[Message] = [
+        Message(role="user", content=build_user_prompt(meta, rows_count, generated)),
+    ]
 
-    # Guard: Anthropic SDK can return a string instead of parsed JSON for
-    # large tool outputs.  Detect and attempt recovery.
-    if isinstance(rows, str):
-        rows = json.loads(rows)
-    if not isinstance(rows, list) or (rows and not isinstance(rows[0], dict)):
-        raise ValueError(
-            f"Table '{meta.table_name}': expected list[dict] from tool output, "
-            f"got {type(rows).__name__} "
-            f"(first element: {type(rows[0]).__name__ if rows else 'empty'})"
+    while len(rows) < rows_count:
+        response: LLMResponse = client.chat(
+            model=MODEL,
+            messages=messages,
+            tools=[tool],
+            max_tokens=100_000,
+            system=system_prompt,
+            thinking_budget=30_000,
         )
 
-    return rows
+        new_rows: list[dict] = [tc.arguments for tc in response.tool_calls]
+        rows.extend(new_rows)
+
+        if len(rows) >= rows_count:
+            break
+
+        remaining: int = rows_count - len(rows)
+        messages.append(Message(role="assistant", content=json.dumps(new_rows)))
+        messages.append(Message(
+            role="user",
+            content=(
+                f"Generated {len(rows)}/{rows_count} rows so far. "
+                f"Here are the existing rows:\n{json.dumps(rows, indent=2)}\n\n"
+                f"Generate {remaining} more row(s). Do NOT repeat any existing row. "
+                f"Call insert_row once per row using parallel tool calls."
+            ),
+        ))
+
+    return rows[:rows_count]
 
 
 # ---------------------------------------------------------------------------
