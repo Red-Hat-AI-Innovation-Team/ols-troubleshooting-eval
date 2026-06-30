@@ -7,6 +7,7 @@ import logging
 from abc import ABC, abstractmethod
 
 import anthropic
+import httpx
 import openai
 from pydantic import ValidationError
 from tenacity import (
@@ -33,6 +34,8 @@ RETRYABLE_EXCEPTIONS = (
     openai.InternalServerError,
     openai.APITimeoutError,
     openai.APIConnectionError,
+    # httpx transport errors (leak through SDK during streaming)
+    httpx.RemoteProtocolError,
     # Data parsing errors (LLM returned malformed output)
     json.JSONDecodeError,
     ValueError,
