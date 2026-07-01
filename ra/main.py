@@ -89,7 +89,10 @@ def stage_seed(scenarios: list[str], n_seeds: int) -> None:
     with ThreadPoolExecutor(max_workers=config.max_concurrency) as pool:
         futures = [pool.submit(_generate, item) for item in work_items]
         for future in as_completed(futures):
-            print(future.result())
+            try:
+                print(future.result())
+            except Exception as e:
+                print(f"failed: {e}")
 
     db.teardown_db()
 
@@ -162,7 +165,10 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
     with ThreadPoolExecutor(max_workers=config.max_concurrency) as pool:
         futures = [pool.submit(_run_agent, item) for item in work_items]
         for future in as_completed(futures):
-            print(future.result())
+            try:
+                print(future.result())
+            except Exception as e:
+                print(f"failed: {e}")
 
 
 # ---------------------------------------------------------------------------
