@@ -21,6 +21,8 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import psycopg2.errors
+
 import db
 from generate_scenario_based_data import generate_seed_data
 from llm import AnthropicVertexClient
@@ -134,7 +136,14 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
         db_name = f"ols_run_{sc_idx}_{seed_idx}_{run_idx}"
         print(f"[{sc_idx}/{seed_idx}/{run_idx}] running agent (db: {db_name})...")
 
-        db.init_db(seed_data, db_name=db_name)
+        try:
+            db.init_db(seed_data, db_name=db_name)
+        except psycopg2.errors.InvalidTextRepresentation:
+            db.teardown_db(db_name=db_name)
+            seed_path = OUTPUT_DIR / f"{sc_idx:04d}" / f"seed_{seed_idx}.json"
+            seed_path.unlink(missing_ok=True)
+            return f"[{sc_idx}/{seed_idx}/{run_idx}] BAD SEED DATA — deleted {seed_path}, will regenerate next run"
+
         conversation = run(seed_data, db_name=db_name, client=llm_client)
         db.teardown_db(db_name=db_name)
 
