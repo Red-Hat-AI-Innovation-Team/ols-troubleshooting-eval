@@ -138,7 +138,7 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
 
         try:
             db.init_db(seed_data, db_name=db_name)
-        except psycopg2.errors.InvalidTextRepresentation:
+        except psycopg2.errors.DataError:
             db.teardown_db(db_name=db_name)
             seed_path = OUTPUT_DIR / f"{sc_idx:04d}" / f"seed_{seed_idx}.json"
             seed_path.unlink(missing_ok=True)
