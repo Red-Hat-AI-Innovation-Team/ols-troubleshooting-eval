@@ -90,8 +90,8 @@ llm_providers:
     credentials_path: ${SCRIPT_DIR}/.openai_key
     models:
       - name: ${MODEL_NAME}
-        context_window_size: ${CONTEXT_WINDOW}
-
+        context_window_size: ${CONTEXT_WINDOW:-32768}
+        
 mcp_servers:
 $(if [ -n "$MCP_EVALS" ]; then cat << 'MCP_BLOCK'
   - name: obs-mcp
