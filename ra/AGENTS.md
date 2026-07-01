@@ -11,6 +11,7 @@ ra/
   agent.py                  # Generic LLM agent loop with tool calling (@dataclass)
   mock_tools.py             # 30 PostgreSQL-backed mock MCP tools (openshift-mcp + obs-mcp)
   vshell.py                 # In-memory virtual shell for pods_exec (fs + network sim)
+  html_to_text.py           # SO HTML→plain text converter (bs4-based, for CPT data processing)
   db.py                     # DB connection/schema/seed/teardown + seeding order (topo sort by FK)
   generate_scenario_based_data.py  # Scenario-driven seed data generation (with JSONB schemas)
   dedup_scenarios.py        # Embed scenarios + cosine dedup via local embedding server
