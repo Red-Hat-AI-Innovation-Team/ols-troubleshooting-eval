@@ -30,6 +30,7 @@ RETRYABLE_EXCEPTIONS = (
     anthropic.InternalServerError,
     anthropic.APITimeoutError,
     anthropic.APIConnectionError,
+    anthropic.APIStatusError,
     openai.RateLimitError,
     openai.InternalServerError,
     openai.APITimeoutError,
