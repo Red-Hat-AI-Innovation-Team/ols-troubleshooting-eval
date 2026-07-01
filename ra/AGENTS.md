@@ -117,3 +117,140 @@ uv run mypy .
 - Schema: clusters, nodes, namespaces, pods, containers, events, resources, metrics, alerts, silences
 - JSONB columns for labels, annotations, manifests, filesystem/network state
 - GIN indexes on JSONB columns, trigram index on metric names
+
+## CPT (Continued Pretraining) Data
+
+All CPT data lives on `rh-h100-01:~/rawhad/ols-cpt/`. Managed as a `uv` project (Python 3.11, deps: `tiktoken`, `playwright`, `beautifulsoup4`).
+
+### Purpose
+
+Raw domain knowledge corpus for continued pretraining. The `ra/` pipeline's SFT traces (Socratic conversations in `sdg/v1/`) come after CPT — CPT injects domain knowledge, SFT teaches behavior.
+
+### Directory structure
+
+```
+~/rawhad/ols-cpt/
+  pyproject.toml              # uv project config
+  count_tokens.py             # Token counter across all doc repos
+  html_to_text.py             # Final SO HTML→text converter (bs4-based)
+  process_so_data.py          # Batch processor: all SO CSVs → so_corpus/
+  test_html_to_text.py        # Test on 10 random samples
+  strategy_regex.py           # Alt parser: regex (rejected — lossy)
+  strategy_htmlparser.py      # Alt parser: stdlib HTMLParser (rejected — no inline code)
+  strategy_bs4.py             # Alt parser: bs4 with bold/italic (basis for final)
+  repos/                      # 18 cloned doc repos (shallow, ~11GB on disk)
+  so_data/                    # 60 raw SO CSV files (539MB, HTML bodies)
+  so_corpus/                  # 51 processed plain-text files (451MB)
+```
+
+### Data sources — doc repos (17.5M tokens)
+
+All Apache-2.0 or CC-BY-4.0 licensed. Cloned with `--depth 1`.
+
+| Repo | Dir name | Doc files | Raw MB | Tokens | Notes |
+|------|----------|-----------|--------|--------|-------|
+| openshift/openshift-docs | openshift-docs | 11,645 | 41.4M | 10,268,283 | AsciiDoc, OCP 3.x-4.22. 59% of total |
+| kubernetes/website | kubernetes-website | 1,670 | 14.0M | 3,699,000 | Markdown + Hugo, `content/en/docs/` |
+| argoproj/argo-cd | argocd | 452 | 2.8M | 663,637 | MkDocs Markdown |
+| istio/istio.io | istio-docs | 407 | 1.8M | 452,354 | Hugo Markdown, `content/en/docs/` |
+| tigera/docs | calico-docs | 357 | 1.8M | 422,554 | MDX (Docusaurus), OSS calico/ only |
+| ovn-kubernetes/ovn-kubernetes | ovn-kubernetes | 112 | 1.4M | 389,715 | MkDocs, has `troubleshooting/` section |
+| tektoncd/pipeline | tekton-pipeline | 66 | 1.2M | 317,027 | Plain Markdown |
+| prometheus/docs | prometheus-docs | 128 | 1.1M | 267,153 | Markdown, includes blog posts |
+| operator-framework/operator-sdk | operator-sdk | 179 | 0.9M | 214,183 | Hugo Markdown |
+| coredns/coredns.io | coredns-io | 223 | 0.6M | 181,013 | Hugo Markdown |
+| etcd-io/website | etcd-website | 96 | 0.7M | 178,398 | Hugo/Docsy, v3.6 only |
+| helm/helm-www | helm-www | 127 | 0.7M | 165,318 | MDX (Docusaurus) |
+| prometheus/prometheus | prometheus-server | 30 | 0.5M | 125,098 | Markdown, config/querying reference |
+| coredns/coredns | coredns | 68 | 0.3M | 71,323 | Plugin READMEs |
+| operator-framework/olm | olm | 33 | 0.2M | 48,960 | Plain Markdown, v0 (maintenance mode) |
+| prometheus/alertmanager | prometheus-alertmanager | 11 | 0.1M | 33,128 | Markdown, config reference |
+| cri-o/cri-o | cri-o | 12 | 0.1M | 28,950 | Markdown, docs/ + tutorials/ |
+| tektoncd/website | tekton-website | 29 | 0.1M | 26,663 | Hugo Markdown |
+| **TOTAL** | | **15,645** | **69.8M** | **17,552,757** | |
+
+Token counts measured with `cl100k_base` tokenizer (GPT-4/Claude approx). Markup stripped before counting (AsciiDoc directives, Hugo frontmatter/shortcodes, MDX JSX tags).
+
+Grafana docs excluded (AGPL-3.0 license risk).
+
+### Data sources — Stack Overflow (451MB processed)
+
+Scraped from SEDE (data.stackexchange.com) via Playwright CDP automation against a local Chrome instance (Cloudflare blocks headless). License: CC BY-SA.
+
+| Category | Tags | Posts | Raw CSV |
+|----------|------|-------|---------|
+| K8s core | kubernetes (3 date batches), kubectl | 59,865 | 175MB |
+| Docker | docker (4 date batches, score>=1) | 77,409 | 224MB |
+| OpenShift | openshift, openshift-4 | 7,555 | 18MB |
+| Monitoring | prometheus, promql, grafana, alertmanager, grafana-alerting | 13,678 | 26MB |
+| Networking | kubernetes-ingress, kubernetes-networking, kube-proxy, calico, istio, coredns, ovn, kubernetes-dns, nfs | 8,427 | 24MB |
+| Workloads | kubernetes-pod, kubernetes-deployment, kubernetes-statefulset, kubernetes-cronjob, kubernetes-jobs, kubernetes-daemonset, kubernetes-hpa, kubernetes-health-check | 3,127 | 8MB |
+| Config/Security | kubernetes-configmap, kubernetes-secrets, kubernetes-rbac, kubernetes-security, cert-manager, kubernetes-pvc | 1,547 | 4MB |
+| Runtime/Infra | containers, container-runtime, containerd, cri-o, kubelet, etcd | 11,957 | 28MB |
+| CI/CD | tekton, argocd, argo-cd, operator-sdk, operator-lifecycle-manager | 890 | 2MB |
+| Cross-domain | kubernetes+postgresql/redis/elasticsearch/mongodb/cassandra/mysql/java/grpc/nginx-ingress | 5,993 | 21MB |
+| **TOTAL** | | **190,541** | **539MB → 451MB text** |
+
+Large tags (>45k questions) were date-partitioned to stay under SEDE's 50k row limit. Docker also filtered to `score >= 1`.
+
+Each CSV row contains: QuestionId, Title, Tags, QScore, ViewCount, CreationDate, QuestionBody (HTML), AnswerId, AScore, AnswerBody (HTML). The `OUTER APPLY` pattern selects the accepted answer or highest-scored answer per question.
+
+### HTML-to-text conversion
+
+Final converter: `html_to_text.py` (BeautifulSoup4-based). Design choices:
+
+| Feature | Decision | Rationale |
+|---------|----------|-----------|
+| Code blocks (`<pre><code>`) | Triple backticks + language hint | Preserve code patterns for CPT |
+| Inline `<code>` | Backtick wrapping | Common in technical Q&A |
+| `<h1>`-`<h6>` | Markdown `#` headings | Structural signal |
+| `<ul>/<li>` | `- ` bullets | Readable lists |
+| `<a>` links | Text only, href dropped | URLs are noise for CPT |
+| `<strong>/<em>` | Stripped, text only | Bold/italic adds no CPT value |
+| `<img>` | Stripped entirely | No alt-text noise |
+| HTML entities | Decoded via bs4 | Clean text |
+| Blank lines | Collapsed to max 2 | No excessive whitespace |
+
+Conversion ratio: ~89% (HTML markup was ~11% of content). Three strategies were evaluated:
+- `strategy_regex.py` — regex-only, stdlib. Rejected: strips inline code backticks and code block indentation.
+- `strategy_htmlparser.py` — stdlib HTMLParser. Rejected: preserves indentation but drops inline code formatting.
+- `strategy_bs4.py` — bs4 with full markdown (bold/italic/images). Basis for final, simplified.
+
+### Output format (so_corpus/)
+
+Each `.txt` file contains concatenated documents, one per SO question:
+
+```
+## <Title>
+
+<question text>
+
+### Answer
+
+<answer text>
+
+---
+
+## <Next Title>
+...
+```
+
+### Total CPT corpus
+
+| Source | Text size | Est. tokens |
+|--------|-----------|-------------|
+| Doc repos | 70 MB | ~17.5M |
+| SO corpus | 451 MB | ~110M (est.) |
+| **Total** | **~521 MB** | **~127M** |
+
+Sufficient for a pilot CPT run. For full-scale CPT (100M+ tokens), the SO corpus alone covers it.
+
+### SEDE query automation
+
+Queries automated via `sede_cdp.py` (local Mac) connecting to Chrome with `--remote-debugging-port=9222` over CDP. Playwright is the CDP client library (no separate browser launched). Key details:
+
+- Cloudflare blocks headless browsers on data.stackexchange.com
+- Chrome Remote Debugging bypasses this (real browser session)
+- Retry logic: exponential backoff with jitter, max 10 retries, max 60s wait
+- Skip logic: already-downloaded CSVs are skipped on restart (idempotent)
+- Download timeout: 300s for large CSVs
