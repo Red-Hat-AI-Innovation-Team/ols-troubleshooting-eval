@@ -2,6 +2,12 @@
 
 Continued pretraining data for OLS troubleshooting. Two sources: domain documentation and Stack Overflow Q&A.
 
+## Target Model
+
+**Qwen3-8B** (`Qwen/Qwen3-8B`) via Megatron-Bridge with LoRA (rank 64), 4K context length.
+
+Qwen3.5-9B (`Qwen/Qwen3.5-9B`) was initially considered but dropped — it uses a hybrid Gated DeltaNet + sparse MoE architecture (`8 × (3 × (Gated DeltaNet → FFN) → 1 × (Gated Attention → FFN))`), and preliminary research into Megatron-Bridge does not confirm training support for the DeltaNet attention variant. Qwen3-8B is a standard transformer with full recipe support (`qwen3_8b_peft_config`).
+
 ## Data Sources
 
 ### Documentation Repos (18 repos, ~28K files, ~70MB text)
@@ -94,17 +100,181 @@ Produces `cpt_dataset.jsonl` (one JSON object per line):
 | Dataset file size | 572.7 MB |
 | Location | `rh-h100-01:~/rawhad/ols-cpt/cpt_dataset.jsonl` |
 
+## Training
+
+### Prerequisites
+
+- Node with NVIDIA GPUs (tested on 8x H100 80GB)
+- Podman with NVIDIA CDI configured (`/etc/cdi/nvidia.yaml`)
+- NeMo container: `nvcr.io/nvidia/nemo:26.06`
+
+Native install via `uv sync` does not work on CentOS Stream 9 (glibc 2.34) because `nvidia-resiliency-ext` requires glibc 2.39.
+
+### Setup (one-time)
+
+```bash
+cd ~/rawhad/ols-cpt
+
+# 1. Pull NeMo container (~17GB)
+podman pull nvcr.io/nvidia/nemo:26.06
+
+# 2. Clone Megatron-Bridge (needed for checkpoint conversion script)
+git clone https://github.com/NVIDIA-NeMo/Megatron-Bridge.git megatron-bridge
+cd megatron-bridge && git submodule update --init --recursive && cd ..
+
+# 3. Download Qwen3-8B weights from HuggingFace
+hf download Qwen/Qwen3-8B --local-dir ./qwen3-8b-hf
+
+# 4. Convert HF checkpoint to Megatron format
+podman run --rm --device nvidia.com/gpu=0 \
+  -v ~/rawhad/ols-cpt:/data -w /opt/Megatron-Bridge \
+  nvcr.io/nvidia/nemo:26.06 \
+  python examples/conversion/convert_checkpoints.py import \
+    --hf-model /data/qwen3-8b-hf \
+    --megatron-path /data/checkpoints/qwen3_8b_megatron
+
+# 5. Preprocess JSONL into Megatron bin/idx format
+podman run --rm \
+  -v ~/rawhad/ols-cpt:/data -w /opt/Megatron-Bridge \
+  nvcr.io/nvidia/nemo:26.06 \
+  python 3rdparty/Megatron-LM/tools/preprocess_data.py \
+    --input /data/cpt_dataset.jsonl \
+    --output-prefix /data/cpt_preprocessed \
+    --tokenizer-type HuggingFaceTokenizer \
+    --tokenizer-model /data/qwen3-8b-hf \
+    --log-interval 10000 \
+    --workers 32 \
+    --append-eod
+```
+
+### Launch training
+
+```bash
+podman run --rm \
+  --device nvidia.com/gpu=all \
+  --ipc=host \
+  -e RAYON_NUM_THREADS=1 \
+  -e TOKENIZERS_PARALLELISM=false \
+  -e CUDA_DEVICE_MAX_CONNECTIONS=1 \
+  -v ~/rawhad/ols-cpt:/data \
+  -w /data \
+  nvcr.io/nvidia/nemo:26.06 \
+  torchrun --nproc_per_node=8 cpt_lora_qwen3.py
+```
+
+### Training config (`cpt_lora_qwen3.py`)
+
+| Parameter | Value |
+|-----------|-------|
+| Base model | Qwen3-8B (Megatron format) |
+| Method | LoRA (rank 64, alpha 64) |
+| Target modules | linear_qkv, linear_proj, linear_fc1, linear_fc2 |
+| Sequence length | 4096 |
+| Global batch size | 8 |
+| Micro batch size | 1 |
+| Learning rate | 2e-4 (cosine decay, 100-step warmup) |
+| Train iterations | 5000 |
+| Parallelism | TP=1, PP=1, DP=8 (8-way data parallel) |
+| Checkpoint interval | every 500 steps |
+
+### Corpus token stats
+
+| Stat | Tokens |
+|------|--------|
+| P25 | 258 |
+| Median | 441 |
+| Mean | 785 |
+| P75 | 783 |
+| P99 | 5,982 |
+| Max | 866,714 |
+| Total | 145.9M |
+
+75% of docs fit under 783 tokens. Docs longer than 4096 are chunked by the Megatron data loader.
+
+### Observed performance (8x H100 80GB)
+
+| Metric | Value |
+|--------|-------|
+| Step time | ~1.1s |
+| GPU memory (peak) | ~48 GB per GPU |
+| GPU TFLOP/s | ~187 per GPU |
+| ETA (5000 iters) | ~1.5 hours |
+
+## Troubleshooting
+
+### `nvidia-resiliency-ext` wheel incompatibility
+
+```
+error: Distribution `nvidia-resiliency-ext` can't be installed because it doesn't have a wheel for the current platform
+```
+
+CentOS Stream 9 ships glibc 2.34; the wheel requires glibc 2.39. Use the NeMo container instead of native install.
+
+### CDI device error: `cannot stat libEGL_nvidia.so`
+
+```
+Error: crun: cannot stat `/usr/lib64/libEGL_nvidia.so.575.57.08`: No such file or directory
+```
+
+The CDI config is stale (generated for an older driver version). Regenerate:
+
+```bash
+sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
+```
+
+### `--shm-size` conflict with `--ipc=host`
+
+```
+Error: invalid config provided: cannot set shmsize when running in the {host} IPC Namespace
+```
+
+Use `--ipc=host` without `--shm-size`. They are mutually exclusive — `--ipc=host` already gives full access to host shared memory.
+
+### Rayon thread pool panic (multi-GPU only)
+
+```
+pyo3_runtime.PanicException: The global thread pool has not been initialized.:
+ThreadPoolBuildError { kind: IOError(Os { code: 11, kind: WouldBlock,
+message: "Resource temporarily unavailable" }) }
+```
+
+The HuggingFace tokenizer's Rust backend (rayon) fails to spawn threads when 8 processes initialize simultaneously. Fix by setting environment variables:
+
+```bash
+-e RAYON_NUM_THREADS=1 -e TOKENIZERS_PARALLELISM=false
+```
+
+### TP=4 assertion error (single GPU)
+
+```
+AssertionError: world size (1) is not divisible by total_model_size
+(tensor_model_parallel_size=4 ...)
+```
+
+The pretrain recipe defaults to TP=4. Override in the training script:
+
+```python
+config.model.tensor_model_parallel_size = 1
+config.model.pipeline_model_parallel_size = 1
+```
+
 ## Data Location
 
 All raw and processed data lives on `rh-h100-01:~/rawhad/ols-cpt/`:
 
 ```
 ols-cpt/
-  repos/              # 18 shallow-cloned doc repos
-  so_data/            # 60 raw SEDE CSV files (539MB)
-  so_corpus/          # intermediate plain text (from process_so_data.py)
-  cpt_dataset.jsonl   # final CPT dataset (572.7MB)
-  html_to_text.py     # HTML converter
-  build_dataset.py    # dataset builder
-  count_tokens.py     # token counter for doc repos
+  repos/                    # 18 shallow-cloned doc repos
+  so_data/                  # 60 raw SEDE CSV files (539MB)
+  so_corpus/                # intermediate plain text (from process_so_data.py)
+  cpt_dataset.jsonl         # final CPT dataset (572.7MB)
+  cpt_preprocessed_text_document.{bin,idx}  # tokenized for Megatron (577MB)
+  qwen3-8b-hf/              # HuggingFace model weights
+  checkpoints/qwen3_8b_megatron/           # converted Megatron checkpoint
+  checkpoints/qwen3_8b_cpt_lora/           # training output (LoRA adapters)
+  megatron-bridge/           # cloned Megatron-Bridge repo
+  cpt_lora_qwen3.py         # training script
+  html_to_text.py            # HTML converter
+  build_dataset.py           # dataset builder
+  count_tokens.py            # token counter for doc repos
 ```

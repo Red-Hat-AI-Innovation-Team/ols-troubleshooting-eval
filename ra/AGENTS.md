@@ -11,7 +11,6 @@ ra/
   agent.py                  # Generic LLM agent loop with tool calling (@dataclass)
   mock_tools.py             # 30 PostgreSQL-backed mock MCP tools (openshift-mcp + obs-mcp)
   vshell.py                 # In-memory virtual shell for pods_exec (fs + network sim)
-  html_to_text.py           # SO HTML→plain text converter (bs4-based, for CPT data processing)
   db.py                     # DB connection/schema/seed/teardown + seeding order (topo sort by FK)
   generate_scenario_based_data.py  # Scenario-driven seed data generation (with JSONB schemas)
   dedup_scenarios.py        # Embed scenarios + cosine dedup via local embedding server
@@ -32,6 +31,11 @@ ra/
   test_data.json            # Seed data for tests (separate from agent seed data)
   test_mock_tool.py         # Custom test runner (not pytest)
   MCP_TOOLS.md              # Full MCP tool schema documentation (30 tools)
+  cpt/                      # CPT data pipeline scripts + documentation
+    build_dataset.py        #   Builds JSONL dataset from doc repos + SO CSVs (global dedup)
+    html_to_text.py         #   SO HTML→plain text converter (bs4-based)
+    README.md               #   Data sources, methods, output stats
+    sede_queries.md          #   All 60 SEDE SQL queries + scraping method
 ```
 
 ## Commands
@@ -133,6 +137,7 @@ Raw domain knowledge corpus for continued pretraining. The `ra/` pipeline's SFT 
 ~/rawhad/ols-cpt/
   pyproject.toml              # uv project config
   count_tokens.py             # Token counter across all doc repos
+  build_dataset.py            # Builds final JSONL from docs + SO CSVs (global dedup)
   html_to_text.py             # Final SO HTML→text converter (bs4-based)
   process_so_data.py          # Batch processor: all SO CSVs → so_corpus/
   test_html_to_text.py        # Test on 10 random samples
@@ -142,6 +147,7 @@ Raw domain knowledge corpus for continued pretraining. The `ra/` pipeline's SFT 
   repos/                      # 18 cloned doc repos (shallow, ~11GB on disk)
   so_data/                    # 60 raw SO CSV files (539MB, HTML bodies)
   so_corpus/                  # 51 processed plain-text files (451MB)
+  cpt_dataset.jsonl           # Final CPT dataset (185K docs, 573MB)
 ```
 
 ### Data sources — doc repos (17.5M tokens)
@@ -235,6 +241,23 @@ Each `.txt` file contains concatenated documents, one per SO question:
 ## <Next Title>
 ...
 ```
+
+### Final dataset (`cpt_dataset.jsonl`)
+
+Built by `build_dataset.py`. One JSON object per line:
+
+```jsonl
+{"text": "...", "source": "docs", "repo": "coredns", "path": "coredns/plugin.md"}
+{"text": "...", "source": "stackoverflow", "tag": "kubernetes__2023_2027", "qid": "12345"}
+```
+
+| Metric | Value |
+|--------|-------|
+| Total documents | 185,631 |
+| Doc files | 28,402 |
+| SO posts (after global dedup) | 157,229 |
+| SO dupes removed | 33,311 (17% cross-tag overlap) |
+| File size | 572.7 MB |
 
 ### Total CPT corpus
 
