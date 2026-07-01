@@ -48,11 +48,13 @@ def main():
     config.train.micro_batch_size = 1
     config.train.global_batch_size = 8
 
-    # Optimizer
+    # Optimizer (beta2=0.95 per Qwen3 technical reports)
     config.optimizer.lr = 2e-4
+    config.optimizer.adam_beta2 = 0.95
+    config.optimizer.min_lr = 1.5e-5  # 10% of peak, per Qwen guidance
 
     # LR schedule
-    config.scheduler.lr_warmup_iters = 100
+    config.scheduler.lr_warmup_iters = 250
     config.scheduler.lr_decay_style = "cosine"
 
     finetune(config=config, forward_step_func=forward_step)
