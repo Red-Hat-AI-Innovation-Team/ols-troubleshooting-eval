@@ -14,3 +14,4 @@ external_libs
 /mcp_tools.json
 /.dingllm
 /ra/sdg
+/ra/sft_dataset.jsonl
