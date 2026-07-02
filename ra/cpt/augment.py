@@ -113,9 +113,11 @@ async def augment_doc(
             messages=[{"role": "user", "content": user_content}],
             max_tokens=max_tokens,
             temperature=0.7,
+            extra_body={"chat_template_kwargs": {"enable_thinking": False}},
         )
 
-    output = resp.choices[0].message.content or ""
+    msg = resp.choices[0].message
+    output = msg.content or getattr(msg, "reasoning", None) or ""
     if not output.strip():
         return None
 
@@ -239,7 +241,7 @@ def main() -> None:
     parser.add_argument("--base-url", default="https://api.deepseek.com/v1",
                         help="OpenAI-compatible API base URL")
     parser.add_argument("--concurrency", type=int, default=64, help="Max concurrent requests")
-    parser.add_argument("--max-tokens", type=int, default=4096, help="Max output tokens per doc")
+    parser.add_argument("--max-tokens", type=int, default=32000, help="Max output tokens per doc")
     args = parser.parse_args()
     asyncio.run(main_async(args))
 
