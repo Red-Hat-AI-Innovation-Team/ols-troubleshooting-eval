@@ -83,7 +83,9 @@ uv run mypy .
 
 ## Architecture
 
-**Pipeline** (`main.py`): Two-stage pipeline. Stage 1 generates N seed data variants per scenario (from `scenarios.txt`) using `ThreadPoolExecutor`. Stage 2 runs the agent loop N times per seed. All results cached to `sdg/v1/<scenario_idx>/`. Concurrency controlled by `AnthropicVertexConfig.max_concurrency` (default 50).
+**Pipeline** (`main.py`): Two-stage pipeline, both stages use `ThreadPoolExecutor`. Stage 1 generates N seed data variants per scenario (from `scenarios.txt`, concurrency: default 5). Stage 2 runs the agent loop N times per seed (concurrency: 50). All results cached to `sdg/v1/<scenario_idx>/`. Concurrency controlled by `AnthropicVertexConfig.max_concurrency`.
+
+**Resilience**: Both stages wrap `future.result()` in `try/except` — one worker failure logs the error and continues. Stage 2 catches `psycopg2.errors.DataError` during `db.init_db()` (bad LLM-generated seed data: invalid UUIDs, null bytes in JSONB), deletes the offending `seed_*.json`, and continues. Deleted seeds get regenerated on next pipeline run.
 
 **Data flow** (`run_agent.py`): Creates two Agent instances — a user-simulator (SRE with full DB knowledge, claude-opus-4-6) and a troubleshooter (has MCP tools, no DB access, claude-haiku-4-5). They converse Socratically for up to 5 rounds until the SRE says "DONE".
 
@@ -91,7 +93,7 @@ uv run mypy .
 
 **Virtual shell** (`vshell.py`): Backs `pods_exec`. Supports cat, ls, grep, curl, nslookup, dig, ~20 commands against in-memory `dict[str, VFile]` filesystem and `VNet` (DNS + HTTP endpoints).
 
-**LLM abstraction** (`llm/`): `LLMClient` ABC with `chat()` method. `AnthropicVertexClient` (streaming + extended thinking) and `OpenAIClient` (custom base_url). Returns normalized `LLMResponse`. Config via pydantic models in `llm/config/`.
+**LLM abstraction** (`llm/`): `LLMClient` ABC with `chat()` method wrapped by tenacity retry (exponential backoff + jitter, max 10 attempts). Retries: `anthropic.{RateLimitError, InternalServerError, APITimeoutError, APIConnectionError, APIStatusError}`, `openai.{RateLimitError, InternalServerError, APITimeoutError, APIConnectionError}`, `httpx.RemoteProtocolError` (leaks through SDK during streaming), plus data parsing errors. `AnthropicVertexClient` (streaming + extended thinking) and `OpenAIClient` (custom base_url). Config via pydantic models in `llm/config/`.
 
 ## Code style
 
