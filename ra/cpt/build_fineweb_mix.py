@@ -19,7 +19,7 @@ def load_domain_docs(path: str) -> list[str]:
     with open(path) as f:
         for line in f:
             row = json.loads(line)
-            text = row.get("document", "")
+            text = row.get("text", "") or row.get("document", "")
             if text and text.strip():
                 docs.append(text)
     return docs
