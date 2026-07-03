@@ -94,6 +94,40 @@ grep -E 'Traceback|Error|FAILED' /mnt/nvme0n1/rawhad/ols-cpt/train.log | grep -v
 
 ### 6. Export LoRA checkpoint back to HuggingFace (after training)
 
+**Important:** The export requires at least one GPU (`--device nvidia.com/gpu=all`).
+TransformerEngine instantiates CUDA kernels during weight mapping, so CPU-only
+export fails with `RuntimeError: TransformerEngine needs CUDA.`
+
+#### What does NOT work: `convert_checkpoints.py export` with LoRA checkpoints
+
+The CLI helper expects a **full model checkpoint** (all weights). LoRA checkpoints
+only contain adapter parameters (`adapter.linear_in.weight`, `adapter.linear_out.weight`),
+not the frozen base weights. Both of these fail with a `KeyError`:
+
+```bash
+# Attempt 1: point at specific iter dir — fails
+python3 convert_checkpoints.py export \
+  --hf-model /data/qwen3-8b-hf \
+  --megatron-path /data/checkpoints/qwen3_8b_cpt_lora/iter_0000030 \
+  --hf-path /data/qwen3_8b_cpt_lora_hf
+
+# Attempt 2: point at parent dir (has latest_checkpointed_iteration.txt) — same error
+python3 convert_checkpoints.py export \
+  --hf-model /data/qwen3-8b-hf \
+  --megatron-path /data/checkpoints/qwen3_8b_cpt_lora \
+  --hf-path /data/qwen3_8b_cpt_lora_hf
+```
+
+Error: `KeyError: "decoder.layers.self_attention.linear_proj.weight from model not
+in state dict: ['decoder.layers.*.adapter.linear_in.weight', ...]"`
+
+This happens because `export_ckpt` tries to map Megatron weight keys to HF keys,
+but the checkpoint only has LoRA adapter keys, not the base model keys it expects.
+
+#### What works: full-model checkpoints (non-LoRA)
+
+For full-parameter fine-tuning (no LoRA), `convert_checkpoints.py export` works:
+
 ```bash
 podman run --rm \
   --device nvidia.com/gpu=all \
@@ -104,6 +138,62 @@ podman run --rm \
     --hf-model /data/nemotron-30b-base-hf \
     --megatron-path /data/checkpoints/nemotron_30b_cpt_lora \
     --hf-path /data/nemotron-30b-cpt-lora-hf
+```
+
+#### Correct approach for LoRA: `export_adapter_ckpt`
+
+Use `AutoBridge.export_adapter_ckpt()` to export LoRA adapter weights to HF PEFT
+format. This loads the base model, reads LoRA config from `run_config.yaml` in
+the checkpoint, loads adapter weights, and writes HF PEFT files.
+
+Write a script (`export_adapter.py`):
+
+```python
+from megatron.bridge import AutoBridge
+
+bridge = AutoBridge.from_hf_pretrained("/data/qwen3-8b-hf")
+bridge.export_adapter_ckpt(
+    peft_checkpoint="/data/checkpoints/qwen3_8b_cpt_lora/iter_0000030",
+    output_path="/data/qwen3_8b_cpt_lora_adapter_hf",
+)
+```
+
+Run inside the NeMo container:
+
+```bash
+podman run --rm \
+  --device nvidia.com/gpu=all \
+  --ipc=host \
+  -v /mnt/nvme0n1/rawhad/sdg-ki-eval:/data:z \
+  nvcr.io/nvidia/nemo:26.06 \
+  python3 /data/export_adapter.py
+```
+
+**Key details:**
+- Point `peft_checkpoint` at the **`iter_NNNNNN`** dir (contains `run_config.yaml`),
+  not the parent dir. The parent dir fails with `not a distributed checkpoint`.
+- The `run_config.yaml` inside the iter dir has the LoRA settings (rank, alpha,
+  target modules). If missing, it falls back to defaults which may be wrong.
+- Output is a HF PEFT adapter directory: `adapter_config.json` + `adapter_model.safetensors`.
+
+Serve with vLLM using LoRA support:
+
+```bash
+vllm serve Qwen/Qwen3-8B \
+  --enable-lora \
+  --lora-modules cpt=/data/qwen3_8b_cpt_lora_adapter_hf
+```
+
+Or merge into a full model with the `peft` library:
+
+```python
+from transformers import AutoModelForCausalLM
+from peft import PeftModel
+
+base = AutoModelForCausalLM.from_pretrained("/data/qwen3-8b-hf")
+model = PeftModel.from_pretrained(base, "/data/qwen3_8b_cpt_lora_adapter_hf")
+merged = model.merge_and_unload()
+merged.save_pretrained("/data/qwen3_8b_cpt_merged_hf")
 ```
 
 ## Podman flags explained
