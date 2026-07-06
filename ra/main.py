@@ -25,8 +25,8 @@ import psycopg2.errors
 
 import db
 from generate_scenario_based_data import generate_seed_data
-from llm import AnthropicVertexClient
-from llm.config.anthropic_vertex import AnthropicVertexConfig
+from llm import LLMClient, AnthropicVertexClient, OpenAIClient
+from llm.config import AnthropicVertexConfig, OpenAIConfig
 from run_agent import run
 
 # ---------------------------------------------------------------------------
@@ -34,10 +34,6 @@ from run_agent import run
 # ---------------------------------------------------------------------------
 
 SCENARIOS_PATH = Path(__file__).parent / "scenarios.txt"
-OUTPUT_DIR = Path(__file__).parent / "sdg" / "v1"
-
-N_SEEDS = 5
-N_RUNS = 5
 
 
 def load_scenarios() -> list[str]:
@@ -50,7 +46,7 @@ def load_scenarios() -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def stage_seed(scenarios: list[str], n_seeds: int) -> None:
+def stage_seed(scenarios: list[str], n_seeds: int, output_dir: Path) -> None:
     print(f"\n{'=' * 70}")
     print(f"STAGE 1: SEED DATA GENERATION ({len(scenarios)} scenarios × {n_seeds} seeds)")
     print(f"{'=' * 70}\n")
@@ -63,7 +59,7 @@ def stage_seed(scenarios: list[str], n_seeds: int) -> None:
     # Build flat work list, pre-create dirs + scenario.txt
     work_items: list[tuple[int, str, int, Path]] = []
     for sc_idx, scenario in enumerate(scenarios):
-        sc_dir = OUTPUT_DIR / f"{sc_idx:04d}"
+        sc_dir = output_dir / f"{sc_idx:04d}"
         sc_dir.mkdir(parents=True, exist_ok=True)
 
         scenario_path = sc_dir / "scenario.txt"
@@ -102,18 +98,36 @@ def stage_seed(scenarios: list[str], n_seeds: int) -> None:
 # ---------------------------------------------------------------------------
 
 
-def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
+def stage_run(
+    scenarios: list[str],
+    n_seeds: int,
+    n_runs: int,
+    output_dir: Path,
+    model_url: str | None = None,
+    model_name: str = "claude-haiku-4-5@20251001",
+    concurrency: int = 50,
+) -> None:
     print(f"\n{'=' * 70}")
     print(f"STAGE 2: AGENT RUNS ({len(scenarios)} scenarios × {n_seeds} seeds × {n_runs} runs)")
     print(f"{'=' * 70}\n")
 
-    config = AnthropicVertexConfig(max_concurrency=50)
-    llm_client = AnthropicVertexClient(config)
+    # these are also used for user simulator
+    config = AnthropicVertexConfig(max_concurrency=concurrency)
+    llm_client: LLMClient = AnthropicVertexClient(config)
+
+    if model_url:
+        troubleshooter_client: LLMClient = OpenAIClient(
+            OpenAIConfig(api_key="not-needed", base_url=model_url, max_concurrency=concurrency)
+        )
+        print(f"Troubleshooter: {model_name} @ {model_url}")
+    else:
+        troubleshooter_client = llm_client
+        print(f"Troubleshooter: {model_name} (Anthropic Vertex)")
 
     # Build flat work list
     work_items: list[tuple[int, str, int, dict, int, Path]] = []
     for sc_idx, scenario in enumerate(scenarios):
-        sc_dir = OUTPUT_DIR / f"{sc_idx:04d}"
+        sc_dir = output_dir / f"{sc_idx:04d}"
         runs_dir = sc_dir / "runs"
         runs_dir.mkdir(parents=True, exist_ok=True)
 
@@ -132,7 +146,7 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
                     continue
                 work_items.append((sc_idx, scenario, seed_idx, seed_data, run_idx, run_path))
 
-    print(f"\n{len(work_items)} run(s) to execute (pool size: {config.max_concurrency})\n")
+    print(f"\n{len(work_items)} run(s) to execute (concurrency: {concurrency})\n")
 
     def _run_agent(item: tuple[int, str, int, dict, int, Path]) -> str:
         sc_idx, scenario, seed_idx, seed_data, run_idx, run_path = item
@@ -143,11 +157,15 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
             db.init_db(seed_data, db_name=db_name)
         except psycopg2.errors.DataError:
             db.teardown_db(db_name=db_name)
-            seed_path = OUTPUT_DIR / f"{sc_idx:04d}" / f"seed_{seed_idx}.json"
-            seed_path.unlink(missing_ok=True)
-            return f"[{sc_idx}/{seed_idx}/{run_idx}] BAD SEED DATA — deleted {seed_path}, will regenerate next run"
+            bad_seed_path = output_dir / f"{sc_idx:04d}" / f"seed_{seed_idx}.json"
+            bad_seed_path.unlink(missing_ok=True)
+            return f"[{sc_idx}/{seed_idx}/{run_idx}] BAD SEED DATA — deleted {bad_seed_path}, will regenerate next run"
 
-        conversation = run(seed_data, db_name=db_name, client=llm_client)
+        conversation = run(
+            seed_data, db_name=db_name, client=llm_client,
+            troubleshooter_client=troubleshooter_client,
+            troubleshooter_model=model_name,
+        )
         db.teardown_db(db_name=db_name)
 
         result = {
@@ -162,7 +180,7 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
         run_path.write_text(json.dumps(result, indent=2))
         return f"[{sc_idx}/{seed_idx}/{run_idx}] -> saved: {run_path}"
 
-    with ThreadPoolExecutor(max_workers=config.max_concurrency) as pool:
+    with ThreadPoolExecutor(max_workers=concurrency) as pool:
         futures = [pool.submit(_run_agent, item) for item in work_items]
         for future in as_completed(futures):
             try:
@@ -177,20 +195,31 @@ def stage_run(scenarios: list[str], n_seeds: int, n_runs: int) -> None:
 
 
 def main():
+    N_SEEDS, N_RUNS = 5, 5
     parser = argparse.ArgumentParser(description="Scenario seed generation + agent evaluation pipeline")
     parser.add_argument("--stage", choices=["seed", "run", "both"], default="both")
     parser.add_argument("--seeds", type=int, default=N_SEEDS, help=f"Seeds per scenario (default: {N_SEEDS})")
     parser.add_argument("--runs", type=int, default=N_RUNS, help=f"Runs per seed (default: {N_RUNS})")
+    parser.add_argument("--output-dir", type=Path, required=True, help="Output directory for seeds and runs")
+    parser.add_argument("--model-url", type=str, help="OpenAI-compatible base URL for troubleshooter")
+    parser.add_argument("--model-name", type=str, default="claude-haiku-4-5@20251001", help="Troubleshooter model name")
+    parser.add_argument("--concurrency", type=int, default=50)
     args = parser.parse_args()
 
     scenarios = load_scenarios()
     print(f"Loaded {len(scenarios)} scenarios from {SCENARIOS_PATH.name}")
 
     if args.stage in ("seed", "both"):
-        stage_seed(scenarios, args.seeds)
+        stage_seed(scenarios, args.seeds, output_dir=args.output_dir)
 
     if args.stage in ("run", "both"):
-        stage_run(scenarios, args.seeds, args.runs)
+        stage_run(
+            scenarios, args.seeds, args.runs,
+            output_dir=args.output_dir,
+            model_url=args.model_url,
+            model_name=args.model_name,
+            concurrency=args.concurrency,
+        )
 
     print("\nDone.")
 
