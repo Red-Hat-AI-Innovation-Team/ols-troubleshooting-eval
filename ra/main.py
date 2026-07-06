@@ -27,7 +27,7 @@ import db
 from generate_scenario_based_data import generate_seed_data
 from llm import LLMClient, AnthropicVertexClient, OpenAIClient
 from llm.config import AnthropicVertexConfig, OpenAIConfig
-from run_agent import run
+from run_agent import run, run_single_turn
 
 # ---------------------------------------------------------------------------
 # Config
@@ -106,9 +106,10 @@ def stage_run(
     model_url: str | None = None,
     model_name: str = "claude-haiku-4-5@20251001",
     concurrency: int = 50,
+    mode: str = "multi-turn",
 ) -> None:
     print(f"\n{'=' * 70}")
-    print(f"STAGE 2: AGENT RUNS ({len(scenarios)} scenarios × {n_seeds} seeds × {n_runs} runs)")
+    print(f"STAGE 2: AGENT RUNS ({len(scenarios)} scenarios × {n_seeds} seeds × {n_runs} runs, mode={mode})")
     print(f"{'=' * 70}\n")
 
     # these are also used for user simulator
@@ -161,7 +162,8 @@ def stage_run(
             bad_seed_path.unlink(missing_ok=True)
             return f"[{sc_idx}/{seed_idx}/{run_idx}] BAD SEED DATA — deleted {bad_seed_path}, will regenerate next run"
 
-        conversation = run(
+        run_fn = run_single_turn if mode == "single-turn" else run
+        conversation = run_fn(
             seed_data, db_name=db_name, client=llm_client,
             troubleshooter_client=troubleshooter_client,
             troubleshooter_model=model_name,
@@ -204,6 +206,11 @@ def main():
     parser.add_argument("--model-url", type=str, help="OpenAI-compatible base URL for troubleshooter")
     parser.add_argument("--model-name", type=str, default="claude-haiku-4-5@20251001", help="Troubleshooter model name")
     parser.add_argument("--concurrency", type=int, default=50)
+    parser.add_argument(
+        "--mode", choices=["single-turn", "multi-turn"], default="multi-turn",
+        help="Conversation mode: single-turn (one question, agent investigates) "
+             "or multi-turn (user simulator provides follow-ups)",
+    )
     args = parser.parse_args()
 
     scenarios = load_scenarios()
@@ -219,6 +226,7 @@ def main():
             model_url=args.model_url,
             model_name=args.model_name,
             concurrency=args.concurrency,
+            mode=args.mode,
         )
 
     print("\nDone.")

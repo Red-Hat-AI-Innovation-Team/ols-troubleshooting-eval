@@ -1,7 +1,12 @@
 """Run a troubleshooting agent loop against the mock MCP tools.
 
+Supports two modes:
+  - multi-turn (default): User simulator provides follow-up questions
+  - single-turn: One user question, agent investigates via tools until final answer
+
 Usage:
     uv run python run_agent.py
+    uv run python run_agent.py --mode single-turn
 """
 
 import json
@@ -80,6 +85,67 @@ drill into specific issues you discover."""
 MAX_CONVERSATION_ROUNDS = 5
 
 
+def run_single_turn(
+    seed_data: dict[str, list[dict]],
+    client: LLMClient,
+    db_name: str | None = None,
+    troubleshooter_client: LLMClient | None = None,
+    troubleshooter_model: str = "claude-haiku-4-5@20251001",
+) -> list[dict]:
+    """Run a single-turn troubleshooting session.
+
+    Generates one initial user question, then lets the agent investigate
+    via tool calls until it produces a final text answer — no user simulator
+    follow-ups. This matches the OLS eval format (10 of 11 scenarios).
+
+    Returns the troubleshooter's conversation history.
+    """
+    dsn = db._dsn_for(db_name) if db_name else db.DB_DSN
+
+    with db.connect(dsn) as conn:
+        # --- User simulator agent (generates initial question only) ---
+        seed_data_str = json.dumps(seed_data, indent=2)
+        user_sim = Agent(
+            system_prompt=USER_SIM_SYSTEM_PROMPT.format(seed_data=seed_data_str),
+            model="claude-opus-4-6@default",
+            tool_defs=[],
+            tool_handler=lambda _name, _params: "",
+            client=client,
+            max_turns=1,
+            thinking_budget=5_000,
+            max_tokens=8_000,
+        )
+
+        # --- Troubleshooting agent (has tools, no seed data) ---
+        troubleshooter = Agent(
+            system_prompt=SYSTEM_PROMPT,
+            model=troubleshooter_model,
+            tool_defs=mock_tools.load_tool_defs(),
+            tool_handler=mock_tools.make_tool_handler(conn),
+            client=troubleshooter_client or client,
+        )
+
+        # --- Generate initial question ---
+        print("=" * 60)
+        print("GENERATING INITIAL QUESTION")
+        print("=" * 60)
+        question = user_sim.run(INITIAL_QUESTION_PROMPT)
+        print(f"\n>>> SRE: {question}\n")
+
+        # --- Single-turn: agent investigates until final answer ---
+        print("=" * 60)
+        print("SINGLE-TURN AGENT INVESTIGATION")
+        print("=" * 60)
+        answer = troubleshooter.run(question)
+        print(f"\n>>> Agent: {answer[:200]}...\n")
+
+        print("=" * 60)
+        print("CONVERSATION COMPLETE (single-turn)")
+        print("=" * 60)
+
+    return [m.model_dump() for m in troubleshooter.messages]
+
+
 def run(
     seed_data: dict[str, list[dict]],
     client: LLMClient,
@@ -87,7 +153,7 @@ def run(
     troubleshooter_client: LLMClient | None = None,
     troubleshooter_model: str = "claude-haiku-4-5@20251001",
 ) -> list[dict]:
-    """Run the troubleshooting agent loop. Returns the troubleshooter's conversation history."""
+    """Run the multi-turn troubleshooting agent loop. Returns the troubleshooter's conversation history."""
     dsn = db._dsn_for(db_name) if db_name else db.DB_DSN
 
     with db.connect(dsn) as conn:
@@ -145,6 +211,21 @@ def run(
     return [m.model_dump() for m in troubleshooter.messages]
 
 if __name__ == "__main__":
-  seed_data_path = Path(__file__).parent / "seed_data.json"
-  seed_data = json.loads(seed_data_path.read_text())
-  run(seed_data, client=AnthropicVertexClient())
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run troubleshooting agent")
+    parser.add_argument(
+        "--mode", choices=["single-turn", "multi-turn"], default="multi-turn",
+        help="Conversation mode: single-turn (one question, agent investigates) "
+             "or multi-turn (user simulator provides follow-ups)",
+    )
+    args = parser.parse_args()
+
+    seed_data_path = Path(__file__).parent / "seed_data.json"
+    seed_data = json.loads(seed_data_path.read_text())
+    client = AnthropicVertexClient()
+
+    if args.mode == "single-turn":
+        run_single_turn(seed_data, client=client)
+    else:
+        run(seed_data, client=client)
