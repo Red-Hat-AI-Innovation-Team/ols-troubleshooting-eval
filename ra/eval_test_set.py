@@ -25,8 +25,10 @@ from pathlib import Path
 
 import db
 from agent import Agent
-from llm import AnthropicVertexClient
+from llm import AnthropicVertexClient, OpenAIClient
+from llm.base import LLMClient
 from llm.config.anthropic_vertex import AnthropicVertexConfig
+from llm.config.openai import OpenAIConfig
 import mock_tools
 from run_agent import (
     INITIAL_QUESTION_PROMPT,
@@ -124,7 +126,9 @@ def format_reference_answers(answers: list[str]) -> str:
 def run_single_eval(
     seed_data: dict[str, list[dict]],
     reference_answers: list[str],
-    client: AnthropicVertexClient,
+    judge_client: LLMClient,
+    troubleshooter_client: LLMClient,
+    troubleshooter_model: str,
     db_name: str,
 ) -> tuple[bool, str, str, str]:
     """Run a single-round eval. Returns (passed, reason, question, answer)."""
@@ -138,7 +142,7 @@ def run_single_eval(
             model="claude-opus-4-6@default",
             tool_defs=[],
             tool_handler=lambda _name, _params: "",
-            client=client,
+            client=judge_client,
             max_turns=1,
             thinking_budget=5_000,
             max_tokens=8_000,
@@ -146,10 +150,10 @@ def run_single_eval(
 
         troubleshooter = Agent(
             system_prompt=SYSTEM_PROMPT,
-            model="claude-haiku-4-5@20251001",
+            model=troubleshooter_model,
             tool_defs=mock_tools.load_tool_defs(),
             tool_handler=mock_tools.make_tool_handler(conn),
-            client=client,
+            client=troubleshooter_client,
         )
 
         question = user_sim.run(INITIAL_QUESTION_PROMPT)
@@ -164,7 +168,7 @@ def run_single_eval(
         model="claude-opus-4-6@default",
         tool_defs=[],
         tool_handler=lambda _name, _params: "",
-        client=client,
+        client=judge_client,
         max_turns=1,
         thinking_budget=5_000,
         max_tokens=8_000,
@@ -191,6 +195,8 @@ def main() -> None:
     parser.add_argument("--runs", type=int, default=N_RUNS, help=f"Runs per seed (default: {N_RUNS})")
     parser.add_argument("--output", type=Path, default=Path("eval_results.json"))
     parser.add_argument("--concurrency", type=int, default=10)
+    parser.add_argument("--model-url", type=str, help="OpenAI-compatible base URL for troubleshooter model")
+    parser.add_argument("--model-name", type=str, default="model", help="Model name for troubleshooter (default: model)")
     args = parser.parse_args()
 
     # Load metadata and reference root causes
@@ -206,8 +212,21 @@ def main() -> None:
         seed_files = sorted(test_dir.glob("seed_*.json"))
     print(f"Found {len(seed_files)} test seeds")
 
-    config = AnthropicVertexConfig(max_concurrency=args.concurrency)
-    client = AnthropicVertexClient(config)
+    # Judge client (always Anthropic Vertex for user sim + evaluator)
+    judge_config = AnthropicVertexConfig(max_concurrency=args.concurrency)
+    judge_client: LLMClient = AnthropicVertexClient(judge_config)
+
+    # Troubleshooter client
+    if args.model_url:
+        troubleshooter_client: LLMClient = OpenAIClient(
+            OpenAIConfig(api_key="not-needed", base_url=args.model_url)
+        )
+        troubleshooter_model = args.model_name
+        print(f"Troubleshooter: {troubleshooter_model} @ {args.model_url}")
+    else:
+        troubleshooter_client = judge_client
+        troubleshooter_model = "claude-haiku-4-5@20251001"
+        print(f"Troubleshooter: {troubleshooter_model} (Anthropic Vertex)")
 
     # Build work items: (seed_idx, run_idx, seed_data, reference_answers)
     work_items: list[tuple[int, int, dict, list[str]]] = []
@@ -230,7 +249,9 @@ def main() -> None:
 
         db.init_db(seed_data, db_name=db_name)
         passed, reason, question, answer = run_single_eval(
-            seed_data, reference_answers, client, db_name,
+            seed_data, reference_answers,
+            judge_client, troubleshooter_client, troubleshooter_model,
+            db_name,
         )
         db.teardown_db(db_name=db_name)
 
