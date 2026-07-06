@@ -84,6 +84,8 @@ def run(
     seed_data: dict[str, list[dict]],
     client: LLMClient,
     db_name: str | None = None,
+    troubleshooter_client: LLMClient | None = None,
+    troubleshooter_model: str = "claude-haiku-4-5@20251001",
 ) -> list[dict]:
     """Run the troubleshooting agent loop. Returns the troubleshooter's conversation history."""
     dsn = db._dsn_for(db_name) if db_name else db.DB_DSN
@@ -105,10 +107,10 @@ def run(
         # --- Troubleshooting agent (has tools, no seed data) ---
         troubleshooter = Agent(
             system_prompt=SYSTEM_PROMPT,
-            model="claude-haiku-4-5@20251001",
+            model=troubleshooter_model,
             tool_defs=mock_tools.load_tool_defs(),
             tool_handler=mock_tools.make_tool_handler(conn),
-            client=client,
+            client=troubleshooter_client or client,
         )
 
         # --- Generate initial question ---
