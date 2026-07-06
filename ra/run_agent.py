@@ -111,6 +111,7 @@ def run(
             tool_defs=mock_tools.load_tool_defs(),
             tool_handler=mock_tools.make_tool_handler(conn),
             client=troubleshooter_client or client,
+            max_turns=50,
         )
 
         # --- Generate initial question ---

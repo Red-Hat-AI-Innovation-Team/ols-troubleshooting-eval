@@ -69,4 +69,6 @@ class Agent:
 
             self.messages.append(Message(role="tool", tool_results=tool_results))
 
-        return "[Agent hit max turns without producing a final answer]"
+        default_ret = "[Agent hit max turns without producing a final answer]"
+        self.messages.append(Message(role='assistant', content=default_ret))
+        return default_ret
