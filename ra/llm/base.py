@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from tenacity import (
     retry,
     retry_if_exception_type,
+    retry_if_not_exception_type,
     stop_after_attempt,
     wait_exponential_jitter,
     before_sleep_log,
@@ -22,6 +23,12 @@ from llm.config.base import LLMConfig
 from llm.types import LLMResponse, Message, ToolDef
 
 logger = logging.getLogger(__name__)
+
+# Exceptions that should NOT be retried (deterministic client errors)
+NON_RETRYABLE_EXCEPTIONS = (
+    anthropic.BadRequestError,
+    openai.BadRequestError,
+)
 
 # Exceptions that should trigger a retry
 RETRYABLE_EXCEPTIONS = (
@@ -46,7 +53,10 @@ RETRYABLE_EXCEPTIONS = (
 )
 
 _chat_retry = retry(
-    retry=retry_if_exception_type(RETRYABLE_EXCEPTIONS),
+    retry=(
+        retry_if_exception_type(RETRYABLE_EXCEPTIONS)
+        & retry_if_not_exception_type(NON_RETRYABLE_EXCEPTIONS)
+    ),
     stop=stop_after_attempt(10),
     wait=wait_exponential_jitter(initial=5, max=120, jitter=5),
     before_sleep=before_sleep_log(logger, logging.WARNING),

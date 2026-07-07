@@ -20,7 +20,7 @@ class Agent:
     client: LLMClient
     max_turns: int = 20
     thinking_budget: int = 10_000
-    max_tokens: int = 16_000
+    max_tokens: int = 64_000
     messages: list[Message] = field(default_factory=list)
 
     def run(self, query: str) -> str:

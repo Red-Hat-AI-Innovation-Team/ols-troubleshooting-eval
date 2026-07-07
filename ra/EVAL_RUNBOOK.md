@@ -406,11 +406,57 @@ Change the model ID and flags. Always check the HF model page for recommended vL
 | Model | TP | Context | Special Flags |
 |-------|----|---------|---------------|
 | Nemotron-3-Nano-30B-A3B | 2 | 131072 | `--reasoning-parser nano_v3 --reasoning-parser-plugin nano_v3_reasoning_parser.py --tool-call-parser qwen3_coder` |
+| GPT-OSS-20B | 8 | 131072 | `--tool-call-parser openai --enable-auto-tool-choice` |
 | Qwen3.6 35B-A3B | 2 | 32768 | `--enable-auto-tool-choice --tool-call-parser qwen3_coder` |
 | Gemma 4 12B-IT | 1 | 32768 | `--enable-auto-tool-choice --tool-call-parser gemma4` |
 | Gemma 4 31B-IT | 2 | 32768 | `--enable-auto-tool-choice --tool-call-parser gemma4` |
 
 The `--served-model-name model` and the model name arg to `run_eval.sh` must match.
+
+### GPT-OSS-20B
+
+Uses OpenAI's [harmony response format](https://github.com/openai/harmony). vLLM 0.19.1 has native support (`GptOssForCausalLM`). No `--trust-remote-code` needed.
+
+**vLLM server (on model node, e.g. rh-h100-05):**
+
+```bash
+ssh rh-h100-05 "tmux new-session -d -s gptoss \
+  'cd /mnt/nvme0n1/rawhad && \
+   export HF_HOME=/mnt/nvme0n1/rawhad/hf_cache && \
+   CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
+   ~/rawhad/vllm_venv_new/bin/vllm serve openai/gpt-oss-20b \
+     --served-model-name model \
+     --max-num-seqs 512 \
+     --tensor-parallel-size 8 \
+     --max-model-len 131072 \
+     --port 8000 \
+     --tool-call-parser openai \
+     --enable-auto-tool-choice \
+     2>&1 | tee /mnt/nvme0n1/rawhad/vllm_gptoss.log; sleep infinity'"
+```
+
+**Testset eval (on eval node rh-h100-01, from `ra/` dir):**
+
+```bash
+OPENAI_KEY=$(cat ~/rawhad/ols-troubleshooting-eval/.openai_key)
+
+ssh rh-h100-01 "tmux new-session -d -s gptoss-testset \
+  'cd ~/rawhad/ols-troubleshooting-eval/ra && \
+   export OPENAI_API_KEY=$OPENAI_KEY && \
+   export PATH=\$HOME/.local/bin:\$PATH && \
+   uv run python eval_test_set.py \
+     --model-url http://10.241.128.21:8000/v1 \
+     --model-name model \
+     --output eval/gptoss_20b/baseline.json \
+     --concurrency 10 \
+   2>&1 | tee /mnt/nvme0n1/rawhad/gptoss_testset_eval.log; sleep infinity'"
+```
+
+**Notes:**
+- `--tool-call-parser openai` is required — without it, tool calls stay in harmony tokens and vLLM returns empty `tool_calls: []`.
+- Reasoning effort is controlled via system prompt (`"Reasoning: high"`, `"Reasoning: low"`), not API params.
+- OLS eval (`run_eval.sh`) does NOT work with GPT-OSS — OLS's backend parser can't handle harmony tokens that leak into responses. Use the testset eval only.
+- MXFP4 quantized out of the box — only needs ~1.83 GiB per GPU with TP=8.
 
 ### Inference-time scaling (ITS)
 
