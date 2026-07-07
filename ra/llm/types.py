@@ -45,6 +45,7 @@ class Message(BaseModel):
 
     role: Role
     content: str | None = None
+    reasoning: str | None = None
     tool_calls: list[ToolCall] = []
     tool_results: list[ToolResult] = []
 
@@ -53,6 +54,7 @@ class LLMResponse(BaseModel):
     """Normalized response from any provider."""
 
     content: str | None = None
+    reasoning: str | None = None
     tool_calls: list[ToolCall] = []
     stop_reason: str | None = None
     tokens_in: int = 0

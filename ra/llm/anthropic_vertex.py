@@ -113,6 +113,8 @@ def _parse_response(response: anthropic.types.Message) -> LLMResponse:
     content_parts: list[str] = []
     tool_calls: list[ToolCall] = []
 
+    thinking_parts: list[str] = []
+
     for block in response.content:
         if isinstance(block, ToolUseBlock):
             if isinstance(block.input, dict):
@@ -126,11 +128,14 @@ def _parse_response(response: anthropic.types.Message) -> LLMResponse:
                 name=block.name,
                 arguments=arguments,
             ))
+        elif hasattr(block, "thinking"):
+            thinking_parts.append(block.thinking)
         elif hasattr(block, "text"):
             content_parts.append(block.text)
 
     return LLMResponse(
         content="\n".join(content_parts) if content_parts else None,
+        reasoning="\n".join(thinking_parts) if thinking_parts else None,
         tool_calls=tool_calls,
         stop_reason=response.stop_reason,
         tokens_in=response.usage.input_tokens,

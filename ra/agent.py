@@ -48,13 +48,14 @@ class Agent:
 
             if not response.tool_calls:
                 final_answer = response.content or ""
-                self.messages.append(Message(role="assistant", content=response.content))
+                self.messages.append(Message(role="assistant", content=response.content, reasoning=response.reasoning))
                 return final_answer
 
             # Store assistant message with tool calls
             self.messages.append(Message(
                 role="assistant",
                 content=response.content,
+                reasoning=response.reasoning,
                 tool_calls=response.tool_calls,
             ))
 

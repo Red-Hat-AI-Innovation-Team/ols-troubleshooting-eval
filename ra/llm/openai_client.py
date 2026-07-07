@@ -117,8 +117,11 @@ def _parse_response(response: openai.types.chat.ChatCompletion) -> LLMResponse:
                 arguments=arguments,
             ))
 
+    reasoning = getattr(msg, "reasoning_content", None) or getattr(msg, "reasoning", None)
+
     return LLMResponse(
         content=msg.content,
+        reasoning=reasoning,
         tool_calls=tool_calls,
         stop_reason=choice.finish_reason,
         tokens_in=response.usage.prompt_tokens if response.usage else 0,

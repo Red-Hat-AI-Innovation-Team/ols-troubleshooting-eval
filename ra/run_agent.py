@@ -9,8 +9,7 @@ from pathlib import Path
 
 from agent import Agent
 import db
-from llm import AnthropicVertexClient
-from llm.base import LLMClient
+from llm import AnthropicVertexClient, LLMClient, Message
 import mock_tools
 
 # ---------------------------------------------------------------------------
@@ -136,6 +135,7 @@ def run(
             print(f"\n>>> SRE: {follow_up}\n")
 
             if follow_up.strip().startswith("DONE"):
+                troubleshooter.messages.append(Message(role="user", content=follow_up))
                 print("=" * 60)
                 print("CONVERSATION COMPLETE")
                 print("=" * 60)
