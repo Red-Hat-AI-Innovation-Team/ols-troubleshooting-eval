@@ -118,7 +118,7 @@ def stage_run(
 
     if model_url:
         troubleshooter_client: LLMClient = OpenAIClient(
-            OpenAIConfig(api_key="not-needed", base_url=model_url, max_concurrency=concurrency)
+            OpenAIConfig(base_url=model_url, max_concurrency=concurrency)
         )
         print(f"Troubleshooter: {model_name} @ {model_url}")
     else:

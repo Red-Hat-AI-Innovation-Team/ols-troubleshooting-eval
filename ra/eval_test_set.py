@@ -219,7 +219,7 @@ def main() -> None:
     # Troubleshooter client
     if args.model_url:
         troubleshooter_client: LLMClient = OpenAIClient(
-            OpenAIConfig(api_key="not-needed", base_url=args.model_url)
+            OpenAIConfig(base_url=args.model_url)
         )
         troubleshooter_model = args.model_name
         print(f"Troubleshooter: {troubleshooter_model} @ {args.model_url}")
