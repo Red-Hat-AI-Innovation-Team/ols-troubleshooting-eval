@@ -125,7 +125,7 @@ for model, configs in sorted(models.items()):
 
     fmt2 = "{:<25} {:>10}"
     print(f"\n  Answer correctness (macro-averaged, score >= {THRESHOLD}):")
-    print(f"  {fmt2.format('Config', 'pass@1')}")
+    print(f"  {fmt2.format('Config', 'Pass%')}")
     print(f"  {'-'*37}")
     for c in ordered:
         marker = " <-- best" if c == best_config else ""
