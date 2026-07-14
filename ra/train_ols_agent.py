@@ -58,7 +58,7 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
     parser.add_argument("--lora-rank", type=int, default=16, help="LoRA rank dimension")
     parser.add_argument("--lora-alpha", type=int, default=64, help="LoRA alpha scaling factor")
-    parser.add_argument("--max-seq-length", type=int, default=8192, help="Maximum sequence length")
+    parser.add_argument("--max-seq-length", type=int, default=32768, help="Maximum sequence length")
     parser.add_argument("--gradient-accumulation-steps", type=int, default=4)
     parser.add_argument("--test-split", type=float, default=0.1, help="Fraction for test split")
     parser.add_argument("--push-to-hub", action="store_true", help="Push model to HuggingFace Hub")

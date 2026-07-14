@@ -133,7 +133,7 @@ def main() -> None:
                 tools=tools,
                 tokenize=False,
                 add_generation_prompt=False,
-            )
+            ).rstrip('\n')
 
             n_tokens = len(tokenizer.encode(text))
             token_counts.append(n_tokens)
