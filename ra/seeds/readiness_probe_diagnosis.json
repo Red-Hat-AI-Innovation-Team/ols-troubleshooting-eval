@@ -1,0 +1,508 @@
+{
+  "clusters": [
+    {
+      "id": 1,
+      "name": "eval-cluster",
+      "api_server_url": "https://api.eval-cluster.example.com:6443",
+      "is_openshift": true,
+      "version": "4.14.12",
+      "created_at": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "kubeconfig_contexts": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "context_name": "admin/api-eval-cluster:6443/system:admin",
+      "server_url": "https://api.eval-cluster.example.com:6443",
+      "is_default": true,
+      "user_name": "system:admin",
+      "namespace": "default"
+    }
+  ],
+  "nodes": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "worker-0.eval-cluster.example.com",
+      "uid": "d4f1a2b3-c001-4e00-a100-000000000001",
+      "labels": {
+        "kubernetes.io/hostname": "worker-0.eval-cluster.example.com",
+        "kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "node-role.kubernetes.io/worker": ""
+      },
+      "annotations": {},
+      "taints": [],
+      "phase": "Ready",
+      "allocatable_cpu_millicores": 15500,
+      "allocatable_memory_bytes": 64424509440,
+      "allocatable_pods": 250,
+      "capacity_cpu_millicores": 16000,
+      "capacity_memory_bytes": 67108864000,
+      "capacity_pods": 250,
+      "os_image": "Red Hat Enterprise Linux CoreOS 414.92.202405201754-0",
+      "kernel_version": "5.14.0-284.67.1.el9_2.x86_64",
+      "kubelet_version": "v1.27.14+7066f0d",
+      "container_runtime": "cri-o://1.27.6-3.rhaos4.14.git3c2e3fc.el9",
+      "architecture": "amd64",
+      "created_at": "2026-01-01T00:05:00Z"
+    }
+  ],
+  "api_resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Pod",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 2,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Event",
+      "is_namespaced": true,
+      "is_scalable": false
+    }
+  ],
+  "namespaces": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "discovery-hub",
+      "uid": "a1b2c3d4-e5f6-4a7b-8c9d-100000000004",
+      "labels": {
+        "kubernetes.io/metadata.name": "discovery-hub",
+        "purpose": "eval-test"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2026-01-01T00:10:00Z"
+    }
+  ],
+  "pods": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "name": "catalog-index-service",
+      "uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "labels": {
+        "app": "catalog-index-service",
+        "tier": "indexing"
+      },
+      "annotations": {
+        "eval/scenario": "readiness-probe-diagnosis"
+      },
+      "owner_kind": null,
+      "owner_name": null,
+      "phase": "Running",
+      "node_name": "worker-0.eval-cluster.example.com",
+      "service_account": "default",
+      "priority": 0,
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "indexer",
+            "image": "busybox:1.36",
+            "command": ["sh", "-c", "while true; do echo 'Running...'; sleep 5; done"],
+            "ports": [
+              {
+                "containerPort": 9200,
+                "name": "health",
+                "protocol": "TCP"
+              }
+            ],
+            "readinessProbe": {
+              "httpGet": {
+                "path": "/healthz",
+                "port": 9200,
+                "scheme": "HTTP"
+              },
+              "initialDelaySeconds": 2,
+              "periodSeconds": 4,
+              "failureThreshold": 2,
+              "successThreshold": 1,
+              "timeoutSeconds": 1
+            },
+            "resources": {
+              "requests": {
+                "cpu": "5m",
+                "memory": "32Mi"
+              },
+              "limits": {
+                "memory": "64Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "nodeName": "worker-0.eval-cluster.example.com",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T10:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "False",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T10:00:00Z",
+            "reason": "ContainersNotReady",
+            "message": "containers with unready status: [indexer]"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "False",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T10:00:00Z",
+            "reason": "ContainersNotReady",
+            "message": "containers with unready status: [indexer]"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T10:00:00Z"
+          }
+        ],
+        "hostIP": "10.0.0.11",
+        "podIP": "10.128.0.70",
+        "podIPs": [{"ip": "10.128.0.70"}],
+        "startTime": "2026-01-14T10:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "indexer",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-14T10:00:01Z"
+              }
+            },
+            "lastState": {},
+            "ready": false,
+            "restartCount": 0,
+            "image": "docker.io/library/busybox:1.36",
+            "imageID": "docker.io/library/busybox@sha256:aabbccdd1122",
+            "containerID": "cri-o://d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-14T10:00:00Z"
+    }
+  ],
+  "containers": [
+    {
+      "id": 1,
+      "pod_id": 1,
+      "name": "indexer",
+      "image": "busybox:1.36",
+      "state": "running",
+      "ready": false,
+      "restart_count": 0,
+      "request_cpu_millicores": 5,
+      "request_memory_bytes": 33554432,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": 67108864,
+      "ports": [{"containerPort": 9200, "name": "health"}]
+    }
+  ],
+  "pod_logs": [
+    {"id": 1, "pod_id": 1, "container_name": "indexer", "line_number": 1, "timestamp": "2026-01-14T10:00:02.000Z", "message": "Running..."},
+    {"id": 2, "pod_id": 1, "container_name": "indexer", "line_number": 2, "timestamp": "2026-01-14T10:00:07.000Z", "message": "Running..."},
+    {"id": 3, "pod_id": 1, "container_name": "indexer", "line_number": 3, "timestamp": "2026-01-14T10:00:12.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 4, "pod_id": 1, "container_name": "indexer", "line_number": 4, "timestamp": "2026-01-14T10:00:12.100Z", "message": "Running..."},
+    {"id": 5, "pod_id": 1, "container_name": "indexer", "line_number": 5, "timestamp": "2026-01-14T10:00:17.000Z", "message": "Running..."},
+    {"id": 6, "pod_id": 1, "container_name": "indexer", "line_number": 6, "timestamp": "2026-01-14T10:00:22.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 7, "pod_id": 1, "container_name": "indexer", "line_number": 7, "timestamp": "2026-01-14T10:00:22.100Z", "message": "Running..."},
+    {"id": 8, "pod_id": 1, "container_name": "indexer", "line_number": 8, "timestamp": "2026-01-14T10:00:27.000Z", "message": "Running..."},
+    {"id": 9, "pod_id": 1, "container_name": "indexer", "line_number": 9, "timestamp": "2026-01-14T10:00:32.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 10, "pod_id": 1, "container_name": "indexer", "line_number": 10, "timestamp": "2026-01-14T10:00:32.100Z", "message": "Running..."},
+    {"id": 11, "pod_id": 1, "container_name": "indexer", "line_number": 11, "timestamp": "2026-01-14T10:00:37.000Z", "message": "Running..."},
+    {"id": 12, "pod_id": 1, "container_name": "indexer", "line_number": 12, "timestamp": "2026-01-14T10:00:42.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 13, "pod_id": 1, "container_name": "indexer", "line_number": 13, "timestamp": "2026-01-14T10:00:42.100Z", "message": "Running..."},
+    {"id": 14, "pod_id": 1, "container_name": "indexer", "line_number": 14, "timestamp": "2026-01-14T10:00:47.000Z", "message": "Running..."},
+    {"id": 15, "pod_id": 1, "container_name": "indexer", "line_number": 15, "timestamp": "2026-01-14T10:00:52.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 16, "pod_id": 1, "container_name": "indexer", "line_number": 16, "timestamp": "2026-01-14T10:00:52.100Z", "message": "Running..."},
+    {"id": 17, "pod_id": 1, "container_name": "indexer", "line_number": 17, "timestamp": "2026-01-14T10:00:57.000Z", "message": "Running..."},
+    {"id": 18, "pod_id": 1, "container_name": "indexer", "line_number": 18, "timestamp": "2026-01-14T10:01:02.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 19, "pod_id": 1, "container_name": "indexer", "line_number": 19, "timestamp": "2026-01-14T10:01:02.100Z", "message": "Running..."},
+    {"id": 20, "pod_id": 1, "container_name": "indexer", "line_number": 20, "timestamp": "2026-01-14T10:01:07.000Z", "message": "Running..."},
+    {"id": 21, "pod_id": 1, "container_name": "indexer", "line_number": 21, "timestamp": "2026-01-14T10:01:12.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 22, "pod_id": 1, "container_name": "indexer", "line_number": 22, "timestamp": "2026-01-14T10:01:12.100Z", "message": "Running..."},
+    {"id": 23, "pod_id": 1, "container_name": "indexer", "line_number": 23, "timestamp": "2026-01-14T10:01:17.000Z", "message": "Running..."},
+    {"id": 24, "pod_id": 1, "container_name": "indexer", "line_number": 24, "timestamp": "2026-01-14T10:01:22.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
+    {"id": 25, "pod_id": 1, "container_name": "indexer", "line_number": 25, "timestamp": "2026-01-14T10:01:22.100Z", "message": "Running..."}
+  ],
+  "events": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e5f6a7b8-c9d0-4e1f-2a3b-400000000001",
+      "event_time": "2026-01-14T10:00:06Z",
+      "last_timestamp": "2026-01-14T10:01:22Z",
+      "resolved_timestamp": "2026-01-14T10:01:22Z",
+      "type": "Warning",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: HTTP probe failed with statuscode: 503",
+      "regarding_kind": "Pod",
+      "regarding_name": "catalog-index-service",
+      "regarding_namespace": "discovery-hub",
+      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "reporting_component": "kubelet",
+      "reporting_instance": "worker-0.eval-cluster.example.com",
+      "count": 20,
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com"
+    },
+    {
+      "id": 2,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e5f6a7b8-c9d0-4e1f-2a3b-400000000002",
+      "event_time": "2026-01-14T10:00:00Z",
+      "last_timestamp": "2026-01-14T10:00:00Z",
+      "resolved_timestamp": "2026-01-14T10:00:00Z",
+      "type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned discovery-hub/catalog-index-service to worker-0.eval-cluster.example.com",
+      "regarding_kind": "Pod",
+      "regarding_name": "catalog-index-service",
+      "regarding_namespace": "discovery-hub",
+      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "reporting_component": "default-scheduler",
+      "reporting_instance": "",
+      "count": 1,
+      "source_component": "default-scheduler",
+      "source_host": ""
+    },
+    {
+      "id": 3,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e5f6a7b8-c9d0-4e1f-2a3b-400000000003",
+      "event_time": "2026-01-14T10:00:00Z",
+      "last_timestamp": "2026-01-14T10:00:01Z",
+      "resolved_timestamp": "2026-01-14T10:00:01Z",
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"busybox:1.36\" already present on machine",
+      "regarding_kind": "Pod",
+      "regarding_name": "catalog-index-service",
+      "regarding_namespace": "discovery-hub",
+      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "reporting_component": "kubelet",
+      "reporting_instance": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com"
+    },
+    {
+      "id": 4,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e5f6a7b8-c9d0-4e1f-2a3b-400000000004",
+      "event_time": "2026-01-14T10:00:01Z",
+      "last_timestamp": "2026-01-14T10:00:01Z",
+      "resolved_timestamp": "2026-01-14T10:00:01Z",
+      "type": "Normal",
+      "reason": "Created",
+      "message": "Created container indexer",
+      "regarding_kind": "Pod",
+      "regarding_name": "catalog-index-service",
+      "regarding_namespace": "discovery-hub",
+      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "reporting_component": "kubelet",
+      "reporting_instance": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com"
+    },
+    {
+      "id": 5,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e5f6a7b8-c9d0-4e1f-2a3b-400000000005",
+      "event_time": "2026-01-14T10:00:01Z",
+      "last_timestamp": "2026-01-14T10:00:01Z",
+      "resolved_timestamp": "2026-01-14T10:00:01Z",
+      "type": "Normal",
+      "reason": "Started",
+      "message": "Started container indexer",
+      "regarding_kind": "Pod",
+      "regarding_name": "catalog-index-service",
+      "regarding_namespace": "discovery-hub",
+      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "reporting_component": "kubelet",
+      "reporting_instance": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com"
+    }
+  ],
+  "resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "api_resource_id": 1,
+      "name": "catalog-index-service",
+      "uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "name": "catalog-index-service",
+          "namespace": "discovery-hub",
+          "uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+          "labels": {
+            "app": "catalog-index-service",
+            "tier": "indexing"
+          },
+          "annotations": {
+            "eval/scenario": "readiness-probe-diagnosis"
+          },
+          "creationTimestamp": "2026-01-14T10:00:00Z"
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "indexer",
+              "image": "busybox:1.36",
+              "command": ["sh", "-c", "while true; do echo 'Running...'; sleep 5; done"],
+              "ports": [
+                {
+                  "containerPort": 9200,
+                  "name": "health",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "httpGet": {
+                  "path": "/healthz",
+                  "port": 9200,
+                  "scheme": "HTTP"
+                },
+                "initialDelaySeconds": 2,
+                "periodSeconds": 4,
+                "failureThreshold": 2,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "resources": {
+                "requests": {
+                  "cpu": "5m",
+                  "memory": "32Mi"
+                },
+                "limits": {
+                  "memory": "64Mi"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "imagePullPolicy": "IfNotPresent"
+            }
+          ],
+          "restartPolicy": "Always",
+          "terminationGracePeriodSeconds": 30,
+          "dnsPolicy": "ClusterFirst",
+          "serviceAccountName": "default",
+          "serviceAccount": "default",
+          "nodeName": "worker-0.eval-cluster.example.com",
+          "schedulerName": "default-scheduler"
+        },
+        "status": {
+          "phase": "Running",
+          "conditions": [
+            {
+              "type": "Initialized",
+              "status": "True",
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-01-14T10:00:00Z"
+            },
+            {
+              "type": "Ready",
+              "status": "False",
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-01-14T10:00:00Z",
+              "reason": "ContainersNotReady",
+              "message": "containers with unready status: [indexer]"
+            },
+            {
+              "type": "ContainersReady",
+              "status": "False",
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-01-14T10:00:00Z",
+              "reason": "ContainersNotReady",
+              "message": "containers with unready status: [indexer]"
+            },
+            {
+              "type": "PodScheduled",
+              "status": "True",
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-01-14T10:00:00Z"
+            }
+          ],
+          "hostIP": "10.0.0.11",
+          "podIP": "10.128.0.70",
+          "podIPs": [{"ip": "10.128.0.70"}],
+          "startTime": "2026-01-14T10:00:00Z",
+          "containerStatuses": [
+            {
+              "name": "indexer",
+              "state": {
+                "running": {
+                  "startedAt": "2026-01-14T10:00:01Z"
+                }
+              },
+              "lastState": {},
+              "ready": false,
+              "restartCount": 0,
+              "image": "docker.io/library/busybox:1.36",
+              "imageID": "docker.io/library/busybox@sha256:aabbccdd1122",
+              "containerID": "cri-o://d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
+              "started": true
+            }
+          ],
+          "qosClass": "Burstable"
+        }
+      },
+      "created_at": "2026-01-14T10:00:00Z"
+    }
+  ],
+  "resource_labels": [
+    {"id": 1, "resource_id": 1, "key": "app", "value": "catalog-index-service"},
+    {"id": 2, "resource_id": 1, "key": "tier", "value": "indexing"}
+  ],
+  "alerts": [],
+  "alert_labels": [],
+  "silences": [],
+  "silence_matchers": [],
+  "metrics": [],
+  "metric_labels": [],
+  "metric_label_values": [],
+  "metric_series": [],
+  "metric_samples": [],
+  "node_logs": [],
+  "node_metrics": [],
+  "pod_metrics": []
+}

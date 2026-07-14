@@ -1,0 +1,482 @@
+{
+  "clusters": [
+    {
+      "id": 1,
+      "name": "eval-cluster",
+      "api_server_url": "https://api.eval-cluster.example.com:6443",
+      "is_openshift": true,
+      "version": "4.14.12",
+      "created_at": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "kubeconfig_contexts": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "context_name": "admin/api-eval-cluster:6443/system:admin",
+      "server_url": "https://api.eval-cluster.example.com:6443",
+      "is_default": true,
+      "user_name": "system:admin",
+      "namespace": "default"
+    }
+  ],
+  "nodes": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "worker-0.eval-cluster.example.com",
+      "uid": "d4f1a2b3-c001-4e00-a100-000000000001",
+      "labels": {
+        "kubernetes.io/hostname": "worker-0.eval-cluster.example.com",
+        "kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "node-role.kubernetes.io/worker": ""
+      },
+      "annotations": {},
+      "taints": [],
+      "phase": "Ready",
+      "allocatable_cpu_millicores": 15500,
+      "allocatable_memory_bytes": 64424509440,
+      "allocatable_pods": 250,
+      "capacity_cpu_millicores": 16000,
+      "capacity_memory_bytes": 67108864000,
+      "capacity_pods": 250,
+      "os_image": "Red Hat Enterprise Linux CoreOS 414.92.202405201754-0",
+      "kernel_version": "5.14.0-284.67.1.el9_2.x86_64",
+      "kubelet_version": "v1.27.14+7066f0d",
+      "container_runtime": "cri-o://1.27.6-3.rhaos4.14.git3c2e3fc.el9",
+      "architecture": "amd64",
+      "created_at": "2026-01-01T00:05:00Z"
+    }
+  ],
+  "api_resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "api_version": "apps/v1",
+      "kind": "Deployment",
+      "is_namespaced": true,
+      "is_scalable": true
+    },
+    {
+      "id": 2,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Pod",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 3,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Event",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 4,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "PersistentVolumeClaim",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 5,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Service",
+      "is_namespaced": true,
+      "is_scalable": false
+    }
+  ],
+  "namespaces": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "cache-tier",
+      "uid": "c3d4e5f6-1111-4aaa-b111-111111111111",
+      "labels": {
+        "kubernetes.io/metadata.name": "cache-tier"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2026-01-01T00:10:00Z"
+    }
+  ],
+  "pods": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "node_id": null,
+      "name": "memcached-7d8f9a6b5c-p3q7r",
+      "uid": "b2c3d4e5-2222-4bbb-a222-222222222222",
+      "labels": {
+        "app": "memcached",
+        "pod-template-hash": "7d8f9a6b5c"
+      },
+      "annotations": {},
+      "phase": "Pending",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "service_account": "default",
+      "priority": 0,
+      "spec_json": {
+        "initContainers": [
+          {
+            "name": "init-perms",
+            "image": "busybox:1.36",
+            "command": ["sh", "-c", "chown -R 11211:11211 /data"],
+            "volumeMounts": [
+              {
+                "name": "memcached-data",
+                "mountPath": "/data"
+              }
+            ],
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "containers": [
+          {
+            "name": "mc",
+            "image": "memcached:1.6-alpine",
+            "ports": [
+              {
+                "name": "mc",
+                "containerPort": 11211,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "50m",
+                "memory": "192Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "384Mi"
+              }
+            },
+            "volumeMounts": [
+              {
+                "name": "memcached-data",
+                "mountPath": "/data"
+              }
+            ],
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "volumes": [
+          {
+            "name": "memcached-data",
+            "persistentVolumeClaim": {
+              "claimName": "memcached-data-pvc"
+            }
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Pending",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "False",
+            "lastTransitionTime": "2026-01-15T11:00:00Z",
+            "reason": "Unschedulable",
+            "message": "0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod."
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-15T11:00:00Z"
+    }
+  ],
+  "containers": [
+    {
+      "id": 1,
+      "pod_id": 1,
+      "name": "mc",
+      "image": "memcached:1.6-alpine",
+      "state": "waiting",
+      "state_reason": "ContainerCreating",
+      "ready": false,
+      "restart_count": 0,
+      "request_cpu_millicores": 50,
+      "request_memory_bytes": 201326592,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 402653184,
+      "ports": [
+        {
+          "containerPort": 11211,
+          "name": "mc"
+        }
+      ]
+    }
+  ],
+  "pod_logs": [],
+  "events": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e3e4e5e6-3333-4ccc-b333-333333333333",
+      "type": "Warning",
+      "reason": "ProvisioningFailed",
+      "message": "storageclass.storage.k8s.io \"standard-v2\" not found",
+      "regarding_kind": "PersistentVolumeClaim",
+      "regarding_name": "memcached-data-pvc",
+      "regarding_namespace": "cache-tier",
+      "regarding_uid": "d4e5f6a7-5555-4eee-a555-555555555555",
+      "source_component": "persistentvolume-controller",
+      "source_host": "",
+      "count": 5,
+      "event_time": "2026-01-15T11:05:00Z",
+      "first_timestamp": "2026-01-15T11:00:10Z",
+      "last_timestamp": "2026-01-15T11:05:00Z",
+      "resolved_timestamp": "2026-01-15T11:05:00Z",
+      "created_at": "2026-01-15T11:00:10Z"
+    },
+    {
+      "id": 2,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e4e5e6e7-3333-4ccc-b333-444444444444",
+      "type": "Warning",
+      "reason": "FailedScheduling",
+      "message": "0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.",
+      "regarding_kind": "Pod",
+      "regarding_name": "memcached-7d8f9a6b5c-p3q7r",
+      "regarding_namespace": "cache-tier",
+      "regarding_uid": "b2c3d4e5-2222-4bbb-a222-222222222222",
+      "source_component": "default-scheduler",
+      "source_host": "",
+      "count": 8,
+      "event_time": "2026-01-15T11:05:00Z",
+      "first_timestamp": "2026-01-15T11:00:00Z",
+      "last_timestamp": "2026-01-15T11:05:00Z",
+      "resolved_timestamp": "2026-01-15T11:05:00Z",
+      "created_at": "2026-01-15T11:00:00Z"
+    }
+  ],
+  "resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "api_resource_id": 4,
+      "name": "memcached-data-pvc",
+      "uid": "d4e5f6a7-5555-4eee-a555-555555555555",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "PersistentVolumeClaim",
+        "metadata": {
+          "name": "memcached-data-pvc",
+          "namespace": "cache-tier",
+          "uid": "d4e5f6a7-5555-4eee-a555-555555555555"
+        },
+        "spec": {
+          "accessModes": ["ReadWriteOnce"],
+          "resources": {
+            "requests": {
+              "storage": "2Gi"
+            }
+          },
+          "storageClassName": "standard-v2",
+          "volumeMode": "Filesystem"
+        },
+        "status": {
+          "phase": "Pending"
+        }
+      },
+      "created_at": "2026-01-15T10:59:50Z"
+    },
+    {
+      "id": 2,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "api_resource_id": 1,
+      "name": "memcached",
+      "uid": "e5f6a7b8-6666-4fff-a666-666666666666",
+      "manifest": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+          "name": "memcached",
+          "namespace": "cache-tier",
+          "uid": "e5f6a7b8-6666-4fff-a666-666666666666",
+          "labels": {
+            "app": "memcached"
+          }
+        },
+        "spec": {
+          "replicas": 1,
+          "selector": {
+            "matchLabels": {
+              "app": "memcached"
+            }
+          },
+          "template": {
+            "metadata": {
+              "labels": {
+                "app": "memcached",
+                "pod-template-hash": "7d8f9a6b5c"
+              }
+            },
+            "spec": {
+              "initContainers": [
+                {
+                  "name": "init-perms",
+                  "image": "busybox:1.36",
+                  "command": ["sh", "-c", "chown -R 11211:11211 /data"],
+                  "volumeMounts": [
+                    {
+                      "name": "memcached-data",
+                      "mountPath": "/data"
+                    }
+                  ]
+                }
+              ],
+              "containers": [
+                {
+                  "name": "mc",
+                  "image": "memcached:1.6-alpine",
+                  "ports": [
+                    {
+                      "name": "mc",
+                      "containerPort": 11211,
+                      "protocol": "TCP"
+                    }
+                  ],
+                  "resources": {
+                    "requests": {
+                      "cpu": "50m",
+                      "memory": "192Mi"
+                    },
+                    "limits": {
+                      "cpu": "200m",
+                      "memory": "384Mi"
+                    }
+                  },
+                  "volumeMounts": [
+                    {
+                      "name": "memcached-data",
+                      "mountPath": "/data"
+                    }
+                  ]
+                }
+              ],
+              "volumes": [
+                {
+                  "name": "memcached-data",
+                  "persistentVolumeClaim": {
+                    "claimName": "memcached-data-pvc"
+                  }
+                }
+              ],
+              "restartPolicy": "Always"
+            }
+          }
+        },
+        "status": {
+          "replicas": 1,
+          "updatedReplicas": 1,
+          "readyReplicas": 0,
+          "availableReplicas": 0,
+          "unavailableReplicas": 1,
+          "conditions": [
+            {
+              "type": "Available",
+              "status": "False",
+              "reason": "MinimumReplicasUnavailable",
+              "message": "Deployment does not have minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "ReplicaSetUpdated",
+              "message": "ReplicaSet \"memcached-7d8f9a6b5c\" has successfully progressed."
+            }
+          ]
+        }
+      },
+      "created_at": "2026-01-15T10:59:45Z"
+    },
+    {
+      "id": 3,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "api_resource_id": 5,
+      "name": "memcached",
+      "uid": "f6a7b8c9-7777-4aaa-b777-777777777777",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+          "name": "memcached",
+          "namespace": "cache-tier",
+          "uid": "f6a7b8c9-7777-4aaa-b777-777777777777",
+          "labels": {
+            "app": "memcached"
+          }
+        },
+        "spec": {
+          "type": "ClusterIP",
+          "selector": {
+            "app": "memcached"
+          },
+          "ports": [
+            {
+              "name": "mc",
+              "port": 11211,
+              "targetPort": 11211,
+              "protocol": "TCP"
+            }
+          ]
+        },
+        "status": {
+          "loadBalancer": {}
+        }
+      },
+      "created_at": "2026-01-15T10:59:48Z"
+    }
+  ],
+  "resource_labels": [
+    {
+      "id": 1,
+      "resource_id": 2,
+      "key": "app",
+      "value": "memcached"
+    },
+    {
+      "id": 2,
+      "resource_id": 3,
+      "key": "app",
+      "value": "memcached"
+    }
+  ],
+  "alerts": [],
+  "alert_labels": [],
+  "silences": [],
+  "silence_matchers": [],
+  "metrics": [],
+  "metric_labels": [],
+  "metric_label_values": [],
+  "metric_series": [],
+  "metric_samples": [],
+  "node_logs": [],
+  "node_metrics": [],
+  "pod_metrics": []
+}

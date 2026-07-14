@@ -1,0 +1,449 @@
+{
+  "clusters": [
+    {
+      "id": 1,
+      "name": "eval-cluster",
+      "api_server_url": "https://api.eval-cluster.example.com:6443",
+      "is_openshift": true,
+      "version": "4.14.12",
+      "created_at": "2026-01-01T00:00:00Z"
+    }
+  ],
+  "kubeconfig_contexts": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "context_name": "admin/api-eval-cluster:6443/system:admin",
+      "server_url": "https://api.eval-cluster.example.com:6443",
+      "is_default": true,
+      "user_name": "system:admin",
+      "namespace": "default"
+    }
+  ],
+  "nodes": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "worker-0.eval-cluster.example.com",
+      "uid": "d4f1a2b3-c001-4e00-a100-000000000001",
+      "labels": {
+        "kubernetes.io/hostname": "worker-0.eval-cluster.example.com",
+        "kubernetes.io/os": "linux",
+        "kubernetes.io/arch": "amd64",
+        "node-role.kubernetes.io/worker": ""
+      },
+      "annotations": {},
+      "taints": [],
+      "phase": "Ready",
+      "allocatable_cpu_millicores": 15500,
+      "allocatable_memory_bytes": 64424509440,
+      "allocatable_pods": 250,
+      "capacity_cpu_millicores": 16000,
+      "capacity_memory_bytes": 67108864000,
+      "capacity_pods": 250,
+      "os_image": "Red Hat Enterprise Linux CoreOS 414.92.202405201754-0",
+      "kernel_version": "5.14.0-284.67.1.el9_2.x86_64",
+      "kubelet_version": "v1.27.14+7066f0d",
+      "container_runtime": "cri-o://1.27.6-3.rhaos4.14.git3c2e3fc.el9",
+      "architecture": "amd64",
+      "created_at": "2026-01-01T00:05:00Z"
+    }
+  ],
+  "api_resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "api_version": "apps/v1",
+      "kind": "StatefulSet",
+      "is_namespaced": true,
+      "is_scalable": true
+    },
+    {
+      "id": 2,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Pod",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 3,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Event",
+      "is_namespaced": true,
+      "is_scalable": false
+    }
+  ],
+  "namespaces": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "name": "analytics-platform",
+      "uid": "a1b2c3d4-e5f6-4a7b-8c9d-100000000001",
+      "labels": {
+        "kubernetes.io/metadata.name": "analytics-platform",
+        "purpose": "eval-test"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2026-01-01T00:10:00Z"
+    }
+  ],
+  "pods": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "name": "report-generator-0",
+      "uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000001",
+      "labels": {
+        "app": "report-generator",
+        "tier": "analytics",
+        "statefulset.kubernetes.io/pod-name": "report-generator-0",
+        "controller-revision-hash": "report-generator-6f8d9e7c4b"
+      },
+      "annotations": {},
+      "owner_kind": "StatefulSet",
+      "owner_name": "report-generator",
+      "phase": "Running",
+      "node_name": "worker-0.eval-cluster.example.com",
+      "service_account": "default",
+      "priority": 0,
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "generator",
+            "image": "python:3.11-alpine",
+            "command": ["python3", "-u", "/opt/scripts/generate_logs.py"],
+            "volumeMounts": [
+              {
+                "name": "log-scripts",
+                "mountPath": "/opt/scripts",
+                "readOnly": true
+              }
+            ],
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "48Mi"
+              },
+              "limits": {
+                "memory": "128Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "volumes": [
+          {
+            "name": "log-scripts",
+            "secret": {
+              "secretName": "report-generator-logs-script",
+              "defaultMode": 365
+            }
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "nodeName": "worker-0.eval-cluster.example.com",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T00:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T00:00:05Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T00:00:05Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-14T00:00:00Z"
+          }
+        ],
+        "hostIP": "10.0.0.11",
+        "podIP": "10.128.0.50",
+        "podIPs": [{"ip": "10.128.0.50"}],
+        "startTime": "2026-01-14T00:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "generator",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-14T00:00:03Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "docker.io/library/python:3.11-alpine",
+            "imageID": "docker.io/library/python@sha256:abc123def456",
+            "containerID": "cri-o://a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-14T00:00:00Z"
+    }
+  ],
+  "containers": [
+    {
+      "id": 1,
+      "pod_id": 1,
+      "name": "generator",
+      "image": "python:3.11-alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 50331648,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": 134217728,
+      "ports": []
+    }
+  ],
+  "pod_logs": [
+    {"id": 1, "pod_id": 1, "container_name": "generator", "line_number": 1, "timestamp": "2026-01-14T00:00:12.341Z", "message": "ts=2026-01-14T00:00:12.341Z level=INFO component=report-generator msg=\"Report batch completed in 167ms\""},
+    {"id": 2, "pod_id": 1, "container_name": "generator", "line_number": 2, "timestamp": "2026-01-14T00:15:05.112Z", "message": "ts=2026-01-14T00:15:05.112Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 3, "pod_id": 1, "container_name": "generator", "line_number": 3, "timestamp": "2026-01-14T00:30:11.203Z", "message": "ts=2026-01-14T00:30:11.203Z level=INFO component=report-generator msg=\"Report batch completed in 142ms\""},
+    {"id": 4, "pod_id": 1, "container_name": "generator", "line_number": 4, "timestamp": "2026-01-14T00:45:08.554Z", "message": "ts=2026-01-14T00:45:08.554Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 5, "pod_id": 1, "container_name": "generator", "line_number": 5, "timestamp": "2026-01-14T01:00:14.671Z", "message": "ts=2026-01-14T01:00:14.671Z level=INFO component=report-generator msg=\"Report batch completed in 189ms\""},
+    {"id": 6, "pod_id": 1, "container_name": "generator", "line_number": 6, "timestamp": "2026-01-14T01:15:03.892Z", "message": "ts=2026-01-14T01:15:03.892Z level=INFO component=report-generator msg=\"Job executed successfully in 167ms.\""},
+    {"id": 7, "pod_id": 1, "container_name": "generator", "line_number": 7, "timestamp": "2026-01-14T01:30:09.443Z", "message": "ts=2026-01-14T01:30:09.443Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 8, "pod_id": 1, "container_name": "generator", "line_number": 8, "timestamp": "2026-01-14T01:45:17.221Z", "message": "ts=2026-01-14T01:45:17.221Z level=INFO component=report-generator msg=\"Report batch completed in 154ms\""},
+    {"id": 9, "pod_id": 1, "container_name": "generator", "line_number": 9, "timestamp": "2026-01-14T02:00:06.338Z", "message": "ts=2026-01-14T02:00:06.338Z level=INFO component=report-generator msg=\"Job executed successfully in 201ms.\""},
+    {"id": 10, "pod_id": 1, "container_name": "generator", "line_number": 10, "timestamp": "2026-01-14T02:15:12.774Z", "message": "ts=2026-01-14T02:15:12.774Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 11, "pod_id": 1, "container_name": "generator", "line_number": 11, "timestamp": "2026-01-14T02:30:08.119Z", "message": "ts=2026-01-14T02:30:08.119Z level=INFO component=report-generator msg=\"Report batch completed in 178ms\""},
+    {"id": 12, "pod_id": 1, "container_name": "generator", "line_number": 12, "timestamp": "2026-01-14T02:45:14.556Z", "message": "ts=2026-01-14T02:45:14.556Z level=INFO component=report-generator msg=\"Job executed successfully in 145ms.\""},
+    {"id": 13, "pod_id": 1, "container_name": "generator", "line_number": 13, "timestamp": "2026-01-14T02:50:02.887Z", "message": "ts=2026-01-14T02:50:02.887Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 14, "pod_id": 1, "container_name": "generator", "line_number": 14, "timestamp": "2026-01-14T02:55:11.332Z", "message": "ts=2026-01-14T02:55:11.332Z level=INFO component=report-generator msg=\"Report batch completed in 163ms\""},
+    {"id": 15, "pod_id": 1, "container_name": "generator", "line_number": 15, "timestamp": "2026-01-14T03:00:01.001Z", "message": "ts=2026-01-14T03:00:01.001Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 16, "pod_id": 1, "container_name": "generator", "line_number": 16, "timestamp": "2026-01-14T03:00:32.445Z", "message": "ts=2026-01-14T03:00:32.445Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 17, "pod_id": 1, "container_name": "generator", "line_number": 17, "timestamp": "2026-01-14T03:01:03.887Z", "message": "ts=2026-01-14T03:01:03.887Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 18, "pod_id": 1, "container_name": "generator", "line_number": 18, "timestamp": "2026-01-14T03:01:35.112Z", "message": "ts=2026-01-14T03:01:35.112Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 19, "pod_id": 1, "container_name": "generator", "line_number": 19, "timestamp": "2026-01-14T03:02:06.334Z", "message": "ts=2026-01-14T03:02:06.334Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 20, "pod_id": 1, "container_name": "generator", "line_number": 20, "timestamp": "2026-01-14T03:02:37.776Z", "message": "ts=2026-01-14T03:02:37.776Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 21, "pod_id": 1, "container_name": "generator", "line_number": 21, "timestamp": "2026-01-14T03:03:08.998Z", "message": "ts=2026-01-14T03:03:08.998Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 22, "pod_id": 1, "container_name": "generator", "line_number": 22, "timestamp": "2026-01-14T03:03:40.221Z", "message": "ts=2026-01-14T03:03:40.221Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 23, "pod_id": 1, "container_name": "generator", "line_number": 23, "timestamp": "2026-01-14T03:04:11.443Z", "message": "ts=2026-01-14T03:04:11.443Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 24, "pod_id": 1, "container_name": "generator", "line_number": 24, "timestamp": "2026-01-14T03:04:42.665Z", "message": "ts=2026-01-14T03:04:42.665Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 25, "pod_id": 1, "container_name": "generator", "line_number": 25, "timestamp": "2026-01-14T03:05:13.887Z", "message": "ts=2026-01-14T03:05:13.887Z level=INFO component=report-generator msg=\"Detected repeated failures during 03:00-03:05 window hint=possible scheduled maintenance upstream\""},
+    {"id": 26, "pod_id": 1, "container_name": "generator", "line_number": 26, "timestamp": "2026-01-14T03:05:45.109Z", "message": "ts=2026-01-14T03:05:45.109Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 27, "pod_id": 1, "container_name": "generator", "line_number": 27, "timestamp": "2026-01-14T03:06:16.331Z", "message": "ts=2026-01-14T03:06:16.331Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 28, "pod_id": 1, "container_name": "generator", "line_number": 28, "timestamp": "2026-01-14T03:06:47.553Z", "message": "ts=2026-01-14T03:06:47.553Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 29, "pod_id": 1, "container_name": "generator", "line_number": 29, "timestamp": "2026-01-14T03:07:18.775Z", "message": "ts=2026-01-14T03:07:18.775Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 30, "pod_id": 1, "container_name": "generator", "line_number": 30, "timestamp": "2026-01-14T03:07:49.997Z", "message": "ts=2026-01-14T03:07:49.997Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 31, "pod_id": 1, "container_name": "generator", "line_number": 31, "timestamp": "2026-01-14T03:08:21.219Z", "message": "ts=2026-01-14T03:08:21.219Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 32, "pod_id": 1, "container_name": "generator", "line_number": 32, "timestamp": "2026-01-14T03:08:52.441Z", "message": "ts=2026-01-14T03:08:52.441Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 33, "pod_id": 1, "container_name": "generator", "line_number": 33, "timestamp": "2026-01-14T03:09:23.663Z", "message": "ts=2026-01-14T03:09:23.663Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 34, "pod_id": 1, "container_name": "generator", "line_number": 34, "timestamp": "2026-01-14T03:09:54.885Z", "message": "ts=2026-01-14T03:09:54.885Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 35, "pod_id": 1, "container_name": "generator", "line_number": 35, "timestamp": "2026-01-14T03:10:26.107Z", "message": "ts=2026-01-14T03:10:26.107Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 36, "pod_id": 1, "container_name": "generator", "line_number": 36, "timestamp": "2026-01-14T03:15:02.329Z", "message": "ts=2026-01-14T03:15:02.329Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 37, "pod_id": 1, "container_name": "generator", "line_number": 37, "timestamp": "2026-01-14T03:20:08.551Z", "message": "ts=2026-01-14T03:20:08.551Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 38, "pod_id": 1, "container_name": "generator", "line_number": 38, "timestamp": "2026-01-14T03:25:14.773Z", "message": "ts=2026-01-14T03:25:14.773Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 39, "pod_id": 1, "container_name": "generator", "line_number": 39, "timestamp": "2026-01-14T03:30:20.995Z", "message": "ts=2026-01-14T03:30:20.995Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 40, "pod_id": 1, "container_name": "generator", "line_number": 40, "timestamp": "2026-01-14T03:35:27.217Z", "message": "ts=2026-01-14T03:35:27.217Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 41, "pod_id": 1, "container_name": "generator", "line_number": 41, "timestamp": "2026-01-14T03:40:33.439Z", "message": "ts=2026-01-14T03:40:33.439Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 42, "pod_id": 1, "container_name": "generator", "line_number": 42, "timestamp": "2026-01-14T03:45:39.661Z", "message": "ts=2026-01-14T03:45:39.661Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 43, "pod_id": 1, "container_name": "generator", "line_number": 43, "timestamp": "2026-01-14T03:50:45.883Z", "message": "ts=2026-01-14T03:50:45.883Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 44, "pod_id": 1, "container_name": "generator", "line_number": 44, "timestamp": "2026-01-14T03:55:52.105Z", "message": "ts=2026-01-14T03:55:52.105Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 45, "pod_id": 1, "container_name": "generator", "line_number": 45, "timestamp": "2026-01-14T03:59:58.327Z", "message": "ts=2026-01-14T03:59:58.327Z level=ERROR component=report-generator msg=\"Report generation failed reason=upstream unreachable url=https://reports-upstream.internal/v2/ingest err=timeout after 5000ms\""},
+    {"id": 46, "pod_id": 1, "container_name": "generator", "line_number": 46, "timestamp": "2026-01-14T04:00:15.549Z", "message": "ts=2026-01-14T04:00:15.549Z level=INFO component=report-generator msg=\"Report batch completed in 198ms\""},
+    {"id": 47, "pod_id": 1, "container_name": "generator", "line_number": 47, "timestamp": "2026-01-14T04:15:21.771Z", "message": "ts=2026-01-14T04:15:21.771Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 48, "pod_id": 1, "container_name": "generator", "line_number": 48, "timestamp": "2026-01-14T04:30:27.993Z", "message": "ts=2026-01-14T04:30:27.993Z level=INFO component=report-generator msg=\"Report batch completed in 155ms\""},
+    {"id": 49, "pod_id": 1, "container_name": "generator", "line_number": 49, "timestamp": "2026-01-14T04:45:34.215Z", "message": "ts=2026-01-14T04:45:34.215Z level=INFO component=report-generator msg=\"Job executed successfully in 167ms.\""},
+    {"id": 50, "pod_id": 1, "container_name": "generator", "line_number": 50, "timestamp": "2026-01-14T05:00:40.437Z", "message": "ts=2026-01-14T05:00:40.437Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 51, "pod_id": 1, "container_name": "generator", "line_number": 51, "timestamp": "2026-01-14T05:15:46.659Z", "message": "ts=2026-01-14T05:15:46.659Z level=INFO component=report-generator msg=\"Report batch completed in 171ms\""},
+    {"id": 52, "pod_id": 1, "container_name": "generator", "line_number": 52, "timestamp": "2026-01-14T05:30:52.881Z", "message": "ts=2026-01-14T05:30:52.881Z level=INFO component=report-generator msg=\"Job executed successfully in 139ms.\""},
+    {"id": 53, "pod_id": 1, "container_name": "generator", "line_number": 53, "timestamp": "2026-01-14T05:45:59.103Z", "message": "ts=2026-01-14T05:45:59.103Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 54, "pod_id": 1, "container_name": "generator", "line_number": 54, "timestamp": "2026-01-14T06:00:05.325Z", "message": "ts=2026-01-14T06:00:05.325Z level=INFO component=report-generator msg=\"Report batch completed in 183ms\""},
+    {"id": 55, "pod_id": 1, "container_name": "generator", "line_number": 55, "timestamp": "2026-01-14T06:15:11.547Z", "message": "ts=2026-01-14T06:15:11.547Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 56, "pod_id": 1, "container_name": "generator", "line_number": 56, "timestamp": "2026-01-14T06:30:17.769Z", "message": "ts=2026-01-14T06:30:17.769Z level=INFO component=report-generator msg=\"Job executed successfully in 192ms.\""},
+    {"id": 57, "pod_id": 1, "container_name": "generator", "line_number": 57, "timestamp": "2026-01-14T06:45:23.991Z", "message": "ts=2026-01-14T06:45:23.991Z level=INFO component=report-generator msg=\"Report batch completed in 148ms\""},
+    {"id": 58, "pod_id": 1, "container_name": "generator", "line_number": 58, "timestamp": "2026-01-14T07:00:30.213Z", "message": "ts=2026-01-14T07:00:30.213Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 59, "pod_id": 1, "container_name": "generator", "line_number": 59, "timestamp": "2026-01-14T07:15:36.435Z", "message": "ts=2026-01-14T07:15:36.435Z level=INFO component=report-generator msg=\"Report batch completed in 176ms\""},
+    {"id": 60, "pod_id": 1, "container_name": "generator", "line_number": 60, "timestamp": "2026-01-14T07:30:42.657Z", "message": "ts=2026-01-14T07:30:42.657Z level=INFO component=report-generator msg=\"Job executed successfully in 158ms.\""},
+    {"id": 61, "pod_id": 1, "container_name": "generator", "line_number": 61, "timestamp": "2026-01-14T07:45:48.879Z", "message": "ts=2026-01-14T07:45:48.879Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 62, "pod_id": 1, "container_name": "generator", "line_number": 62, "timestamp": "2026-01-14T08:00:55.101Z", "message": "ts=2026-01-14T08:00:55.101Z level=INFO component=report-generator msg=\"Report batch completed in 165ms\""},
+    {"id": 63, "pod_id": 1, "container_name": "generator", "line_number": 63, "timestamp": "2026-01-14T08:15:01.323Z", "message": "ts=2026-01-14T08:15:01.323Z level=INFO component=report-generator msg=\"Job executed successfully in 181ms.\""},
+    {"id": 64, "pod_id": 1, "container_name": "generator", "line_number": 64, "timestamp": "2026-01-14T08:30:07.545Z", "message": "ts=2026-01-14T08:30:07.545Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 65, "pod_id": 1, "container_name": "generator", "line_number": 65, "timestamp": "2026-01-14T08:45:13.767Z", "message": "ts=2026-01-14T08:45:13.767Z level=INFO component=report-generator msg=\"Report batch completed in 143ms\""},
+    {"id": 66, "pod_id": 1, "container_name": "generator", "line_number": 66, "timestamp": "2026-01-14T09:00:19.989Z", "message": "ts=2026-01-14T09:00:19.989Z level=INFO component=report-generator msg=\"Job executed successfully in 196ms.\""},
+    {"id": 67, "pod_id": 1, "container_name": "generator", "line_number": 67, "timestamp": "2026-01-14T09:15:26.211Z", "message": "ts=2026-01-14T09:15:26.211Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 68, "pod_id": 1, "container_name": "generator", "line_number": 68, "timestamp": "2026-01-14T09:30:32.433Z", "message": "ts=2026-01-14T09:30:32.433Z level=INFO component=report-generator msg=\"Report batch completed in 174ms\""},
+    {"id": 69, "pod_id": 1, "container_name": "generator", "line_number": 69, "timestamp": "2026-01-14T09:45:38.655Z", "message": "ts=2026-01-14T09:45:38.655Z level=INFO component=report-generator msg=\"Job executed successfully in 152ms.\""},
+    {"id": 70, "pod_id": 1, "container_name": "generator", "line_number": 70, "timestamp": "2026-01-14T10:00:44.877Z", "message": "ts=2026-01-14T10:00:44.877Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 71, "pod_id": 1, "container_name": "generator", "line_number": 71, "timestamp": "2026-01-14T10:15:51.099Z", "message": "ts=2026-01-14T10:15:51.099Z level=INFO component=report-generator msg=\"Report batch completed in 187ms\""},
+    {"id": 72, "pod_id": 1, "container_name": "generator", "line_number": 72, "timestamp": "2026-01-14T10:30:57.321Z", "message": "ts=2026-01-14T10:30:57.321Z level=INFO component=report-generator msg=\"Job executed successfully in 161ms.\""},
+    {"id": 73, "pod_id": 1, "container_name": "generator", "line_number": 73, "timestamp": "2026-01-14T10:45:03.543Z", "message": "ts=2026-01-14T10:45:03.543Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 74, "pod_id": 1, "container_name": "generator", "line_number": 74, "timestamp": "2026-01-14T11:00:09.765Z", "message": "ts=2026-01-14T11:00:09.765Z level=INFO component=report-generator msg=\"Report batch completed in 169ms\""},
+    {"id": 75, "pod_id": 1, "container_name": "generator", "line_number": 75, "timestamp": "2026-01-14T11:15:15.987Z", "message": "ts=2026-01-14T11:15:15.987Z level=INFO component=report-generator msg=\"Job executed successfully in 144ms.\""},
+    {"id": 76, "pod_id": 1, "container_name": "generator", "line_number": 76, "timestamp": "2026-01-14T11:30:22.209Z", "message": "ts=2026-01-14T11:30:22.209Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 77, "pod_id": 1, "container_name": "generator", "line_number": 77, "timestamp": "2026-01-14T11:45:28.431Z", "message": "ts=2026-01-14T11:45:28.431Z level=INFO component=report-generator msg=\"Report batch completed in 190ms\""},
+    {"id": 78, "pod_id": 1, "container_name": "generator", "line_number": 78, "timestamp": "2026-01-14T12:00:34.653Z", "message": "ts=2026-01-14T12:00:34.653Z level=INFO component=report-generator msg=\"Job executed successfully in 157ms.\""},
+    {"id": 79, "pod_id": 1, "container_name": "generator", "line_number": 79, "timestamp": "2026-01-14T12:15:40.875Z", "message": "ts=2026-01-14T12:15:40.875Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 80, "pod_id": 1, "container_name": "generator", "line_number": 80, "timestamp": "2026-01-14T12:30:47.097Z", "message": "ts=2026-01-14T12:30:47.097Z level=INFO component=report-generator msg=\"Report batch completed in 175ms\""},
+    {"id": 81, "pod_id": 1, "container_name": "generator", "line_number": 81, "timestamp": "2026-01-14T12:45:53.319Z", "message": "ts=2026-01-14T12:45:53.319Z level=INFO component=report-generator msg=\"Job executed successfully in 168ms.\""},
+    {"id": 82, "pod_id": 1, "container_name": "generator", "line_number": 82, "timestamp": "2026-01-14T13:00:59.541Z", "message": "ts=2026-01-14T13:00:59.541Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 83, "pod_id": 1, "container_name": "generator", "line_number": 83, "timestamp": "2026-01-14T13:15:05.763Z", "message": "ts=2026-01-14T13:15:05.763Z level=INFO component=report-generator msg=\"Report batch completed in 146ms\""},
+    {"id": 84, "pod_id": 1, "container_name": "generator", "line_number": 84, "timestamp": "2026-01-14T13:30:11.985Z", "message": "ts=2026-01-14T13:30:11.985Z level=INFO component=report-generator msg=\"Job executed successfully in 184ms.\""},
+    {"id": 85, "pod_id": 1, "container_name": "generator", "line_number": 85, "timestamp": "2026-01-14T13:45:18.207Z", "message": "ts=2026-01-14T13:45:18.207Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 86, "pod_id": 1, "container_name": "generator", "line_number": 86, "timestamp": "2026-01-14T14:00:24.429Z", "message": "ts=2026-01-14T14:00:24.429Z level=INFO component=report-generator msg=\"Report batch completed in 162ms\""},
+    {"id": 87, "pod_id": 1, "container_name": "generator", "line_number": 87, "timestamp": "2026-01-14T14:15:30.651Z", "message": "ts=2026-01-14T14:15:30.651Z level=INFO component=report-generator msg=\"Job executed successfully in 177ms.\""},
+    {"id": 88, "pod_id": 1, "container_name": "generator", "line_number": 88, "timestamp": "2026-01-14T14:30:36.873Z", "message": "ts=2026-01-14T14:30:36.873Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 89, "pod_id": 1, "container_name": "generator", "line_number": 89, "timestamp": "2026-01-14T14:45:43.095Z", "message": "ts=2026-01-14T14:45:43.095Z level=INFO component=report-generator msg=\"Report batch completed in 151ms\""},
+    {"id": 90, "pod_id": 1, "container_name": "generator", "line_number": 90, "timestamp": "2026-01-14T15:00:49.317Z", "message": "ts=2026-01-14T15:00:49.317Z level=INFO component=report-generator msg=\"Job executed successfully in 193ms.\""},
+    {"id": 91, "pod_id": 1, "container_name": "generator", "line_number": 91, "timestamp": "2026-01-14T16:00:55.539Z", "message": "ts=2026-01-14T16:00:55.539Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 92, "pod_id": 1, "container_name": "generator", "line_number": 92, "timestamp": "2026-01-14T17:00:01.761Z", "message": "ts=2026-01-14T17:00:01.761Z level=INFO component=report-generator msg=\"Report batch completed in 159ms\""},
+    {"id": 93, "pod_id": 1, "container_name": "generator", "line_number": 93, "timestamp": "2026-01-14T18:00:07.983Z", "message": "ts=2026-01-14T18:00:07.983Z level=INFO component=report-generator msg=\"Job executed successfully in 172ms.\""},
+    {"id": 94, "pod_id": 1, "container_name": "generator", "line_number": 94, "timestamp": "2026-01-14T19:00:14.205Z", "message": "ts=2026-01-14T19:00:14.205Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 95, "pod_id": 1, "container_name": "generator", "line_number": 95, "timestamp": "2026-01-14T20:00:20.427Z", "message": "ts=2026-01-14T20:00:20.427Z level=INFO component=report-generator msg=\"Report batch completed in 166ms\""},
+    {"id": 96, "pod_id": 1, "container_name": "generator", "line_number": 96, "timestamp": "2026-01-14T21:00:26.649Z", "message": "ts=2026-01-14T21:00:26.649Z level=INFO component=report-generator msg=\"Job executed successfully in 185ms.\""},
+    {"id": 97, "pod_id": 1, "container_name": "generator", "line_number": 97, "timestamp": "2026-01-14T22:00:32.871Z", "message": "ts=2026-01-14T22:00:32.871Z level=INFO component=report-generator msg=\"System health check passed\""},
+    {"id": 98, "pod_id": 1, "container_name": "generator", "line_number": 98, "timestamp": "2026-01-14T23:00:39.093Z", "message": "ts=2026-01-14T23:00:39.093Z level=INFO component=report-generator msg=\"Report batch completed in 153ms\""},
+    {"id": 99, "pod_id": 1, "container_name": "generator", "line_number": 99, "timestamp": "2026-01-14T23:30:45.315Z", "message": "ts=2026-01-14T23:30:45.315Z level=INFO component=report-generator msg=\"Job executed successfully in 179ms.\""},
+    {"id": 100, "pod_id": 1, "container_name": "generator", "line_number": 100, "timestamp": "2026-01-15T00:00:00.000Z", "message": "ts=2026-01-15T00:00:00.000Z level=INFO component=report-generator msg=\"System health check passed\""}
+  ],
+  "events": [],
+  "resources": [
+    {
+      "id": 1,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "api_resource_id": 1,
+      "name": "report-generator",
+      "uid": "c3d4e5f6-a7b8-4c9d-0e1f-300000000001",
+      "manifest": {
+        "apiVersion": "apps/v1",
+        "kind": "StatefulSet",
+        "metadata": {
+          "name": "report-generator",
+          "namespace": "analytics-platform",
+          "uid": "c3d4e5f6-a7b8-4c9d-0e1f-300000000001",
+          "labels": {
+            "app": "report-generator",
+            "tier": "analytics"
+          },
+          "creationTimestamp": "2026-01-14T00:00:00Z"
+        },
+        "spec": {
+          "serviceName": "report-generator",
+          "replicas": 1,
+          "selector": {
+            "matchLabels": {
+              "app": "report-generator"
+            }
+          },
+          "template": {
+            "metadata": {
+              "labels": {
+                "app": "report-generator",
+                "tier": "analytics"
+              }
+            },
+            "spec": {
+              "containers": [
+                {
+                  "name": "generator",
+                  "image": "python:3.11-alpine",
+                  "command": ["python3", "-u", "/opt/scripts/generate_logs.py"],
+                  "volumeMounts": [
+                    {
+                      "name": "log-scripts",
+                      "mountPath": "/opt/scripts",
+                      "readOnly": true
+                    }
+                  ],
+                  "resources": {
+                    "requests": {
+                      "cpu": "10m",
+                      "memory": "48Mi"
+                    },
+                    "limits": {
+                      "memory": "128Mi"
+                    }
+                  },
+                  "terminationMessagePath": "/dev/termination-log",
+                  "terminationMessagePolicy": "File",
+                  "imagePullPolicy": "IfNotPresent"
+                }
+              ],
+              "volumes": [
+                {
+                  "name": "log-scripts",
+                  "secret": {
+                    "secretName": "report-generator-logs-script",
+                    "defaultMode": 365
+                  }
+                }
+              ],
+              "restartPolicy": "Always",
+              "terminationGracePeriodSeconds": 30,
+              "dnsPolicy": "ClusterFirst",
+              "schedulerName": "default-scheduler"
+            }
+          },
+          "updateStrategy": {
+            "type": "RollingUpdate",
+            "rollingUpdate": {
+              "partition": 0
+            }
+          },
+          "revisionHistoryLimit": 10
+        },
+        "status": {
+          "observedGeneration": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "currentReplicas": 1,
+          "updatedReplicas": 1,
+          "currentRevision": "report-generator-6f8d9e7c4b",
+          "updateRevision": "report-generator-6f8d9e7c4b",
+          "collisionCount": 0,
+          "availableReplicas": 1
+        }
+      },
+      "created_at": "2026-01-14T00:00:00Z"
+    }
+  ],
+  "resource_labels": [
+    {"id": 1, "resource_id": 1, "key": "app", "value": "report-generator"},
+    {"id": 2, "resource_id": 1, "key": "tier", "value": "analytics"}
+  ],
+  "alerts": [],
+  "alert_labels": [],
+  "silences": [],
+  "silence_matchers": [],
+  "metrics": [],
+  "metric_labels": [],
+  "metric_label_values": [],
+  "metric_series": [],
+  "metric_samples": [],
+  "node_logs": [],
+  "node_metrics": [],
+  "pod_metrics": []
+}
