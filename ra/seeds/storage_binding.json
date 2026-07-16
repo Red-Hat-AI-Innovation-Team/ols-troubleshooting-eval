@@ -241,8 +241,8 @@
         }
       ],
       "started": false,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     }
   ],
   "pod_logs": [],

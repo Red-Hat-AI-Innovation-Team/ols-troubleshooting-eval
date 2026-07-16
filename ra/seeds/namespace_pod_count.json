@@ -1726,8 +1726,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 2,
@@ -1741,8 +1741,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 3,
@@ -1756,8 +1756,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 4,
@@ -1771,8 +1771,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 5,
@@ -1786,8 +1786,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 6,
@@ -1801,8 +1801,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 7,
@@ -1816,8 +1816,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 8,
@@ -1831,8 +1831,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 9,
@@ -1846,8 +1846,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 10,
@@ -1861,8 +1861,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 11,
@@ -1876,8 +1876,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 12,
@@ -1891,8 +1891,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 13,
@@ -1906,8 +1906,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 14,
@@ -1921,8 +1921,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     },
     {
       "id": 15,
@@ -1936,8 +1936,8 @@
       "limit_memory_bytes": null,
       "ports": [],
       "started": true,
-      "filesystem_json": null,
-      "network_json": null
+      "filesystem_json": {},
+      "network_json": {}
     }
   ],
   "pod_logs": [],
