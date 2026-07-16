@@ -23,8 +23,8 @@ class OpenAIClient(LLMClient):
         config = config or OpenAIConfig()
         super().__init__(config)
         self._client = openai.OpenAI(
-            api_key=config.api_key,
-            base_url=config.base_url,
+            api_key=config.api_key or None,
+            base_url=config.base_url or None,
             timeout=600.0,
         )
 
