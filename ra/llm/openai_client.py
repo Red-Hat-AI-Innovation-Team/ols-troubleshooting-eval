@@ -40,7 +40,7 @@ class OpenAIClient(LLMClient):
         kwargs: dict[str, Any] = dict(
             model=model,
             messages=_to_openai_messages(messages, system),
-            max_completion_tokens=max_tokens,
+            max_tokens=max_tokens,
         )
         if tools:
             kwargs["tools"] = _to_openai_tools(tools)
@@ -81,7 +81,6 @@ def _to_openai_messages(messages: list[Message], system: str) -> list[dict[str, 
         elif msg.role == "assistant" and msg.tool_calls:
             oai_msg: dict[str, Any] = {
                 "role": "assistant",
-                "content": msg.content,
                 "tool_calls": [
                     {
                         "id": tc.id,
@@ -94,6 +93,8 @@ def _to_openai_messages(messages: list[Message], system: str) -> list[dict[str, 
                     for tc in msg.tool_calls
                 ],
             }
+            if msg.content:
+                oai_msg["content"] = msg.content
             out.append(oai_msg)
         else:
             out.append({"role": msg.role, "content": msg.content or ""})
