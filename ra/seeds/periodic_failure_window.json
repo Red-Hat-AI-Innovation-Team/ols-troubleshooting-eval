@@ -87,7 +87,8 @@
       },
       "annotations": {},
       "phase": "Active",
-      "created_at": "2026-01-01T00:10:00Z"
+      "created_at": "2026-01-01T00:10:00Z",
+      "is_openshift_project": true
     }
   ],
   "pods": [
@@ -107,8 +108,6 @@
       "owner_name": "batch-processor-6d7e8f9a0b",
       "phase": "Running",
       "node_name": "worker-0.eval-cluster.example.com",
-      "service_account": "default",
-      "priority": 0,
       "qos_class": "Burstable",
       "restart_policy": "Always",
       "spec_json": {
@@ -116,8 +115,13 @@
           {
             "name": "processor",
             "image": "python:3.11-alpine",
-            "command": ["python3", "-u"],
-            "args": ["/opt/scripts/generate_logs.py"],
+            "command": [
+              "python3",
+              "-u"
+            ],
+            "args": [
+              "/opt/scripts/generate_logs.py"
+            ],
             "volumeMounts": [
               {
                 "name": "log-scripts",
@@ -187,7 +191,11 @@
         ],
         "hostIP": "10.0.0.11",
         "podIP": "10.128.0.55",
-        "podIPs": [{"ip": "10.128.0.55"}],
+        "podIPs": [
+          {
+            "ip": "10.128.0.55"
+          }
+        ],
         "startTime": "2026-01-14T00:00:00Z",
         "containerStatuses": [
           {
@@ -208,7 +216,38 @@
         ],
         "qosClass": "Burstable"
       },
-      "created_at": "2026-01-14T00:00:00Z"
+      "created_at": "2026-01-14T00:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T00:00:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T00:00:04Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T00:00:04Z"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T00:00:00Z"
+        }
+      ],
+      "host_ip": "10.0.0.11",
+      "pod_ip": "10.128.0.55",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-14T00:00:00Z"
     }
   ],
   "containers": [
@@ -224,110 +263,813 @@
       "request_memory_bytes": 50331648,
       "limit_cpu_millicores": 50,
       "limit_memory_bytes": 134217728,
-      "ports": []
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
     }
   ],
   "pod_logs": [
-    {"id": 1, "pod_id": 1, "container_name": "processor", "line_number": 1, "timestamp": "2026-01-14T00:00:10.000Z", "message": "timestamp,level,component,message"},
-    {"id": 2, "pod_id": 1, "container_name": "processor", "line_number": 2, "timestamp": "2026-01-14T00:00:10.001Z", "message": "2026-01-14T00:00:10.001Z,INFO,batch-processor,Job executed successfully in 167ms."},
-    {"id": 3, "pod_id": 1, "container_name": "processor", "line_number": 3, "timestamp": "2026-01-14T00:15:00.112Z", "message": "2026-01-14T00:15:00.112Z,INFO,batch-processor,System health check passed"},
-    {"id": 4, "pod_id": 1, "container_name": "processor", "line_number": 4, "timestamp": "2026-01-14T00:30:05.223Z", "message": "2026-01-14T00:30:05.223Z,INFO,batch-processor,Job executed successfully in 142ms."},
-    {"id": 5, "pod_id": 1, "container_name": "processor", "line_number": 5, "timestamp": "2026-01-14T00:45:10.334Z", "message": "2026-01-14T00:45:10.334Z,INFO,batch-processor,System health check passed"},
-    {"id": 6, "pod_id": 1, "container_name": "processor", "line_number": 6, "timestamp": "2026-01-14T01:00:15.445Z", "message": "2026-01-14T01:00:15.445Z,INFO,batch-processor,Job executed successfully in 189ms."},
-    {"id": 7, "pod_id": 1, "container_name": "processor", "line_number": 7, "timestamp": "2026-01-14T01:15:20.556Z", "message": "2026-01-14T01:15:20.556Z,INFO,batch-processor,System health check passed"},
-    {"id": 8, "pod_id": 1, "container_name": "processor", "line_number": 8, "timestamp": "2026-01-14T01:30:25.667Z", "message": "2026-01-14T01:30:25.667Z,INFO,batch-processor,Job executed successfully in 154ms."},
-    {"id": 9, "pod_id": 1, "container_name": "processor", "line_number": 9, "timestamp": "2026-01-14T01:45:30.778Z", "message": "2026-01-14T01:45:30.778Z,INFO,batch-processor,System health check passed"},
-    {"id": 10, "pod_id": 1, "container_name": "processor", "line_number": 10, "timestamp": "2026-01-14T02:00:35.889Z", "message": "2026-01-14T02:00:35.889Z,INFO,batch-processor,Job executed successfully in 201ms."},
-    {"id": 11, "pod_id": 1, "container_name": "processor", "line_number": 11, "timestamp": "2026-01-14T02:15:40.990Z", "message": "2026-01-14T02:15:40.990Z,INFO,batch-processor,System health check passed"},
-    {"id": 12, "pod_id": 1, "container_name": "processor", "line_number": 12, "timestamp": "2026-01-14T02:30:46.101Z", "message": "2026-01-14T02:30:46.101Z,INFO,batch-processor,Job executed successfully in 178ms."},
-    {"id": 13, "pod_id": 1, "container_name": "processor", "line_number": 13, "timestamp": "2026-01-14T02:45:51.212Z", "message": "2026-01-14T02:45:51.212Z,INFO,batch-processor,System health check passed"},
-    {"id": 14, "pod_id": 1, "container_name": "processor", "line_number": 14, "timestamp": "2026-01-14T02:50:56.323Z", "message": "2026-01-14T02:50:56.323Z,INFO,batch-processor,Job executed successfully in 145ms."},
-    {"id": 15, "pod_id": 1, "container_name": "processor", "line_number": 15, "timestamp": "2026-01-14T02:55:01.434Z", "message": "2026-01-14T02:55:01.434Z,INFO,batch-processor,System health check passed"},
-    {"id": 16, "pod_id": 1, "container_name": "processor", "line_number": 16, "timestamp": "2026-01-14T03:00:05.100Z", "message": "2026-01-14T03:00:05.100Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 17, "pod_id": 1, "container_name": "processor", "line_number": 17, "timestamp": "2026-01-14T03:00:15.200Z", "message": "2026-01-14T03:00:15.200Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 18, "pod_id": 1, "container_name": "processor", "line_number": 18, "timestamp": "2026-01-14T03:00:25.300Z", "message": "2026-01-14T03:00:25.300Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 19, "pod_id": 1, "container_name": "processor", "line_number": 19, "timestamp": "2026-01-14T03:00:35.400Z", "message": "2026-01-14T03:00:35.400Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 20, "pod_id": 1, "container_name": "processor", "line_number": 20, "timestamp": "2026-01-14T03:00:45.500Z", "message": "2026-01-14T03:00:45.500Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 21, "pod_id": 1, "container_name": "processor", "line_number": 21, "timestamp": "2026-01-14T03:00:55.600Z", "message": "2026-01-14T03:00:55.600Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 22, "pod_id": 1, "container_name": "processor", "line_number": 22, "timestamp": "2026-01-14T03:01:05.700Z", "message": "2026-01-14T03:01:05.700Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 23, "pod_id": 1, "container_name": "processor", "line_number": 23, "timestamp": "2026-01-14T03:01:15.800Z", "message": "2026-01-14T03:01:15.800Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 24, "pod_id": 1, "container_name": "processor", "line_number": 24, "timestamp": "2026-01-14T03:01:25.900Z", "message": "2026-01-14T03:01:25.900Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 25, "pod_id": 1, "container_name": "processor", "line_number": 25, "timestamp": "2026-01-14T03:01:36.000Z", "message": "2026-01-14T03:01:36.000Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 26, "pod_id": 1, "container_name": "processor", "line_number": 26, "timestamp": "2026-01-14T03:01:46.100Z", "message": "2026-01-14T03:01:46.100Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 27, "pod_id": 1, "container_name": "processor", "line_number": 27, "timestamp": "2026-01-14T03:01:56.200Z", "message": "2026-01-14T03:01:56.200Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 28, "pod_id": 1, "container_name": "processor", "line_number": 28, "timestamp": "2026-01-14T03:02:06.300Z", "message": "2026-01-14T03:02:06.300Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 29, "pod_id": 1, "container_name": "processor", "line_number": 29, "timestamp": "2026-01-14T03:02:16.400Z", "message": "2026-01-14T03:02:16.400Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 30, "pod_id": 1, "container_name": "processor", "line_number": 30, "timestamp": "2026-01-14T03:02:26.500Z", "message": "2026-01-14T03:02:26.500Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 31, "pod_id": 1, "container_name": "processor", "line_number": 31, "timestamp": "2026-01-14T03:02:36.600Z", "message": "2026-01-14T03:02:36.600Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 32, "pod_id": 1, "container_name": "processor", "line_number": 32, "timestamp": "2026-01-14T03:02:46.700Z", "message": "2026-01-14T03:02:46.700Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 33, "pod_id": 1, "container_name": "processor", "line_number": 33, "timestamp": "2026-01-14T03:02:56.800Z", "message": "2026-01-14T03:02:56.800Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 34, "pod_id": 1, "container_name": "processor", "line_number": 34, "timestamp": "2026-01-14T03:03:06.900Z", "message": "2026-01-14T03:03:06.900Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 35, "pod_id": 1, "container_name": "processor", "line_number": 35, "timestamp": "2026-01-14T03:03:17.000Z", "message": "2026-01-14T03:03:17.000Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 36, "pod_id": 1, "container_name": "processor", "line_number": 36, "timestamp": "2026-01-14T03:03:27.100Z", "message": "2026-01-14T03:03:27.100Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 37, "pod_id": 1, "container_name": "processor", "line_number": 37, "timestamp": "2026-01-14T03:03:37.200Z", "message": "2026-01-14T03:03:37.200Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 38, "pod_id": 1, "container_name": "processor", "line_number": 38, "timestamp": "2026-01-14T03:03:47.300Z", "message": "2026-01-14T03:03:47.300Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 39, "pod_id": 1, "container_name": "processor", "line_number": 39, "timestamp": "2026-01-14T03:03:57.400Z", "message": "2026-01-14T03:03:57.400Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 40, "pod_id": 1, "container_name": "processor", "line_number": 40, "timestamp": "2026-01-14T03:04:07.500Z", "message": "2026-01-14T03:04:07.500Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 41, "pod_id": 1, "container_name": "processor", "line_number": 41, "timestamp": "2026-01-14T03:04:17.600Z", "message": "2026-01-14T03:04:17.600Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 42, "pod_id": 1, "container_name": "processor", "line_number": 42, "timestamp": "2026-01-14T03:04:27.700Z", "message": "2026-01-14T03:04:27.700Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 43, "pod_id": 1, "container_name": "processor", "line_number": 43, "timestamp": "2026-01-14T03:04:37.800Z", "message": "2026-01-14T03:04:37.800Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 44, "pod_id": 1, "container_name": "processor", "line_number": 44, "timestamp": "2026-01-14T03:04:47.900Z", "message": "2026-01-14T03:04:47.900Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"},
-    {"id": 45, "pod_id": 1, "container_name": "processor", "line_number": 45, "timestamp": "2026-01-14T03:05:00.000Z", "message": "2026-01-14T03:05:00.000Z,WARN,batch-processor,Detected repeated failures during 03:00-03:05 window hint=possible scheduled maintenance upstream"},
-    {"id": 46, "pod_id": 1, "container_name": "processor", "line_number": 46, "timestamp": "2026-01-14T03:05:10.100Z", "message": "2026-01-14T03:05:10.100Z,INFO,batch-processor,Job executed successfully in 198ms."},
-    {"id": 47, "pod_id": 1, "container_name": "processor", "line_number": 47, "timestamp": "2026-01-14T03:15:15.212Z", "message": "2026-01-14T03:15:15.212Z,INFO,batch-processor,System health check passed"},
-    {"id": 48, "pod_id": 1, "container_name": "processor", "line_number": 48, "timestamp": "2026-01-14T03:30:20.323Z", "message": "2026-01-14T03:30:20.323Z,INFO,batch-processor,Job executed successfully in 155ms."},
-    {"id": 49, "pod_id": 1, "container_name": "processor", "line_number": 49, "timestamp": "2026-01-14T03:45:25.434Z", "message": "2026-01-14T03:45:25.434Z,INFO,batch-processor,System health check passed"},
-    {"id": 50, "pod_id": 1, "container_name": "processor", "line_number": 50, "timestamp": "2026-01-14T04:00:30.545Z", "message": "2026-01-14T04:00:30.545Z,INFO,batch-processor,Job executed successfully in 171ms."},
-    {"id": 51, "pod_id": 1, "container_name": "processor", "line_number": 51, "timestamp": "2026-01-14T04:15:35.656Z", "message": "2026-01-14T04:15:35.656Z,INFO,batch-processor,System health check passed"},
-    {"id": 52, "pod_id": 1, "container_name": "processor", "line_number": 52, "timestamp": "2026-01-14T04:30:40.767Z", "message": "2026-01-14T04:30:40.767Z,INFO,batch-processor,Job executed successfully in 139ms."},
-    {"id": 53, "pod_id": 1, "container_name": "processor", "line_number": 53, "timestamp": "2026-01-14T04:45:45.878Z", "message": "2026-01-14T04:45:45.878Z,INFO,batch-processor,System health check passed"},
-    {"id": 54, "pod_id": 1, "container_name": "processor", "line_number": 54, "timestamp": "2026-01-14T05:00:50.989Z", "message": "2026-01-14T05:00:50.989Z,INFO,batch-processor,Job executed successfully in 183ms."},
-    {"id": 55, "pod_id": 1, "container_name": "processor", "line_number": 55, "timestamp": "2026-01-14T05:15:56.100Z", "message": "2026-01-14T05:15:56.100Z,INFO,batch-processor,System health check passed"},
-    {"id": 56, "pod_id": 1, "container_name": "processor", "line_number": 56, "timestamp": "2026-01-14T05:30:01.211Z", "message": "2026-01-14T05:30:01.211Z,INFO,batch-processor,Job executed successfully in 192ms."},
-    {"id": 57, "pod_id": 1, "container_name": "processor", "line_number": 57, "timestamp": "2026-01-14T05:45:06.322Z", "message": "2026-01-14T05:45:06.322Z,INFO,batch-processor,System health check passed"},
-    {"id": 58, "pod_id": 1, "container_name": "processor", "line_number": 58, "timestamp": "2026-01-14T06:00:11.433Z", "message": "2026-01-14T06:00:11.433Z,INFO,batch-processor,Job executed successfully in 148ms."},
-    {"id": 59, "pod_id": 1, "container_name": "processor", "line_number": 59, "timestamp": "2026-01-14T06:15:16.544Z", "message": "2026-01-14T06:15:16.544Z,INFO,batch-processor,System health check passed"},
-    {"id": 60, "pod_id": 1, "container_name": "processor", "line_number": 60, "timestamp": "2026-01-14T06:30:21.655Z", "message": "2026-01-14T06:30:21.655Z,INFO,batch-processor,Job executed successfully in 176ms."},
-    {"id": 61, "pod_id": 1, "container_name": "processor", "line_number": 61, "timestamp": "2026-01-14T06:45:26.766Z", "message": "2026-01-14T06:45:26.766Z,INFO,batch-processor,System health check passed"},
-    {"id": 62, "pod_id": 1, "container_name": "processor", "line_number": 62, "timestamp": "2026-01-14T07:00:31.877Z", "message": "2026-01-14T07:00:31.877Z,INFO,batch-processor,Job executed successfully in 158ms."},
-    {"id": 63, "pod_id": 1, "container_name": "processor", "line_number": 63, "timestamp": "2026-01-14T07:15:36.988Z", "message": "2026-01-14T07:15:36.988Z,INFO,batch-processor,System health check passed"},
-    {"id": 64, "pod_id": 1, "container_name": "processor", "line_number": 64, "timestamp": "2026-01-14T07:30:42.099Z", "message": "2026-01-14T07:30:42.099Z,INFO,batch-processor,Job executed successfully in 165ms."},
-    {"id": 65, "pod_id": 1, "container_name": "processor", "line_number": 65, "timestamp": "2026-01-14T07:45:47.210Z", "message": "2026-01-14T07:45:47.210Z,INFO,batch-processor,System health check passed"},
-    {"id": 66, "pod_id": 1, "container_name": "processor", "line_number": 66, "timestamp": "2026-01-14T08:00:52.321Z", "message": "2026-01-14T08:00:52.321Z,INFO,batch-processor,Job executed successfully in 181ms."},
-    {"id": 67, "pod_id": 1, "container_name": "processor", "line_number": 67, "timestamp": "2026-01-14T08:15:57.432Z", "message": "2026-01-14T08:15:57.432Z,INFO,batch-processor,System health check passed"},
-    {"id": 68, "pod_id": 1, "container_name": "processor", "line_number": 68, "timestamp": "2026-01-14T08:30:02.543Z", "message": "2026-01-14T08:30:02.543Z,INFO,batch-processor,Job executed successfully in 143ms."},
-    {"id": 69, "pod_id": 1, "container_name": "processor", "line_number": 69, "timestamp": "2026-01-14T09:00:07.654Z", "message": "2026-01-14T09:00:07.654Z,INFO,batch-processor,System health check passed"},
-    {"id": 70, "pod_id": 1, "container_name": "processor", "line_number": 70, "timestamp": "2026-01-14T09:30:12.765Z", "message": "2026-01-14T09:30:12.765Z,INFO,batch-processor,Job executed successfully in 196ms."},
-    {"id": 71, "pod_id": 1, "container_name": "processor", "line_number": 71, "timestamp": "2026-01-14T10:00:17.876Z", "message": "2026-01-14T10:00:17.876Z,INFO,batch-processor,System health check passed"},
-    {"id": 72, "pod_id": 1, "container_name": "processor", "line_number": 72, "timestamp": "2026-01-14T10:30:22.987Z", "message": "2026-01-14T10:30:22.987Z,INFO,batch-processor,Job executed successfully in 174ms."},
-    {"id": 73, "pod_id": 1, "container_name": "processor", "line_number": 73, "timestamp": "2026-01-14T11:00:28.098Z", "message": "2026-01-14T11:00:28.098Z,INFO,batch-processor,System health check passed"},
-    {"id": 74, "pod_id": 1, "container_name": "processor", "line_number": 74, "timestamp": "2026-01-14T11:30:33.209Z", "message": "2026-01-14T11:30:33.209Z,INFO,batch-processor,Job executed successfully in 152ms."},
-    {"id": 75, "pod_id": 1, "container_name": "processor", "line_number": 75, "timestamp": "2026-01-14T12:00:38.320Z", "message": "2026-01-14T12:00:38.320Z,INFO,batch-processor,System health check passed"},
-    {"id": 76, "pod_id": 1, "container_name": "processor", "line_number": 76, "timestamp": "2026-01-14T12:30:43.431Z", "message": "2026-01-14T12:30:43.431Z,INFO,batch-processor,Job executed successfully in 187ms."},
-    {"id": 77, "pod_id": 1, "container_name": "processor", "line_number": 77, "timestamp": "2026-01-14T13:00:48.542Z", "message": "2026-01-14T13:00:48.542Z,INFO,batch-processor,System health check passed"},
-    {"id": 78, "pod_id": 1, "container_name": "processor", "line_number": 78, "timestamp": "2026-01-14T13:30:53.653Z", "message": "2026-01-14T13:30:53.653Z,INFO,batch-processor,Job executed successfully in 161ms."},
-    {"id": 79, "pod_id": 1, "container_name": "processor", "line_number": 79, "timestamp": "2026-01-14T14:00:58.764Z", "message": "2026-01-14T14:00:58.764Z,INFO,batch-processor,System health check passed"},
-    {"id": 80, "pod_id": 1, "container_name": "processor", "line_number": 80, "timestamp": "2026-01-14T14:30:03.875Z", "message": "2026-01-14T14:30:03.875Z,INFO,batch-processor,Job executed successfully in 169ms."},
-    {"id": 81, "pod_id": 1, "container_name": "processor", "line_number": 81, "timestamp": "2026-01-14T15:00:08.986Z", "message": "2026-01-14T15:00:08.986Z,INFO,batch-processor,System health check passed"},
-    {"id": 82, "pod_id": 1, "container_name": "processor", "line_number": 82, "timestamp": "2026-01-14T15:30:14.097Z", "message": "2026-01-14T15:30:14.097Z,INFO,batch-processor,Job executed successfully in 144ms."},
-    {"id": 83, "pod_id": 1, "container_name": "processor", "line_number": 83, "timestamp": "2026-01-14T16:00:19.208Z", "message": "2026-01-14T16:00:19.208Z,INFO,batch-processor,System health check passed"},
-    {"id": 84, "pod_id": 1, "container_name": "processor", "line_number": 84, "timestamp": "2026-01-14T16:30:24.319Z", "message": "2026-01-14T16:30:24.319Z,INFO,batch-processor,Job executed successfully in 184ms."},
-    {"id": 85, "pod_id": 1, "container_name": "processor", "line_number": 85, "timestamp": "2026-01-14T17:00:29.430Z", "message": "2026-01-14T17:00:29.430Z,INFO,batch-processor,System health check passed"},
-    {"id": 86, "pod_id": 1, "container_name": "processor", "line_number": 86, "timestamp": "2026-01-14T17:30:34.541Z", "message": "2026-01-14T17:30:34.541Z,INFO,batch-processor,Job executed successfully in 162ms."},
-    {"id": 87, "pod_id": 1, "container_name": "processor", "line_number": 87, "timestamp": "2026-01-14T18:00:39.652Z", "message": "2026-01-14T18:00:39.652Z,INFO,batch-processor,System health check passed"},
-    {"id": 88, "pod_id": 1, "container_name": "processor", "line_number": 88, "timestamp": "2026-01-14T18:30:44.763Z", "message": "2026-01-14T18:30:44.763Z,INFO,batch-processor,Job executed successfully in 177ms."},
-    {"id": 89, "pod_id": 1, "container_name": "processor", "line_number": 89, "timestamp": "2026-01-14T19:00:49.874Z", "message": "2026-01-14T19:00:49.874Z,INFO,batch-processor,System health check passed"},
-    {"id": 90, "pod_id": 1, "container_name": "processor", "line_number": 90, "timestamp": "2026-01-14T19:30:54.985Z", "message": "2026-01-14T19:30:54.985Z,INFO,batch-processor,Job executed successfully in 151ms."},
-    {"id": 91, "pod_id": 1, "container_name": "processor", "line_number": 91, "timestamp": "2026-01-14T20:00:00.096Z", "message": "2026-01-14T20:00:00.096Z,INFO,batch-processor,System health check passed"},
-    {"id": 92, "pod_id": 1, "container_name": "processor", "line_number": 92, "timestamp": "2026-01-14T20:30:05.207Z", "message": "2026-01-14T20:30:05.207Z,INFO,batch-processor,Job executed successfully in 193ms."},
-    {"id": 93, "pod_id": 1, "container_name": "processor", "line_number": 93, "timestamp": "2026-01-14T21:00:10.318Z", "message": "2026-01-14T21:00:10.318Z,INFO,batch-processor,System health check passed"},
-    {"id": 94, "pod_id": 1, "container_name": "processor", "line_number": 94, "timestamp": "2026-01-14T21:30:15.429Z", "message": "2026-01-14T21:30:15.429Z,INFO,batch-processor,Job executed successfully in 159ms."},
-    {"id": 95, "pod_id": 1, "container_name": "processor", "line_number": 95, "timestamp": "2026-01-14T22:00:20.540Z", "message": "2026-01-14T22:00:20.540Z,INFO,batch-processor,System health check passed"},
-    {"id": 96, "pod_id": 1, "container_name": "processor", "line_number": 96, "timestamp": "2026-01-14T22:30:25.651Z", "message": "2026-01-14T22:30:25.651Z,INFO,batch-processor,Job executed successfully in 166ms."},
-    {"id": 97, "pod_id": 1, "container_name": "processor", "line_number": 97, "timestamp": "2026-01-14T23:00:30.762Z", "message": "2026-01-14T23:00:30.762Z,INFO,batch-processor,System health check passed"},
-    {"id": 98, "pod_id": 1, "container_name": "processor", "line_number": 98, "timestamp": "2026-01-14T23:30:35.873Z", "message": "2026-01-14T23:30:35.873Z,INFO,batch-processor,Job executed successfully in 185ms."},
-    {"id": 99, "pod_id": 1, "container_name": "processor", "line_number": 99, "timestamp": "2026-01-14T23:45:40.984Z", "message": "2026-01-14T23:45:40.984Z,INFO,batch-processor,System health check passed"},
-    {"id": 100, "pod_id": 1, "container_name": "processor", "line_number": 100, "timestamp": "2026-01-15T00:00:00.000Z", "message": "2026-01-15T00:00:00.000Z,INFO,batch-processor,Job executed successfully in 179ms."}
+    {
+      "id": 1,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 1,
+      "timestamp": "2026-01-14T00:00:10.000Z",
+      "message": "timestamp,level,component,message"
+    },
+    {
+      "id": 2,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 2,
+      "timestamp": "2026-01-14T00:00:10.001Z",
+      "message": "2026-01-14T00:00:10.001Z,INFO,batch-processor,Job executed successfully in 167ms."
+    },
+    {
+      "id": 3,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 3,
+      "timestamp": "2026-01-14T00:15:00.112Z",
+      "message": "2026-01-14T00:15:00.112Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 4,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 4,
+      "timestamp": "2026-01-14T00:30:05.223Z",
+      "message": "2026-01-14T00:30:05.223Z,INFO,batch-processor,Job executed successfully in 142ms."
+    },
+    {
+      "id": 5,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 5,
+      "timestamp": "2026-01-14T00:45:10.334Z",
+      "message": "2026-01-14T00:45:10.334Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 6,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 6,
+      "timestamp": "2026-01-14T01:00:15.445Z",
+      "message": "2026-01-14T01:00:15.445Z,INFO,batch-processor,Job executed successfully in 189ms."
+    },
+    {
+      "id": 7,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 7,
+      "timestamp": "2026-01-14T01:15:20.556Z",
+      "message": "2026-01-14T01:15:20.556Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 8,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 8,
+      "timestamp": "2026-01-14T01:30:25.667Z",
+      "message": "2026-01-14T01:30:25.667Z,INFO,batch-processor,Job executed successfully in 154ms."
+    },
+    {
+      "id": 9,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 9,
+      "timestamp": "2026-01-14T01:45:30.778Z",
+      "message": "2026-01-14T01:45:30.778Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 10,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 10,
+      "timestamp": "2026-01-14T02:00:35.889Z",
+      "message": "2026-01-14T02:00:35.889Z,INFO,batch-processor,Job executed successfully in 201ms."
+    },
+    {
+      "id": 11,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 11,
+      "timestamp": "2026-01-14T02:15:40.990Z",
+      "message": "2026-01-14T02:15:40.990Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 12,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 12,
+      "timestamp": "2026-01-14T02:30:46.101Z",
+      "message": "2026-01-14T02:30:46.101Z,INFO,batch-processor,Job executed successfully in 178ms."
+    },
+    {
+      "id": 13,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 13,
+      "timestamp": "2026-01-14T02:45:51.212Z",
+      "message": "2026-01-14T02:45:51.212Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 14,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 14,
+      "timestamp": "2026-01-14T02:50:56.323Z",
+      "message": "2026-01-14T02:50:56.323Z,INFO,batch-processor,Job executed successfully in 145ms."
+    },
+    {
+      "id": 15,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 15,
+      "timestamp": "2026-01-14T02:55:01.434Z",
+      "message": "2026-01-14T02:55:01.434Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 16,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 16,
+      "timestamp": "2026-01-14T03:00:05.100Z",
+      "message": "2026-01-14T03:00:05.100Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 17,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 17,
+      "timestamp": "2026-01-14T03:00:15.200Z",
+      "message": "2026-01-14T03:00:15.200Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 18,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 18,
+      "timestamp": "2026-01-14T03:00:25.300Z",
+      "message": "2026-01-14T03:00:25.300Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 19,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 19,
+      "timestamp": "2026-01-14T03:00:35.400Z",
+      "message": "2026-01-14T03:00:35.400Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 20,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 20,
+      "timestamp": "2026-01-14T03:00:45.500Z",
+      "message": "2026-01-14T03:00:45.500Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 21,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 21,
+      "timestamp": "2026-01-14T03:00:55.600Z",
+      "message": "2026-01-14T03:00:55.600Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 22,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 22,
+      "timestamp": "2026-01-14T03:01:05.700Z",
+      "message": "2026-01-14T03:01:05.700Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 23,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 23,
+      "timestamp": "2026-01-14T03:01:15.800Z",
+      "message": "2026-01-14T03:01:15.800Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 24,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 24,
+      "timestamp": "2026-01-14T03:01:25.900Z",
+      "message": "2026-01-14T03:01:25.900Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 25,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 25,
+      "timestamp": "2026-01-14T03:01:36.000Z",
+      "message": "2026-01-14T03:01:36.000Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 26,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 26,
+      "timestamp": "2026-01-14T03:01:46.100Z",
+      "message": "2026-01-14T03:01:46.100Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 27,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 27,
+      "timestamp": "2026-01-14T03:01:56.200Z",
+      "message": "2026-01-14T03:01:56.200Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 28,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 28,
+      "timestamp": "2026-01-14T03:02:06.300Z",
+      "message": "2026-01-14T03:02:06.300Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 29,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 29,
+      "timestamp": "2026-01-14T03:02:16.400Z",
+      "message": "2026-01-14T03:02:16.400Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 30,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 30,
+      "timestamp": "2026-01-14T03:02:26.500Z",
+      "message": "2026-01-14T03:02:26.500Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 31,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 31,
+      "timestamp": "2026-01-14T03:02:36.600Z",
+      "message": "2026-01-14T03:02:36.600Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 32,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 32,
+      "timestamp": "2026-01-14T03:02:46.700Z",
+      "message": "2026-01-14T03:02:46.700Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 33,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 33,
+      "timestamp": "2026-01-14T03:02:56.800Z",
+      "message": "2026-01-14T03:02:56.800Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 34,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 34,
+      "timestamp": "2026-01-14T03:03:06.900Z",
+      "message": "2026-01-14T03:03:06.900Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 35,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 35,
+      "timestamp": "2026-01-14T03:03:17.000Z",
+      "message": "2026-01-14T03:03:17.000Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 36,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 36,
+      "timestamp": "2026-01-14T03:03:27.100Z",
+      "message": "2026-01-14T03:03:27.100Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 37,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 37,
+      "timestamp": "2026-01-14T03:03:37.200Z",
+      "message": "2026-01-14T03:03:37.200Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 38,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 38,
+      "timestamp": "2026-01-14T03:03:47.300Z",
+      "message": "2026-01-14T03:03:47.300Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 39,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 39,
+      "timestamp": "2026-01-14T03:03:57.400Z",
+      "message": "2026-01-14T03:03:57.400Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 40,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 40,
+      "timestamp": "2026-01-14T03:04:07.500Z",
+      "message": "2026-01-14T03:04:07.500Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 41,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 41,
+      "timestamp": "2026-01-14T03:04:17.600Z",
+      "message": "2026-01-14T03:04:17.600Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 42,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 42,
+      "timestamp": "2026-01-14T03:04:27.700Z",
+      "message": "2026-01-14T03:04:27.700Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 43,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 43,
+      "timestamp": "2026-01-14T03:04:37.800Z",
+      "message": "2026-01-14T03:04:37.800Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 44,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 44,
+      "timestamp": "2026-01-14T03:04:47.900Z",
+      "message": "2026-01-14T03:04:47.900Z,ERROR,batch-processor,External API connection failed: connection refused to api.external-service.com:443"
+    },
+    {
+      "id": 45,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 45,
+      "timestamp": "2026-01-14T03:05:00.000Z",
+      "message": "2026-01-14T03:05:00.000Z,WARN,batch-processor,Detected repeated failures during 03:00-03:05 window hint=possible scheduled maintenance upstream"
+    },
+    {
+      "id": 46,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 46,
+      "timestamp": "2026-01-14T03:05:10.100Z",
+      "message": "2026-01-14T03:05:10.100Z,INFO,batch-processor,Job executed successfully in 198ms."
+    },
+    {
+      "id": 47,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 47,
+      "timestamp": "2026-01-14T03:15:15.212Z",
+      "message": "2026-01-14T03:15:15.212Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 48,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 48,
+      "timestamp": "2026-01-14T03:30:20.323Z",
+      "message": "2026-01-14T03:30:20.323Z,INFO,batch-processor,Job executed successfully in 155ms."
+    },
+    {
+      "id": 49,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 49,
+      "timestamp": "2026-01-14T03:45:25.434Z",
+      "message": "2026-01-14T03:45:25.434Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 50,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 50,
+      "timestamp": "2026-01-14T04:00:30.545Z",
+      "message": "2026-01-14T04:00:30.545Z,INFO,batch-processor,Job executed successfully in 171ms."
+    },
+    {
+      "id": 51,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 51,
+      "timestamp": "2026-01-14T04:15:35.656Z",
+      "message": "2026-01-14T04:15:35.656Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 52,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 52,
+      "timestamp": "2026-01-14T04:30:40.767Z",
+      "message": "2026-01-14T04:30:40.767Z,INFO,batch-processor,Job executed successfully in 139ms."
+    },
+    {
+      "id": 53,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 53,
+      "timestamp": "2026-01-14T04:45:45.878Z",
+      "message": "2026-01-14T04:45:45.878Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 54,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 54,
+      "timestamp": "2026-01-14T05:00:50.989Z",
+      "message": "2026-01-14T05:00:50.989Z,INFO,batch-processor,Job executed successfully in 183ms."
+    },
+    {
+      "id": 55,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 55,
+      "timestamp": "2026-01-14T05:15:56.100Z",
+      "message": "2026-01-14T05:15:56.100Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 56,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 56,
+      "timestamp": "2026-01-14T05:30:01.211Z",
+      "message": "2026-01-14T05:30:01.211Z,INFO,batch-processor,Job executed successfully in 192ms."
+    },
+    {
+      "id": 57,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 57,
+      "timestamp": "2026-01-14T05:45:06.322Z",
+      "message": "2026-01-14T05:45:06.322Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 58,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 58,
+      "timestamp": "2026-01-14T06:00:11.433Z",
+      "message": "2026-01-14T06:00:11.433Z,INFO,batch-processor,Job executed successfully in 148ms."
+    },
+    {
+      "id": 59,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 59,
+      "timestamp": "2026-01-14T06:15:16.544Z",
+      "message": "2026-01-14T06:15:16.544Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 60,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 60,
+      "timestamp": "2026-01-14T06:30:21.655Z",
+      "message": "2026-01-14T06:30:21.655Z,INFO,batch-processor,Job executed successfully in 176ms."
+    },
+    {
+      "id": 61,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 61,
+      "timestamp": "2026-01-14T06:45:26.766Z",
+      "message": "2026-01-14T06:45:26.766Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 62,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 62,
+      "timestamp": "2026-01-14T07:00:31.877Z",
+      "message": "2026-01-14T07:00:31.877Z,INFO,batch-processor,Job executed successfully in 158ms."
+    },
+    {
+      "id": 63,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 63,
+      "timestamp": "2026-01-14T07:15:36.988Z",
+      "message": "2026-01-14T07:15:36.988Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 64,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 64,
+      "timestamp": "2026-01-14T07:30:42.099Z",
+      "message": "2026-01-14T07:30:42.099Z,INFO,batch-processor,Job executed successfully in 165ms."
+    },
+    {
+      "id": 65,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 65,
+      "timestamp": "2026-01-14T07:45:47.210Z",
+      "message": "2026-01-14T07:45:47.210Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 66,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 66,
+      "timestamp": "2026-01-14T08:00:52.321Z",
+      "message": "2026-01-14T08:00:52.321Z,INFO,batch-processor,Job executed successfully in 181ms."
+    },
+    {
+      "id": 67,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 67,
+      "timestamp": "2026-01-14T08:15:57.432Z",
+      "message": "2026-01-14T08:15:57.432Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 68,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 68,
+      "timestamp": "2026-01-14T08:30:02.543Z",
+      "message": "2026-01-14T08:30:02.543Z,INFO,batch-processor,Job executed successfully in 143ms."
+    },
+    {
+      "id": 69,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 69,
+      "timestamp": "2026-01-14T09:00:07.654Z",
+      "message": "2026-01-14T09:00:07.654Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 70,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 70,
+      "timestamp": "2026-01-14T09:30:12.765Z",
+      "message": "2026-01-14T09:30:12.765Z,INFO,batch-processor,Job executed successfully in 196ms."
+    },
+    {
+      "id": 71,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 71,
+      "timestamp": "2026-01-14T10:00:17.876Z",
+      "message": "2026-01-14T10:00:17.876Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 72,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 72,
+      "timestamp": "2026-01-14T10:30:22.987Z",
+      "message": "2026-01-14T10:30:22.987Z,INFO,batch-processor,Job executed successfully in 174ms."
+    },
+    {
+      "id": 73,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 73,
+      "timestamp": "2026-01-14T11:00:28.098Z",
+      "message": "2026-01-14T11:00:28.098Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 74,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 74,
+      "timestamp": "2026-01-14T11:30:33.209Z",
+      "message": "2026-01-14T11:30:33.209Z,INFO,batch-processor,Job executed successfully in 152ms."
+    },
+    {
+      "id": 75,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 75,
+      "timestamp": "2026-01-14T12:00:38.320Z",
+      "message": "2026-01-14T12:00:38.320Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 76,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 76,
+      "timestamp": "2026-01-14T12:30:43.431Z",
+      "message": "2026-01-14T12:30:43.431Z,INFO,batch-processor,Job executed successfully in 187ms."
+    },
+    {
+      "id": 77,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 77,
+      "timestamp": "2026-01-14T13:00:48.542Z",
+      "message": "2026-01-14T13:00:48.542Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 78,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 78,
+      "timestamp": "2026-01-14T13:30:53.653Z",
+      "message": "2026-01-14T13:30:53.653Z,INFO,batch-processor,Job executed successfully in 161ms."
+    },
+    {
+      "id": 79,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 79,
+      "timestamp": "2026-01-14T14:00:58.764Z",
+      "message": "2026-01-14T14:00:58.764Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 80,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 80,
+      "timestamp": "2026-01-14T14:30:03.875Z",
+      "message": "2026-01-14T14:30:03.875Z,INFO,batch-processor,Job executed successfully in 169ms."
+    },
+    {
+      "id": 81,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 81,
+      "timestamp": "2026-01-14T15:00:08.986Z",
+      "message": "2026-01-14T15:00:08.986Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 82,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 82,
+      "timestamp": "2026-01-14T15:30:14.097Z",
+      "message": "2026-01-14T15:30:14.097Z,INFO,batch-processor,Job executed successfully in 144ms."
+    },
+    {
+      "id": 83,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 83,
+      "timestamp": "2026-01-14T16:00:19.208Z",
+      "message": "2026-01-14T16:00:19.208Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 84,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 84,
+      "timestamp": "2026-01-14T16:30:24.319Z",
+      "message": "2026-01-14T16:30:24.319Z,INFO,batch-processor,Job executed successfully in 184ms."
+    },
+    {
+      "id": 85,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 85,
+      "timestamp": "2026-01-14T17:00:29.430Z",
+      "message": "2026-01-14T17:00:29.430Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 86,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 86,
+      "timestamp": "2026-01-14T17:30:34.541Z",
+      "message": "2026-01-14T17:30:34.541Z,INFO,batch-processor,Job executed successfully in 162ms."
+    },
+    {
+      "id": 87,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 87,
+      "timestamp": "2026-01-14T18:00:39.652Z",
+      "message": "2026-01-14T18:00:39.652Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 88,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 88,
+      "timestamp": "2026-01-14T18:30:44.763Z",
+      "message": "2026-01-14T18:30:44.763Z,INFO,batch-processor,Job executed successfully in 177ms."
+    },
+    {
+      "id": 89,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 89,
+      "timestamp": "2026-01-14T19:00:49.874Z",
+      "message": "2026-01-14T19:00:49.874Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 90,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 90,
+      "timestamp": "2026-01-14T19:30:54.985Z",
+      "message": "2026-01-14T19:30:54.985Z,INFO,batch-processor,Job executed successfully in 151ms."
+    },
+    {
+      "id": 91,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 91,
+      "timestamp": "2026-01-14T20:00:00.096Z",
+      "message": "2026-01-14T20:00:00.096Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 92,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 92,
+      "timestamp": "2026-01-14T20:30:05.207Z",
+      "message": "2026-01-14T20:30:05.207Z,INFO,batch-processor,Job executed successfully in 193ms."
+    },
+    {
+      "id": 93,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 93,
+      "timestamp": "2026-01-14T21:00:10.318Z",
+      "message": "2026-01-14T21:00:10.318Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 94,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 94,
+      "timestamp": "2026-01-14T21:30:15.429Z",
+      "message": "2026-01-14T21:30:15.429Z,INFO,batch-processor,Job executed successfully in 159ms."
+    },
+    {
+      "id": 95,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 95,
+      "timestamp": "2026-01-14T22:00:20.540Z",
+      "message": "2026-01-14T22:00:20.540Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 96,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 96,
+      "timestamp": "2026-01-14T22:30:25.651Z",
+      "message": "2026-01-14T22:30:25.651Z,INFO,batch-processor,Job executed successfully in 166ms."
+    },
+    {
+      "id": 97,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 97,
+      "timestamp": "2026-01-14T23:00:30.762Z",
+      "message": "2026-01-14T23:00:30.762Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 98,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 98,
+      "timestamp": "2026-01-14T23:30:35.873Z",
+      "message": "2026-01-14T23:30:35.873Z,INFO,batch-processor,Job executed successfully in 185ms."
+    },
+    {
+      "id": 99,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 99,
+      "timestamp": "2026-01-14T23:45:40.984Z",
+      "message": "2026-01-14T23:45:40.984Z,INFO,batch-processor,System health check passed"
+    },
+    {
+      "id": 100,
+      "pod_id": 1,
+      "container_name": "processor",
+      "line_number": 100,
+      "timestamp": "2026-01-15T00:00:00.000Z",
+      "message": "2026-01-15T00:00:00.000Z,INFO,batch-processor,Job executed successfully in 179ms."
+    }
   ],
   "events": [],
   "resources": [
@@ -373,8 +1115,13 @@
                 {
                   "name": "processor",
                   "image": "python:3.11-alpine",
-                  "command": ["python3", "-u"],
-                  "args": ["/opt/scripts/generate_logs.py"],
+                  "command": [
+                    "python3",
+                    "-u"
+                  ],
+                  "args": [
+                    "/opt/scripts/generate_logs.py"
+                  ],
                   "volumeMounts": [
                     {
                       "name": "log-scripts",
@@ -448,12 +1195,23 @@
           ]
         }
       },
-      "created_at": "2026-01-14T00:00:00Z"
+      "created_at": "2026-01-14T00:00:00Z",
+      "replicas": 1
     }
   ],
   "resource_labels": [
-    {"id": 1, "resource_id": 1, "key": "app", "value": "batch-processor"},
-    {"id": 2, "resource_id": 1, "key": "pipeline-stage", "value": "transform"}
+    {
+      "id": 1,
+      "resource_id": 1,
+      "label_key": "app",
+      "label_value": "batch-processor"
+    },
+    {
+      "id": 2,
+      "resource_id": 1,
+      "label_key": "pipeline-stage",
+      "label_value": "transform"
+    }
   ],
   "alerts": [],
   "alert_labels": [],

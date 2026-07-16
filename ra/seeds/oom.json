@@ -148,7 +148,11 @@
           {
             "name": "app",
             "image": "python:3.9-slim",
-            "command": ["python3", "-c", "import time\nprint(\"Starting application...\")\n# Create a memory leak\ndata = []\nwhile True:\n    # Continuously append data to cause memory growth\n    data.append(\"x\" * 1000000)  # 1MB of data each iteration\n    print(f\"Allocated {len(data)} MB\")\n    time.sleep(1)\n"],
+            "command": [
+              "python3",
+              "-c",
+              "import time\nprint(\"Starting application...\")\n# Create a memory leak\ndata = []\nwhile True:\n    # Continuously append data to cause memory growth\n    data.append(\"x\" * 1000000)  # 1MB of data each iteration\n    print(f\"Allocated {len(data)} MB\")\n    time.sleep(1)\n"
+            ],
             "resources": {
               "requests": {
                 "cpu": "100m",
@@ -244,7 +248,6 @@
       "limit_memory_bytes": 62914560,
       "ports": [],
       "state": "waiting",
-      "state_reason": "CrashLoopBackOff",
       "state_message": "back-off 5m0s restarting failed container=app",
       "ready": false,
       "restart_count": 4,
@@ -394,7 +397,11 @@
                 {
                   "name": "app",
                   "image": "python:3.9-slim",
-                  "command": ["python3", "-c", "import time\nprint(\"Starting application...\")\n# Create a memory leak\ndata = []\nwhile True:\n    # Continuously append data to cause memory growth\n    data.append(\"x\" * 1000000)  # 1MB of data each iteration\n    print(f\"Allocated {len(data)} MB\")\n    time.sleep(1)\n"],
+                  "command": [
+                    "python3",
+                    "-c",
+                    "import time\nprint(\"Starting application...\")\n# Create a memory leak\ndata = []\nwhile True:\n    # Continuously append data to cause memory growth\n    data.append(\"x\" * 1000000)  # 1MB of data each iteration\n    print(f\"Allocated {len(data)} MB\")\n    time.sleep(1)\n"
+                  ],
                   "resources": {
                     "requests": {
                       "cpu": "100m",
@@ -445,7 +452,8 @@
           ]
         }
       },
-      "created_at": "2026-01-15T09:50:00Z"
+      "created_at": "2026-01-15T09:50:00Z",
+      "replicas": 2
     }
   ],
   "resource_labels": [

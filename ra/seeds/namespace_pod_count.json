@@ -78,7 +78,8 @@
       },
       "annotations": {},
       "phase": "Active",
-      "created_at": "2026-01-01T00:10:00Z"
+      "created_at": "2026-01-01T00:10:00Z",
+      "is_openshift_project": true
     },
     {
       "id": 2,
@@ -90,7 +91,8 @@
       },
       "annotations": {},
       "phase": "Active",
-      "created_at": "2026-01-01T00:10:05Z"
+      "created_at": "2026-01-01T00:10:05Z",
+      "is_openshift_project": true
     }
   ],
   "pods": [
@@ -110,8 +112,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -132,10 +132,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.101",
@@ -143,7 +159,11 @@
         "containerStatuses": [
           {
             "name": "runner",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -155,7 +175,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.101",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 2,
@@ -173,8 +220,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -195,10 +240,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.102",
@@ -206,7 +267,11 @@
         "containerStatuses": [
           {
             "name": "runner",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -218,7 +283,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.102",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 3,
@@ -235,8 +327,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -257,10 +347,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.103",
@@ -268,7 +374,11 @@
         "containerStatuses": [
           {
             "name": "nginx",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -280,7 +390,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.103",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 4,
@@ -297,8 +434,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -319,10 +454,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.104",
@@ -330,7 +481,11 @@
         "containerStatuses": [
           {
             "name": "nginx",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -342,7 +497,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.104",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 5,
@@ -359,8 +541,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -381,10 +561,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.105",
@@ -392,7 +588,11 @@
         "containerStatuses": [
           {
             "name": "nginx",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -404,7 +604,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.105",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 6,
@@ -421,8 +648,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -443,10 +668,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.106",
@@ -454,7 +695,11 @@
         "containerStatuses": [
           {
             "name": "nginx",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -466,7 +711,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.106",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 7,
@@ -484,8 +756,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -506,10 +776,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.201",
@@ -517,7 +803,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -529,7 +819,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.201",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 8,
@@ -547,8 +864,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -569,10 +884,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.202",
@@ -580,7 +911,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -592,7 +927,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.202",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 9,
@@ -610,8 +972,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -632,10 +992,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.203",
@@ -643,7 +1019,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -655,7 +1035,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.203",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 10,
@@ -673,8 +1080,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -695,10 +1100,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.204",
@@ -706,7 +1127,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -718,7 +1143,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.204",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 11,
@@ -736,8 +1188,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -758,10 +1208,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.205",
@@ -769,7 +1235,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -781,7 +1251,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.205",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 12,
@@ -799,8 +1296,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -821,10 +1316,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.206",
@@ -832,7 +1343,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -844,7 +1359,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.206",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 13,
@@ -862,8 +1404,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -884,10 +1424,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.207",
@@ -895,7 +1451,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -907,7 +1467,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.207",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 14,
@@ -925,8 +1512,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -947,10 +1532,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.208",
@@ -958,7 +1559,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -970,7 +1575,34 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.208",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     },
     {
       "id": 15,
@@ -988,8 +1620,6 @@
       "phase": "Running",
       "qos_class": "BestEffort",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
@@ -1010,10 +1640,26 @@
       "status_json": {
         "phase": "Running",
         "conditions": [
-          {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-01-15T08:00:00Z"},
-          {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"},
-          {"type": "Ready", "status": "True", "lastTransitionTime": "2026-01-15T08:00:05Z"}
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-15T08:00:05Z"
+          }
         ],
         "hostIP": "10.0.0.1",
         "podIP": "10.128.0.209",
@@ -1021,7 +1667,11 @@
         "containerStatuses": [
           {
             "name": "worker",
-            "state": {"running": {"startedAt": "2026-01-15T08:00:03Z"}},
+            "state": {
+              "running": {
+                "startedAt": "2026-01-15T08:00:03Z"
+              }
+            },
             "lastState": {},
             "ready": true,
             "restartCount": 0,
@@ -1033,25 +1683,262 @@
         ],
         "qosClass": "BestEffort"
       },
-      "created_at": "2026-01-15T08:00:00Z"
+      "created_at": "2026-01-15T08:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T08:00:05Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.209",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T08:00:00Z"
     }
   ],
   "containers": [
-    {"id": 1, "pod_id": 1, "name": "runner", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 2, "pod_id": 2, "name": "runner", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 3, "pod_id": 3, "name": "nginx", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 4, "pod_id": 4, "name": "nginx", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 5, "pod_id": 5, "name": "nginx", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 6, "pod_id": 6, "name": "nginx", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 7, "pod_id": 7, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 8, "pod_id": 8, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 9, "pod_id": 9, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 10, "pod_id": 10, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 11, "pod_id": 11, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 12, "pod_id": 12, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 13, "pod_id": 13, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 14, "pod_id": 14, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0},
-    {"id": 15, "pod_id": 15, "name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "state": "running", "ready": true, "restart_count": 0}
+    {
+      "id": 1,
+      "pod_id": 1,
+      "name": "runner",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 2,
+      "pod_id": 2,
+      "name": "runner",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 3,
+      "pod_id": 3,
+      "name": "nginx",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 4,
+      "pod_id": 4,
+      "name": "nginx",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 5,
+      "pod_id": 5,
+      "name": "nginx",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 6,
+      "pod_id": 6,
+      "name": "nginx",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 7,
+      "pod_id": 7,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 8,
+      "pod_id": 8,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 9,
+      "pod_id": 9,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 10,
+      "pod_id": 10,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 11,
+      "pod_id": 11,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 12,
+      "pod_id": 12,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 13,
+      "pod_id": 13,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 14,
+      "pod_id": 14,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    },
+    {
+      "id": 15,
+      "pod_id": 15,
+      "name": "worker",
+      "image": "nginxinc/nginx-unprivileged:alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
+    }
   ],
   "pod_logs": [],
   "events": [],
@@ -1070,30 +1957,60 @@
           "name": "dispatcher-north",
           "namespace": "fleet-alpha",
           "uid": "d0000001-aaaa-4aaa-baaa-aaaaaaaaaaaa",
-          "labels": {"app": "dispatcher-north", "unit": "dispatcher-north"}
+          "labels": {
+            "app": "dispatcher-north",
+            "unit": "dispatcher-north"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "dispatcher-north"}},
+          "selector": {
+            "matchLabels": {
+              "app": "dispatcher-north"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "dispatcher-north", "unit": "dispatcher-north"}},
+            "metadata": {
+              "labels": {
+                "app": "dispatcher-north",
+                "unit": "dispatcher-north"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "runner", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "runner",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"dispatcher-north-5a6b7c8d9e\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"dispatcher-north-5a6b7c8d9e\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 2,
@@ -1109,30 +2026,60 @@
           "name": "dispatcher-south",
           "namespace": "fleet-alpha",
           "uid": "d0000002-bbbb-4bbb-bbbb-bbbbbbbbbbbb",
-          "labels": {"app": "dispatcher-south", "unit": "dispatcher-south"}
+          "labels": {
+            "app": "dispatcher-south",
+            "unit": "dispatcher-south"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "dispatcher-south"}},
+          "selector": {
+            "matchLabels": {
+              "app": "dispatcher-south"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "dispatcher-south", "unit": "dispatcher-south"}},
+            "metadata": {
+              "labels": {
+                "app": "dispatcher-south",
+                "unit": "dispatcher-south"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "runner", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "runner",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"dispatcher-south-6b7c8d9e0f\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"dispatcher-south-6b7c8d9e0f\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 3,
@@ -1148,30 +2095,60 @@
           "name": "ingestion-node",
           "namespace": "fleet-alpha1",
           "uid": "d0000003-cccc-4ccc-bccc-cccccccccccc",
-          "labels": {"app": "ingestion-node", "unit": "ingestion-node"}
+          "labels": {
+            "app": "ingestion-node",
+            "unit": "ingestion-node"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "ingestion-node"}},
+          "selector": {
+            "matchLabels": {
+              "app": "ingestion-node"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "ingestion-node", "unit": "ingestion-node"}},
+            "metadata": {
+              "labels": {
+                "app": "ingestion-node",
+                "unit": "ingestion-node"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"ingestion-node-7c8d9e0f1a\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"ingestion-node-7c8d9e0f1a\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 4,
@@ -1187,30 +2164,60 @@
           "name": "transform-node",
           "namespace": "fleet-alpha1",
           "uid": "d0000004-dddd-4ddd-bddd-dddddddddddd",
-          "labels": {"app": "transform-node", "unit": "transform-node"}
+          "labels": {
+            "app": "transform-node",
+            "unit": "transform-node"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "transform-node"}},
+          "selector": {
+            "matchLabels": {
+              "app": "transform-node"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "transform-node", "unit": "transform-node"}},
+            "metadata": {
+              "labels": {
+                "app": "transform-node",
+                "unit": "transform-node"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"transform-node-8d9e0f1a2b\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"transform-node-8d9e0f1a2b\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 5,
@@ -1226,30 +2233,60 @@
           "name": "output-node",
           "namespace": "fleet-alpha1",
           "uid": "d0000005-eeee-4eee-beee-eeeeeeeeeeee",
-          "labels": {"app": "output-node", "unit": "output-node"}
+          "labels": {
+            "app": "output-node",
+            "unit": "output-node"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "output-node"}},
+          "selector": {
+            "matchLabels": {
+              "app": "output-node"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "output-node", "unit": "output-node"}},
+            "metadata": {
+              "labels": {
+                "app": "output-node",
+                "unit": "output-node"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"output-node-9e0f1a2b3c\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"output-node-9e0f1a2b3c\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 6,
@@ -1265,30 +2302,60 @@
           "name": "validator-east",
           "namespace": "fleet-alpha1",
           "uid": "d0000006-ffff-4fff-bfff-ffffffffffff",
-          "labels": {"app": "validator-east", "unit": "validator-east"}
+          "labels": {
+            "app": "validator-east",
+            "unit": "validator-east"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "validator-east"}},
+          "selector": {
+            "matchLabels": {
+              "app": "validator-east"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "validator-east", "unit": "validator-east"}},
+            "metadata": {
+              "labels": {
+                "app": "validator-east",
+                "unit": "validator-east"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"validator-east-0f1a2b3c4d\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"validator-east-0f1a2b3c4d\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 7,
@@ -1304,30 +2371,60 @@
           "name": "validator-west",
           "namespace": "fleet-alpha1",
           "uid": "d0000007-aaaa-4aaa-baaa-111111111111",
-          "labels": {"app": "validator-west", "unit": "validator-west"}
+          "labels": {
+            "app": "validator-west",
+            "unit": "validator-west"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "validator-west"}},
+          "selector": {
+            "matchLabels": {
+              "app": "validator-west"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "validator-west", "unit": "validator-west"}},
+            "metadata": {
+              "labels": {
+                "app": "validator-west",
+                "unit": "validator-west"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"validator-west-1a2b3c4d5e\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"validator-west-1a2b3c4d5e\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 8,
@@ -1343,30 +2440,60 @@
           "name": "store-primary",
           "namespace": "fleet-alpha1",
           "uid": "d0000008-bbbb-4bbb-bbbb-222222222222",
-          "labels": {"app": "store-primary", "unit": "store-primary"}
+          "labels": {
+            "app": "store-primary",
+            "unit": "store-primary"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "store-primary"}},
+          "selector": {
+            "matchLabels": {
+              "app": "store-primary"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "store-primary", "unit": "store-primary"}},
+            "metadata": {
+              "labels": {
+                "app": "store-primary",
+                "unit": "store-primary"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"store-primary-2b3c4d5e6f\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"store-primary-2b3c4d5e6f\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 9,
@@ -1382,30 +2509,60 @@
           "name": "store-replica",
           "namespace": "fleet-alpha1",
           "uid": "d0000009-cccc-4ccc-bccc-333333333333",
-          "labels": {"app": "store-replica", "unit": "store-replica"}
+          "labels": {
+            "app": "store-replica",
+            "unit": "store-replica"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "store-replica"}},
+          "selector": {
+            "matchLabels": {
+              "app": "store-replica"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "store-replica", "unit": "store-replica"}},
+            "metadata": {
+              "labels": {
+                "app": "store-replica",
+                "unit": "store-replica"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"store-replica-3c4d5e6f7a\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"store-replica-3c4d5e6f7a\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 10,
@@ -1421,30 +2578,60 @@
           "name": "cache-handler",
           "namespace": "fleet-alpha1",
           "uid": "d0000010-dddd-4ddd-bddd-444444444444",
-          "labels": {"app": "cache-handler", "unit": "cache-handler"}
+          "labels": {
+            "app": "cache-handler",
+            "unit": "cache-handler"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "cache-handler"}},
+          "selector": {
+            "matchLabels": {
+              "app": "cache-handler"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "cache-handler", "unit": "cache-handler"}},
+            "metadata": {
+              "labels": {
+                "app": "cache-handler",
+                "unit": "cache-handler"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"cache-handler-4d5e6f7a8b\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"cache-handler-4d5e6f7a8b\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     },
     {
       "id": 11,
@@ -1460,55 +2647,195 @@
           "name": "proxy-router",
           "namespace": "fleet-alpha1",
           "uid": "d0000011-eeee-4eee-beee-555555555555",
-          "labels": {"app": "proxy-router", "unit": "proxy-router"}
+          "labels": {
+            "app": "proxy-router",
+            "unit": "proxy-router"
+          }
         },
         "spec": {
           "replicas": 1,
-          "selector": {"matchLabels": {"app": "proxy-router"}},
+          "selector": {
+            "matchLabels": {
+              "app": "proxy-router"
+            }
+          },
           "template": {
-            "metadata": {"labels": {"app": "proxy-router", "unit": "proxy-router"}},
+            "metadata": {
+              "labels": {
+                "app": "proxy-router",
+                "unit": "proxy-router"
+              }
+            },
             "spec": {
               "containers": [
-                {"name": "worker", "image": "nginxinc/nginx-unprivileged:alpine", "resources": {}}
+                {
+                  "name": "worker",
+                  "image": "nginxinc/nginx-unprivileged:alpine",
+                  "resources": {}
+                }
               ],
               "restartPolicy": "Always"
             }
           }
         },
         "status": {
-          "replicas": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1,
+          "replicas": 1,
+          "readyReplicas": 1,
+          "availableReplicas": 1,
+          "updatedReplicas": 1,
           "conditions": [
-            {"type": "Available", "status": "True", "reason": "MinimumReplicasAvailable", "message": "Deployment has minimum availability."},
-            {"type": "Progressing", "status": "True", "reason": "NewReplicaSetAvailable", "message": "ReplicaSet \"proxy-router-5e6f7a8b9c\" has successfully progressed."}
+            {
+              "type": "Available",
+              "status": "True",
+              "reason": "MinimumReplicasAvailable",
+              "message": "Deployment has minimum availability."
+            },
+            {
+              "type": "Progressing",
+              "status": "True",
+              "reason": "NewReplicaSetAvailable",
+              "message": "ReplicaSet \"proxy-router-5e6f7a8b9c\" has successfully progressed."
+            }
           ]
         }
       },
-      "created_at": "2026-01-15T07:59:50Z"
+      "created_at": "2026-01-15T07:59:50Z",
+      "replicas": 1
     }
   ],
   "resource_labels": [
-    {"id": 1, "resource_id": 1, "key": "app", "value": "dispatcher-north"},
-    {"id": 2, "resource_id": 1, "key": "unit", "value": "dispatcher-north"},
-    {"id": 3, "resource_id": 2, "key": "app", "value": "dispatcher-south"},
-    {"id": 4, "resource_id": 2, "key": "unit", "value": "dispatcher-south"},
-    {"id": 5, "resource_id": 3, "key": "app", "value": "ingestion-node"},
-    {"id": 6, "resource_id": 3, "key": "unit", "value": "ingestion-node"},
-    {"id": 7, "resource_id": 4, "key": "app", "value": "transform-node"},
-    {"id": 8, "resource_id": 4, "key": "unit", "value": "transform-node"},
-    {"id": 9, "resource_id": 5, "key": "app", "value": "output-node"},
-    {"id": 10, "resource_id": 5, "key": "unit", "value": "output-node"},
-    {"id": 11, "resource_id": 6, "key": "app", "value": "validator-east"},
-    {"id": 12, "resource_id": 6, "key": "unit", "value": "validator-east"},
-    {"id": 13, "resource_id": 7, "key": "app", "value": "validator-west"},
-    {"id": 14, "resource_id": 7, "key": "unit", "value": "validator-west"},
-    {"id": 15, "resource_id": 8, "key": "app", "value": "store-primary"},
-    {"id": 16, "resource_id": 8, "key": "unit", "value": "store-primary"},
-    {"id": 17, "resource_id": 9, "key": "app", "value": "store-replica"},
-    {"id": 18, "resource_id": 9, "key": "unit", "value": "store-replica"},
-    {"id": 19, "resource_id": 10, "key": "app", "value": "cache-handler"},
-    {"id": 20, "resource_id": 10, "key": "unit", "value": "cache-handler"},
-    {"id": 21, "resource_id": 11, "key": "app", "value": "proxy-router"},
-    {"id": 22, "resource_id": 11, "key": "unit", "value": "proxy-router"}
+    {
+      "id": 1,
+      "resource_id": 1,
+      "label_key": "app",
+      "label_value": "dispatcher-north"
+    },
+    {
+      "id": 2,
+      "resource_id": 1,
+      "label_key": "unit",
+      "label_value": "dispatcher-north"
+    },
+    {
+      "id": 3,
+      "resource_id": 2,
+      "label_key": "app",
+      "label_value": "dispatcher-south"
+    },
+    {
+      "id": 4,
+      "resource_id": 2,
+      "label_key": "unit",
+      "label_value": "dispatcher-south"
+    },
+    {
+      "id": 5,
+      "resource_id": 3,
+      "label_key": "app",
+      "label_value": "ingestion-node"
+    },
+    {
+      "id": 6,
+      "resource_id": 3,
+      "label_key": "unit",
+      "label_value": "ingestion-node"
+    },
+    {
+      "id": 7,
+      "resource_id": 4,
+      "label_key": "app",
+      "label_value": "transform-node"
+    },
+    {
+      "id": 8,
+      "resource_id": 4,
+      "label_key": "unit",
+      "label_value": "transform-node"
+    },
+    {
+      "id": 9,
+      "resource_id": 5,
+      "label_key": "app",
+      "label_value": "output-node"
+    },
+    {
+      "id": 10,
+      "resource_id": 5,
+      "label_key": "unit",
+      "label_value": "output-node"
+    },
+    {
+      "id": 11,
+      "resource_id": 6,
+      "label_key": "app",
+      "label_value": "validator-east"
+    },
+    {
+      "id": 12,
+      "resource_id": 6,
+      "label_key": "unit",
+      "label_value": "validator-east"
+    },
+    {
+      "id": 13,
+      "resource_id": 7,
+      "label_key": "app",
+      "label_value": "validator-west"
+    },
+    {
+      "id": 14,
+      "resource_id": 7,
+      "label_key": "unit",
+      "label_value": "validator-west"
+    },
+    {
+      "id": 15,
+      "resource_id": 8,
+      "label_key": "app",
+      "label_value": "store-primary"
+    },
+    {
+      "id": 16,
+      "resource_id": 8,
+      "label_key": "unit",
+      "label_value": "store-primary"
+    },
+    {
+      "id": 17,
+      "resource_id": 9,
+      "label_key": "app",
+      "label_value": "store-replica"
+    },
+    {
+      "id": 18,
+      "resource_id": 9,
+      "label_key": "unit",
+      "label_value": "store-replica"
+    },
+    {
+      "id": 19,
+      "resource_id": 10,
+      "label_key": "app",
+      "label_value": "cache-handler"
+    },
+    {
+      "id": 20,
+      "resource_id": 10,
+      "label_key": "unit",
+      "label_value": "cache-handler"
+    },
+    {
+      "id": 21,
+      "resource_id": 11,
+      "label_key": "app",
+      "label_value": "proxy-router"
+    },
+    {
+      "id": 22,
+      "resource_id": 11,
+      "label_key": "unit",
+      "label_value": "proxy-router"
+    }
   ],
   "alerts": [],
   "alert_labels": [],

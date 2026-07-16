@@ -86,7 +86,8 @@
       },
       "annotations": {},
       "phase": "Active",
-      "created_at": "2026-01-01T00:10:00Z"
+      "created_at": "2026-01-01T00:10:00Z",
+      "is_openshift_project": true
     }
   ],
   "pods": [
@@ -105,15 +106,18 @@
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "containers": [
           {
             "name": "fulfillment-container",
             "image": "busybox:1.36",
-            "command": ["/bin/sh"],
-            "args": ["-c", "if [ -z \"${DEPLOY_ENV}\" ]; then\n  echo \"Environment variable DEPLOY_ENV is undefined\"\n  exit 1\nfi\nwhile true; do echo hello; sleep 10; done\n"],
+            "command": [
+              "/bin/sh"
+            ],
+            "args": [
+              "-c",
+              "if [ -z \"${DEPLOY_ENV}\" ]; then\n  echo \"Environment variable DEPLOY_ENV is undefined\"\n  exit 1\nfi\nwhile true; do echo hello; sleep 10; done\n"
+            ],
             "resources": {
               "requests": {
                 "cpu": "5m",
@@ -191,7 +195,38 @@
         ],
         "qosClass": "Burstable"
       },
-      "created_at": "2026-01-15T09:30:00Z"
+      "created_at": "2026-01-15T09:30:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T09:30:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-15T09:30:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "lastTransitionTime": "2026-01-15T09:30:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [fulfillment-container]"
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "lastTransitionTime": "2026-01-15T09:30:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [fulfillment-container]"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.0.50",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T09:30:00Z"
     }
   ],
   "containers": [
@@ -200,14 +235,17 @@
       "pod_id": 1,
       "name": "fulfillment-container",
       "image": "busybox:1.36",
-      "command": ["/bin/sh"],
-      "args": ["-c", "if [ -z \"${DEPLOY_ENV}\" ]; then\n  echo \"Environment variable DEPLOY_ENV is undefined\"\n  exit 1\nfi\nwhile true; do echo hello; sleep 10; done\n"],
       "state": "waiting",
-      "state_reason": "CrashLoopBackOff",
       "ready": false,
       "restart_count": 5,
       "request_cpu_millicores": 5,
-      "request_memory_bytes": 33554432
+      "request_memory_bytes": 33554432,
+      "limit_cpu_millicores": null,
+      "limit_memory_bytes": null,
+      "ports": [],
+      "started": false,
+      "filesystem_json": null,
+      "network_json": null
     }
   ],
   "pod_logs": [
@@ -263,13 +301,8 @@
       "cluster_id": 1,
       "namespace_id": 1,
       "uid": "e1e2e3e4-3333-4ccc-b333-333333333333",
-      "type": "Warning",
       "reason": "BackOff",
       "message": "Back-off restarting failed container fulfillment-container in pod order-fulfillment-daemon-7f8b9c6d5e-x2k4m_warehouse-ops",
-      "regarding_kind": "Pod",
-      "regarding_name": "order-fulfillment-daemon-7f8b9c6d5e-x2k4m",
-      "regarding_namespace": "warehouse-ops",
-      "regarding_uid": "f1e2d3c4-2222-4bbb-a222-222222222222",
       "source_component": "kubelet",
       "source_host": "worker-0.eval-cluster.example.com",
       "count": 12,
@@ -277,7 +310,14 @@
       "first_timestamp": "2026-01-15T09:32:00Z",
       "last_timestamp": "2026-01-15T09:55:00Z",
       "resolved_timestamp": "2026-01-15T09:55:00Z",
-      "created_at": "2026-01-15T09:32:00Z"
+      "created_at": "2026-01-15T09:32:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "order-fulfillment-daemon-7f8b9c6d5e-x2k4m",
+      "involved_object_uid": "f1e2d3c4-2222-4bbb-a222-222222222222",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:55:00Z"
     }
   ],
   "resources": [
@@ -319,8 +359,13 @@
                 {
                   "name": "fulfillment-container",
                   "image": "busybox:1.36",
-                  "command": ["/bin/sh"],
-                  "args": ["-c", "if [ -z \"${DEPLOY_ENV}\" ]; then\n  echo \"Environment variable DEPLOY_ENV is undefined\"\n  exit 1\nfi\nwhile true; do echo hello; sleep 10; done\n"],
+                  "command": [
+                    "/bin/sh"
+                  ],
+                  "args": [
+                    "-c",
+                    "if [ -z \"${DEPLOY_ENV}\" ]; then\n  echo \"Environment variable DEPLOY_ENV is undefined\"\n  exit 1\nfi\nwhile true; do echo hello; sleep 10; done\n"
+                  ],
                   "resources": {
                     "requests": {
                       "cpu": "5m",
@@ -355,21 +400,22 @@
           ]
         }
       },
-      "created_at": "2026-01-15T09:29:00Z"
+      "created_at": "2026-01-15T09:29:00Z",
+      "replicas": 1
     }
   ],
   "resource_labels": [
     {
       "id": 1,
       "resource_id": 1,
-      "key": "app",
-      "value": "order-fulfillment-daemon"
+      "label_key": "app",
+      "label_value": "order-fulfillment-daemon"
     },
     {
       "id": 2,
       "resource_id": 1,
-      "key": "component",
-      "value": "fulfillment"
+      "label_key": "component",
+      "label_value": "fulfillment"
     }
   ],
   "alerts": [],

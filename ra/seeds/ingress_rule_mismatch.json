@@ -161,8 +161,13 @@
           {
             "name": "portal",
             "image": "alpine:3.19",
-            "command": ["sh"],
-            "args": ["-c", "apk add --no-cache curl >/dev/null 2>&1\nwhile true; do\n  echo \"[portal] probing api-gateway-svc on port 8080\\u2026\"\n  if curl -sf --connect-timeout 5 http://api-gateway-svc:8080/ >/dev/null 2>&1; then\n    echo \"[portal] api-gateway-svc responded OK\"\n  else\n    echo \"ERROR: Connection timeout to api-gateway-svc!\"\n  fi\n  sleep 10\ndone\n"],
+            "command": [
+              "sh"
+            ],
+            "args": [
+              "-c",
+              "apk add --no-cache curl >/dev/null 2>&1\nwhile true; do\n  echo \"[portal] probing api-gateway-svc on port 8080\\u2026\"\n  if curl -sf --connect-timeout 5 http://api-gateway-svc:8080/ >/dev/null 2>&1; then\n    echo \"[portal] api-gateway-svc responded OK\"\n  else\n    echo \"ERROR: Connection timeout to api-gateway-svc!\"\n  fi\n  sleep 10\ndone\n"
+            ],
             "resources": {
               "requests": {
                 "cpu": "5m",
@@ -371,7 +376,6 @@
       "limit_memory_bytes": 50331648,
       "ports": [],
       "state": "running",
-      "state_reason": null,
       "state_message": null,
       "ready": true,
       "restart_count": 0,
@@ -395,7 +399,6 @@
         }
       ],
       "state": "running",
-      "state_reason": null,
       "state_message": null,
       "ready": true,
       "restart_count": 0,
@@ -712,8 +715,13 @@
                 {
                   "name": "portal",
                   "image": "alpine:3.19",
-                  "command": ["sh"],
-                  "args": ["-c", "apk add --no-cache curl >/dev/null 2>&1\nwhile true; do\n  echo \"[portal] probing api-gateway-svc on port 8080\\u2026\"\n  if curl -sf --connect-timeout 5 http://api-gateway-svc:8080/ >/dev/null 2>&1; then\n    echo \"[portal] api-gateway-svc responded OK\"\n  else\n    echo \"ERROR: Connection timeout to api-gateway-svc!\"\n  fi\n  sleep 10\ndone\n"],
+                  "command": [
+                    "sh"
+                  ],
+                  "args": [
+                    "-c",
+                    "apk add --no-cache curl >/dev/null 2>&1\nwhile true; do\n  echo \"[portal] probing api-gateway-svc on port 8080\\u2026\"\n  if curl -sf --connect-timeout 5 http://api-gateway-svc:8080/ >/dev/null 2>&1; then\n    echo \"[portal] api-gateway-svc responded OK\"\n  else\n    echo \"ERROR: Connection timeout to api-gateway-svc!\"\n  fi\n  sleep 10\ndone\n"
+                  ],
                   "resources": {
                     "requests": {
                       "cpu": "5m",
@@ -763,7 +771,8 @@
           ]
         }
       },
-      "created_at": "2026-01-10T08:09:00Z"
+      "created_at": "2026-01-10T08:09:00Z",
+      "replicas": 1
     },
     {
       "id": 2,
@@ -865,7 +874,8 @@
           ]
         }
       },
-      "created_at": "2026-01-10T08:09:00Z"
+      "created_at": "2026-01-10T08:09:00Z",
+      "replicas": 1
     },
     {
       "id": 3,
@@ -904,7 +914,8 @@
           "loadBalancer": {}
         }
       },
-      "created_at": "2026-01-10T08:09:00Z"
+      "created_at": "2026-01-10T08:09:00Z",
+      "replicas": null
     },
     {
       "id": 4,
@@ -954,7 +965,8 @@
         },
         "status": {}
       },
-      "created_at": "2026-01-10T08:09:00Z"
+      "created_at": "2026-01-10T08:09:00Z",
+      "replicas": null
     }
   ],
   "resource_labels": [

@@ -161,8 +161,13 @@
           {
             "name": "frontend",
             "image": "busybox",
-            "command": ["/bin/sh"],
-            "args": ["-c", "while true; do\n  echo \"Trying to connect to backend-service...\"\n  if wget -O- http://backend-service:8080 -T 5; then\n    echo \"Success!\"\n  else\n    echo \"ERROR: Connection timeout to backend-service!\"\n  fi\n  sleep 15\ndone\n"],
+            "command": [
+              "/bin/sh"
+            ],
+            "args": [
+              "-c",
+              "while true; do\n  echo \"Trying to connect to backend-service...\"\n  if wget -O- http://backend-service:8080 -T 5; then\n    echo \"Success!\"\n  else\n    echo \"ERROR: Connection timeout to backend-service!\"\n  fi\n  sleep 15\ndone\n"
+            ],
             "resources": {
               "requests": {
                 "cpu": "10m",
@@ -369,7 +374,6 @@
       "limit_memory_bytes": 67108864,
       "ports": [],
       "state": "running",
-      "state_reason": null,
       "state_message": null,
       "ready": true,
       "restart_count": 0,
@@ -392,7 +396,6 @@
         }
       ],
       "state": "running",
-      "state_reason": null,
       "state_message": null,
       "ready": true,
       "restart_count": 0,
@@ -664,8 +667,13 @@
                 {
                   "name": "frontend",
                   "image": "busybox",
-                  "command": ["/bin/sh"],
-                  "args": ["-c", "while true; do\n  echo \"Trying to connect to backend-service...\"\n  if wget -O- http://backend-service:8080 -T 5; then\n    echo \"Success!\"\n  else\n    echo \"ERROR: Connection timeout to backend-service!\"\n  fi\n  sleep 15\ndone\n"],
+                  "command": [
+                    "/bin/sh"
+                  ],
+                  "args": [
+                    "-c",
+                    "while true; do\n  echo \"Trying to connect to backend-service...\"\n  if wget -O- http://backend-service:8080 -T 5; then\n    echo \"Success!\"\n  else\n    echo \"ERROR: Connection timeout to backend-service!\"\n  fi\n  sleep 15\ndone\n"
+                  ],
                   "resources": {
                     "requests": {
                       "cpu": "10m",
@@ -715,7 +723,8 @@
           ]
         }
       },
-      "created_at": "2026-01-20T10:04:00Z"
+      "created_at": "2026-01-20T10:04:00Z",
+      "replicas": 1
     },
     {
       "id": 2,
@@ -815,7 +824,8 @@
           ]
         }
       },
-      "created_at": "2026-01-20T10:04:00Z"
+      "created_at": "2026-01-20T10:04:00Z",
+      "replicas": 1
     },
     {
       "id": 3,
@@ -853,7 +863,8 @@
           "loadBalancer": {}
         }
       },
-      "created_at": "2026-01-20T10:04:00Z"
+      "created_at": "2026-01-20T10:04:00Z",
+      "replicas": null
     },
     {
       "id": 4,
@@ -903,7 +914,8 @@
         },
         "status": {}
       },
-      "created_at": "2026-01-20T10:04:00Z"
+      "created_at": "2026-01-20T10:04:00Z",
+      "replicas": null
     }
   ],
   "resource_labels": [

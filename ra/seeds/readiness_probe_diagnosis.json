@@ -79,7 +79,8 @@
       },
       "annotations": {},
       "phase": "Active",
-      "created_at": "2026-01-01T00:10:00Z"
+      "created_at": "2026-01-01T00:10:00Z",
+      "is_openshift_project": true
     }
   ],
   "pods": [
@@ -100,8 +101,6 @@
       "owner_name": null,
       "phase": "Running",
       "node_name": "worker-0.eval-cluster.example.com",
-      "service_account": "default",
-      "priority": 0,
       "qos_class": "Burstable",
       "restart_policy": "Always",
       "spec_json": {
@@ -109,7 +108,11 @@
           {
             "name": "indexer",
             "image": "busybox:1.36",
-            "command": ["sh", "-c", "while true; do echo 'Running...'; sleep 5; done"],
+            "command": [
+              "sh",
+              "-c",
+              "while true; do echo 'Running...'; sleep 5; done"
+            ],
             "ports": [
               {
                 "containerPort": 9200,
@@ -185,7 +188,11 @@
         ],
         "hostIP": "10.0.0.11",
         "podIP": "10.128.0.70",
-        "podIPs": [{"ip": "10.128.0.70"}],
+        "podIPs": [
+          {
+            "ip": "10.128.0.70"
+          }
+        ],
         "startTime": "2026-01-14T10:00:00Z",
         "containerStatuses": [
           {
@@ -206,7 +213,42 @@
         ],
         "qosClass": "Burstable"
       },
-      "created_at": "2026-01-14T10:00:00Z"
+      "created_at": "2026-01-14T10:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T10:00:00Z"
+        },
+        {
+          "type": "Ready",
+          "status": "False",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T10:00:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [indexer]"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "False",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T10:00:00Z",
+          "reason": "ContainersNotReady",
+          "message": "containers with unready status: [indexer]"
+        },
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastProbeTime": null,
+          "lastTransitionTime": "2026-01-14T10:00:00Z"
+        }
+      ],
+      "host_ip": "10.0.0.11",
+      "pod_ip": "10.128.0.70",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-14T10:00:00Z"
     }
   ],
   "containers": [
@@ -222,35 +264,218 @@
       "request_memory_bytes": 33554432,
       "limit_cpu_millicores": null,
       "limit_memory_bytes": 67108864,
-      "ports": [{"containerPort": 9200, "name": "health"}]
+      "ports": [
+        {
+          "containerPort": 9200,
+          "name": "health"
+        }
+      ],
+      "started": true,
+      "filesystem_json": null,
+      "network_json": null
     }
   ],
   "pod_logs": [
-    {"id": 1, "pod_id": 1, "container_name": "indexer", "line_number": 1, "timestamp": "2026-01-14T10:00:02.000Z", "message": "Running..."},
-    {"id": 2, "pod_id": 1, "container_name": "indexer", "line_number": 2, "timestamp": "2026-01-14T10:00:07.000Z", "message": "Running..."},
-    {"id": 3, "pod_id": 1, "container_name": "indexer", "line_number": 3, "timestamp": "2026-01-14T10:00:12.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 4, "pod_id": 1, "container_name": "indexer", "line_number": 4, "timestamp": "2026-01-14T10:00:12.100Z", "message": "Running..."},
-    {"id": 5, "pod_id": 1, "container_name": "indexer", "line_number": 5, "timestamp": "2026-01-14T10:00:17.000Z", "message": "Running..."},
-    {"id": 6, "pod_id": 1, "container_name": "indexer", "line_number": 6, "timestamp": "2026-01-14T10:00:22.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 7, "pod_id": 1, "container_name": "indexer", "line_number": 7, "timestamp": "2026-01-14T10:00:22.100Z", "message": "Running..."},
-    {"id": 8, "pod_id": 1, "container_name": "indexer", "line_number": 8, "timestamp": "2026-01-14T10:00:27.000Z", "message": "Running..."},
-    {"id": 9, "pod_id": 1, "container_name": "indexer", "line_number": 9, "timestamp": "2026-01-14T10:00:32.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 10, "pod_id": 1, "container_name": "indexer", "line_number": 10, "timestamp": "2026-01-14T10:00:32.100Z", "message": "Running..."},
-    {"id": 11, "pod_id": 1, "container_name": "indexer", "line_number": 11, "timestamp": "2026-01-14T10:00:37.000Z", "message": "Running..."},
-    {"id": 12, "pod_id": 1, "container_name": "indexer", "line_number": 12, "timestamp": "2026-01-14T10:00:42.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 13, "pod_id": 1, "container_name": "indexer", "line_number": 13, "timestamp": "2026-01-14T10:00:42.100Z", "message": "Running..."},
-    {"id": 14, "pod_id": 1, "container_name": "indexer", "line_number": 14, "timestamp": "2026-01-14T10:00:47.000Z", "message": "Running..."},
-    {"id": 15, "pod_id": 1, "container_name": "indexer", "line_number": 15, "timestamp": "2026-01-14T10:00:52.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 16, "pod_id": 1, "container_name": "indexer", "line_number": 16, "timestamp": "2026-01-14T10:00:52.100Z", "message": "Running..."},
-    {"id": 17, "pod_id": 1, "container_name": "indexer", "line_number": 17, "timestamp": "2026-01-14T10:00:57.000Z", "message": "Running..."},
-    {"id": 18, "pod_id": 1, "container_name": "indexer", "line_number": 18, "timestamp": "2026-01-14T10:01:02.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 19, "pod_id": 1, "container_name": "indexer", "line_number": 19, "timestamp": "2026-01-14T10:01:02.100Z", "message": "Running..."},
-    {"id": 20, "pod_id": 1, "container_name": "indexer", "line_number": 20, "timestamp": "2026-01-14T10:01:07.000Z", "message": "Running..."},
-    {"id": 21, "pod_id": 1, "container_name": "indexer", "line_number": 21, "timestamp": "2026-01-14T10:01:12.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 22, "pod_id": 1, "container_name": "indexer", "line_number": 22, "timestamp": "2026-01-14T10:01:12.100Z", "message": "Running..."},
-    {"id": 23, "pod_id": 1, "container_name": "indexer", "line_number": 23, "timestamp": "2026-01-14T10:01:17.000Z", "message": "Running..."},
-    {"id": 24, "pod_id": 1, "container_name": "indexer", "line_number": 24, "timestamp": "2026-01-14T10:01:22.000Z", "message": "Health check endpoint /healthz returning 503 - index not ready"},
-    {"id": 25, "pod_id": 1, "container_name": "indexer", "line_number": 25, "timestamp": "2026-01-14T10:01:22.100Z", "message": "Running..."}
+    {
+      "id": 1,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 1,
+      "timestamp": "2026-01-14T10:00:02.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 2,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 2,
+      "timestamp": "2026-01-14T10:00:07.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 3,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 3,
+      "timestamp": "2026-01-14T10:00:12.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 4,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 4,
+      "timestamp": "2026-01-14T10:00:12.100Z",
+      "message": "Running..."
+    },
+    {
+      "id": 5,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 5,
+      "timestamp": "2026-01-14T10:00:17.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 6,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 6,
+      "timestamp": "2026-01-14T10:00:22.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 7,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 7,
+      "timestamp": "2026-01-14T10:00:22.100Z",
+      "message": "Running..."
+    },
+    {
+      "id": 8,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 8,
+      "timestamp": "2026-01-14T10:00:27.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 9,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 9,
+      "timestamp": "2026-01-14T10:00:32.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 10,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 10,
+      "timestamp": "2026-01-14T10:00:32.100Z",
+      "message": "Running..."
+    },
+    {
+      "id": 11,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 11,
+      "timestamp": "2026-01-14T10:00:37.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 12,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 12,
+      "timestamp": "2026-01-14T10:00:42.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 13,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 13,
+      "timestamp": "2026-01-14T10:00:42.100Z",
+      "message": "Running..."
+    },
+    {
+      "id": 14,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 14,
+      "timestamp": "2026-01-14T10:00:47.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 15,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 15,
+      "timestamp": "2026-01-14T10:00:52.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 16,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 16,
+      "timestamp": "2026-01-14T10:00:52.100Z",
+      "message": "Running..."
+    },
+    {
+      "id": 17,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 17,
+      "timestamp": "2026-01-14T10:00:57.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 18,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 18,
+      "timestamp": "2026-01-14T10:01:02.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 19,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 19,
+      "timestamp": "2026-01-14T10:01:02.100Z",
+      "message": "Running..."
+    },
+    {
+      "id": 20,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 20,
+      "timestamp": "2026-01-14T10:01:07.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 21,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 21,
+      "timestamp": "2026-01-14T10:01:12.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 22,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 22,
+      "timestamp": "2026-01-14T10:01:12.100Z",
+      "message": "Running..."
+    },
+    {
+      "id": 23,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 23,
+      "timestamp": "2026-01-14T10:01:17.000Z",
+      "message": "Running..."
+    },
+    {
+      "id": 24,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 24,
+      "timestamp": "2026-01-14T10:01:22.000Z",
+      "message": "Health check endpoint /healthz returning 503 - index not ready"
+    },
+    {
+      "id": 25,
+      "pod_id": 1,
+      "container_name": "indexer",
+      "line_number": 25,
+      "timestamp": "2026-01-14T10:01:22.100Z",
+      "message": "Running..."
+    }
   ],
   "events": [
     {
@@ -261,18 +486,19 @@
       "event_time": "2026-01-14T10:00:06Z",
       "last_timestamp": "2026-01-14T10:01:22Z",
       "resolved_timestamp": "2026-01-14T10:01:22Z",
-      "type": "Warning",
       "reason": "Unhealthy",
       "message": "Readiness probe failed: HTTP probe failed with statuscode: 503",
-      "regarding_kind": "Pod",
-      "regarding_name": "catalog-index-service",
-      "regarding_namespace": "discovery-hub",
-      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
       "reporting_component": "kubelet",
       "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 20,
       "source_component": "kubelet",
-      "source_host": "worker-0.eval-cluster.example.com"
+      "source_host": "worker-0.eval-cluster.example.com",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "catalog-index-service",
+      "involved_object_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "involved_object_api_version": "v1",
+      "series_last_observed": "2026-01-14T10:01:22Z"
     },
     {
       "id": 2,
@@ -282,18 +508,19 @@
       "event_time": "2026-01-14T10:00:00Z",
       "last_timestamp": "2026-01-14T10:00:00Z",
       "resolved_timestamp": "2026-01-14T10:00:00Z",
-      "type": "Normal",
       "reason": "Scheduled",
       "message": "Successfully assigned discovery-hub/catalog-index-service to worker-0.eval-cluster.example.com",
-      "regarding_kind": "Pod",
-      "regarding_name": "catalog-index-service",
-      "regarding_namespace": "discovery-hub",
-      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
       "reporting_component": "default-scheduler",
       "reporting_instance": "",
       "count": 1,
       "source_component": "default-scheduler",
-      "source_host": ""
+      "source_host": "",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "catalog-index-service",
+      "involved_object_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "involved_object_api_version": "v1",
+      "series_last_observed": "2026-01-14T10:00:00Z"
     },
     {
       "id": 3,
@@ -303,18 +530,19 @@
       "event_time": "2026-01-14T10:00:00Z",
       "last_timestamp": "2026-01-14T10:00:01Z",
       "resolved_timestamp": "2026-01-14T10:00:01Z",
-      "type": "Normal",
       "reason": "Pulled",
       "message": "Container image \"busybox:1.36\" already present on machine",
-      "regarding_kind": "Pod",
-      "regarding_name": "catalog-index-service",
-      "regarding_namespace": "discovery-hub",
-      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
       "reporting_component": "kubelet",
       "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 1,
       "source_component": "kubelet",
-      "source_host": "worker-0.eval-cluster.example.com"
+      "source_host": "worker-0.eval-cluster.example.com",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "catalog-index-service",
+      "involved_object_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "involved_object_api_version": "v1",
+      "series_last_observed": "2026-01-14T10:00:01Z"
     },
     {
       "id": 4,
@@ -324,18 +552,19 @@
       "event_time": "2026-01-14T10:00:01Z",
       "last_timestamp": "2026-01-14T10:00:01Z",
       "resolved_timestamp": "2026-01-14T10:00:01Z",
-      "type": "Normal",
       "reason": "Created",
       "message": "Created container indexer",
-      "regarding_kind": "Pod",
-      "regarding_name": "catalog-index-service",
-      "regarding_namespace": "discovery-hub",
-      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
       "reporting_component": "kubelet",
       "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 1,
       "source_component": "kubelet",
-      "source_host": "worker-0.eval-cluster.example.com"
+      "source_host": "worker-0.eval-cluster.example.com",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "catalog-index-service",
+      "involved_object_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "involved_object_api_version": "v1",
+      "series_last_observed": "2026-01-14T10:00:01Z"
     },
     {
       "id": 5,
@@ -345,18 +574,19 @@
       "event_time": "2026-01-14T10:00:01Z",
       "last_timestamp": "2026-01-14T10:00:01Z",
       "resolved_timestamp": "2026-01-14T10:00:01Z",
-      "type": "Normal",
       "reason": "Started",
       "message": "Started container indexer",
-      "regarding_kind": "Pod",
-      "regarding_name": "catalog-index-service",
-      "regarding_namespace": "discovery-hub",
-      "regarding_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
       "reporting_component": "kubelet",
       "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 1,
       "source_component": "kubelet",
-      "source_host": "worker-0.eval-cluster.example.com"
+      "source_host": "worker-0.eval-cluster.example.com",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "catalog-index-service",
+      "involved_object_uid": "b2c3d4e5-f6a7-4b8c-9d0e-200000000004",
+      "involved_object_api_version": "v1",
+      "series_last_observed": "2026-01-14T10:00:01Z"
     }
   ],
   "resources": [
@@ -388,7 +618,11 @@
             {
               "name": "indexer",
               "image": "busybox:1.36",
-              "command": ["sh", "-c", "while true; do echo 'Running...'; sleep 5; done"],
+              "command": [
+                "sh",
+                "-c",
+                "while true; do echo 'Running...'; sleep 5; done"
+              ],
               "ports": [
                 {
                   "containerPort": 9200,
@@ -464,7 +698,11 @@
           ],
           "hostIP": "10.0.0.11",
           "podIP": "10.128.0.70",
-          "podIPs": [{"ip": "10.128.0.70"}],
+          "podIPs": [
+            {
+              "ip": "10.128.0.70"
+            }
+          ],
           "startTime": "2026-01-14T10:00:00Z",
           "containerStatuses": [
             {
@@ -486,12 +724,23 @@
           "qosClass": "Burstable"
         }
       },
-      "created_at": "2026-01-14T10:00:00Z"
+      "created_at": "2026-01-14T10:00:00Z",
+      "replicas": null
     }
   ],
   "resource_labels": [
-    {"id": 1, "resource_id": 1, "key": "app", "value": "catalog-index-service"},
-    {"id": 2, "resource_id": 1, "key": "tier", "value": "indexing"}
+    {
+      "id": 1,
+      "resource_id": 1,
+      "label_key": "app",
+      "label_value": "catalog-index-service"
+    },
+    {
+      "id": 2,
+      "resource_id": 1,
+      "label_key": "tier",
+      "label_value": "indexing"
+    }
   ],
   "alerts": [],
   "alert_labels": [],

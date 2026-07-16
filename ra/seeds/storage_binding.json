@@ -102,7 +102,8 @@
       },
       "annotations": {},
       "phase": "Active",
-      "created_at": "2026-01-01T00:10:00Z"
+      "created_at": "2026-01-01T00:10:00Z",
+      "is_openshift_project": true
     }
   ],
   "pods": [
@@ -121,14 +122,16 @@
       "phase": "Pending",
       "qos_class": "Burstable",
       "restart_policy": "Always",
-      "service_account": "default",
-      "priority": 0,
       "spec_json": {
         "initContainers": [
           {
             "name": "init-perms",
             "image": "busybox:1.36",
-            "command": ["sh", "-c", "chown -R 11211:11211 /data"],
+            "command": [
+              "sh",
+              "-c",
+              "chown -R 11211:11211 /data"
+            ],
             "volumeMounts": [
               {
                 "name": "memcached-data",
@@ -201,7 +204,21 @@
         ],
         "qosClass": "Burstable"
       },
-      "created_at": "2026-01-15T11:00:00Z"
+      "created_at": "2026-01-15T11:00:00Z",
+      "service_account_name": "default",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "False",
+          "lastTransitionTime": "2026-01-15T11:00:00Z",
+          "reason": "Unschedulable",
+          "message": "0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod."
+        }
+      ],
+      "host_ip": null,
+      "pod_ip": null,
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-15T11:00:00Z"
     }
   ],
   "containers": [
@@ -211,7 +228,6 @@
       "name": "mc",
       "image": "memcached:1.6-alpine",
       "state": "waiting",
-      "state_reason": "ContainerCreating",
       "ready": false,
       "restart_count": 0,
       "request_cpu_millicores": 50,
@@ -223,7 +239,10 @@
           "containerPort": 11211,
           "name": "mc"
         }
-      ]
+      ],
+      "started": false,
+      "filesystem_json": null,
+      "network_json": null
     }
   ],
   "pod_logs": [],
@@ -233,13 +252,8 @@
       "cluster_id": 1,
       "namespace_id": 1,
       "uid": "e3e4e5e6-3333-4ccc-b333-333333333333",
-      "type": "Warning",
       "reason": "ProvisioningFailed",
       "message": "storageclass.storage.k8s.io \"standard-v2\" not found",
-      "regarding_kind": "PersistentVolumeClaim",
-      "regarding_name": "memcached-data-pvc",
-      "regarding_namespace": "cache-tier",
-      "regarding_uid": "d4e5f6a7-5555-4eee-a555-555555555555",
       "source_component": "persistentvolume-controller",
       "source_host": "",
       "count": 5,
@@ -247,20 +261,22 @@
       "first_timestamp": "2026-01-15T11:00:10Z",
       "last_timestamp": "2026-01-15T11:05:00Z",
       "resolved_timestamp": "2026-01-15T11:05:00Z",
-      "created_at": "2026-01-15T11:00:10Z"
+      "created_at": "2026-01-15T11:00:10Z",
+      "event_type": "Warning",
+      "involved_object_kind": "PersistentVolumeClaim",
+      "involved_object_name": "memcached-data-pvc",
+      "involved_object_uid": "d4e5f6a7-5555-4eee-a555-555555555555",
+      "involved_object_api_version": "v1",
+      "reporting_component": "persistentvolume-controller",
+      "series_last_observed": "2026-01-15T11:05:00Z"
     },
     {
       "id": 2,
       "cluster_id": 1,
       "namespace_id": 1,
       "uid": "e4e5e6e7-3333-4ccc-b333-444444444444",
-      "type": "Warning",
       "reason": "FailedScheduling",
       "message": "0/1 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod.",
-      "regarding_kind": "Pod",
-      "regarding_name": "memcached-7d8f9a6b5c-p3q7r",
-      "regarding_namespace": "cache-tier",
-      "regarding_uid": "b2c3d4e5-2222-4bbb-a222-222222222222",
       "source_component": "default-scheduler",
       "source_host": "",
       "count": 8,
@@ -268,7 +284,14 @@
       "first_timestamp": "2026-01-15T11:00:00Z",
       "last_timestamp": "2026-01-15T11:05:00Z",
       "resolved_timestamp": "2026-01-15T11:05:00Z",
-      "created_at": "2026-01-15T11:00:00Z"
+      "created_at": "2026-01-15T11:00:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "memcached-7d8f9a6b5c-p3q7r",
+      "involved_object_uid": "b2c3d4e5-2222-4bbb-a222-222222222222",
+      "involved_object_api_version": "v1",
+      "reporting_component": "default-scheduler",
+      "series_last_observed": "2026-01-15T11:05:00Z"
     }
   ],
   "resources": [
@@ -288,7 +311,9 @@
           "uid": "d4e5f6a7-5555-4eee-a555-555555555555"
         },
         "spec": {
-          "accessModes": ["ReadWriteOnce"],
+          "accessModes": [
+            "ReadWriteOnce"
+          ],
           "resources": {
             "requests": {
               "storage": "2Gi"
@@ -301,7 +326,8 @@
           "phase": "Pending"
         }
       },
-      "created_at": "2026-01-15T10:59:50Z"
+      "created_at": "2026-01-15T10:59:50Z",
+      "replicas": null
     },
     {
       "id": 2,
@@ -340,7 +366,11 @@
                 {
                   "name": "init-perms",
                   "image": "busybox:1.36",
-                  "command": ["sh", "-c", "chown -R 11211:11211 /data"],
+                  "command": [
+                    "sh",
+                    "-c",
+                    "chown -R 11211:11211 /data"
+                  ],
                   "volumeMounts": [
                     {
                       "name": "memcached-data",
@@ -412,7 +442,8 @@
           ]
         }
       },
-      "created_at": "2026-01-15T10:59:45Z"
+      "created_at": "2026-01-15T10:59:45Z",
+      "replicas": 1
     },
     {
       "id": 3,
@@ -450,21 +481,22 @@
           "loadBalancer": {}
         }
       },
-      "created_at": "2026-01-15T10:59:48Z"
+      "created_at": "2026-01-15T10:59:48Z",
+      "replicas": null
     }
   ],
   "resource_labels": [
     {
       "id": 1,
       "resource_id": 2,
-      "key": "app",
-      "value": "memcached"
+      "label_key": "app",
+      "label_value": "memcached"
     },
     {
       "id": 2,
       "resource_id": 3,
-      "key": "app",
-      "value": "memcached"
+      "label_key": "app",
+      "label_value": "memcached"
     }
   ],
   "alerts": [],
