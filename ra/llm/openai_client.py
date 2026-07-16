@@ -22,7 +22,11 @@ class OpenAIClient(LLMClient):
     def __init__(self, config: OpenAIConfig | None = None) -> None:
         config = config or OpenAIConfig()
         super().__init__(config)
-        self._client = openai.OpenAI(api_key=config.api_key, base_url=config.base_url)
+        self._client = openai.OpenAI(
+            api_key=config.api_key,
+            base_url=config.base_url,
+            timeout=600.0,
+        )
 
     def _chat_impl(
         self,
