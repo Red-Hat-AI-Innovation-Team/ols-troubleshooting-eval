@@ -105,10 +105,7 @@
         "controller-revision-hash": "report-generator-6f8d9e7c4b"
       },
       "annotations": {},
-      "owner_kind": "StatefulSet",
-      "owner_name": "report-generator",
       "phase": "Running",
-      "node_name": "worker-0.eval-cluster.example.com",
       "qos_class": "Burstable",
       "restart_policy": "Always",
       "spec_json": {
@@ -245,7 +242,8 @@
       "host_ip": "10.0.0.11",
       "pod_ip": "10.128.0.50",
       "scheduler_name": "default-scheduler",
-      "start_time": "2026-01-14T00:00:00Z"
+      "start_time": "2026-01-14T00:00:00Z",
+      "node_id": 1
     }
   ],
   "containers": [

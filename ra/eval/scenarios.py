@@ -265,7 +265,9 @@ def list_scenarios() -> list[str]:
 
 
 def load_seed(scenario_id: str) -> dict:
-    """Load seed data for a scenario from ra/seeds/<id>.json."""
-    path = Path(SCENARIOS[scenario_id].seed_path)
+    """Load seed data for a scenario from seeds/<id>.json."""
+    _this_dir = Path(__file__).resolve().parent
+    seed_file = Path(SCENARIOS[scenario_id].seed_path).name
+    path = _this_dir.parent / "seeds" / seed_file
     with open(path) as f:
         return json.load(f)

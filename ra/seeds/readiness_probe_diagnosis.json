@@ -97,10 +97,7 @@
       "annotations": {
         "eval/scenario": "readiness-probe-diagnosis"
       },
-      "owner_kind": null,
-      "owner_name": null,
       "phase": "Running",
-      "node_name": "worker-0.eval-cluster.example.com",
       "qos_class": "Burstable",
       "restart_policy": "Always",
       "spec_json": {
@@ -248,7 +245,8 @@
       "host_ip": "10.0.0.11",
       "pod_ip": "10.128.0.70",
       "scheduler_name": "default-scheduler",
-      "start_time": "2026-01-14T10:00:00Z"
+      "start_time": "2026-01-14T10:00:00Z",
+      "node_id": 1
     }
   ],
   "containers": [
@@ -489,7 +487,6 @@
       "reason": "Unhealthy",
       "message": "Readiness probe failed: HTTP probe failed with statuscode: 503",
       "reporting_component": "kubelet",
-      "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 20,
       "source_component": "kubelet",
       "source_host": "worker-0.eval-cluster.example.com",
@@ -511,7 +508,6 @@
       "reason": "Scheduled",
       "message": "Successfully assigned discovery-hub/catalog-index-service to worker-0.eval-cluster.example.com",
       "reporting_component": "default-scheduler",
-      "reporting_instance": "",
       "count": 1,
       "source_component": "default-scheduler",
       "source_host": "",
@@ -533,7 +529,6 @@
       "reason": "Pulled",
       "message": "Container image \"busybox:1.36\" already present on machine",
       "reporting_component": "kubelet",
-      "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 1,
       "source_component": "kubelet",
       "source_host": "worker-0.eval-cluster.example.com",
@@ -555,7 +550,6 @@
       "reason": "Created",
       "message": "Created container indexer",
       "reporting_component": "kubelet",
-      "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 1,
       "source_component": "kubelet",
       "source_host": "worker-0.eval-cluster.example.com",
@@ -577,7 +571,6 @@
       "reason": "Started",
       "message": "Started container indexer",
       "reporting_component": "kubelet",
-      "reporting_instance": "worker-0.eval-cluster.example.com",
       "count": 1,
       "source_component": "kubelet",
       "source_host": "worker-0.eval-cluster.example.com",

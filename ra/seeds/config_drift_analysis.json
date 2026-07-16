@@ -104,10 +104,7 @@
         "pod-template-hash": "5a6b7c8d9e"
       },
       "annotations": {},
-      "owner_kind": "ReplicaSet",
-      "owner_name": "gateway-proxy-5a6b7c8d9e",
       "phase": "Running",
-      "node_name": "worker-0.eval-cluster.example.com",
       "qos_class": "Burstable",
       "restart_policy": "Always",
       "spec_json": {
@@ -244,7 +241,8 @@
       "host_ip": "10.0.0.11",
       "pod_ip": "10.128.0.60",
       "scheduler_name": "default-scheduler",
-      "start_time": "2026-01-14T08:00:00Z"
+      "start_time": "2026-01-14T08:00:00Z",
+      "node_id": 1
     }
   ],
   "containers": [
