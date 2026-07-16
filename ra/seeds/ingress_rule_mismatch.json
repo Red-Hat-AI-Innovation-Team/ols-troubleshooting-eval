@@ -89,6 +89,22 @@
       "kind": "NetworkPolicy",
       "is_namespaced": true,
       "is_scalable": false
+    },
+    {
+      "id": 6,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Endpoints",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 7,
+      "cluster_id": 1,
+      "api_version": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "is_namespaced": true,
+      "is_scalable": false
     }
   ],
   "namespaces": [
@@ -964,6 +980,97 @@
           ]
         },
         "status": {}
+      },
+      "created_at": "2026-01-10T08:09:00Z",
+      "replicas": null
+    },
+    {
+      "id": 5,
+      "cluster_id": 1,
+      "api_resource_id": 6,
+      "namespace_id": 1,
+      "name": "api-gateway-svc",
+      "uid": "c1d2e3f4-3005-4aaa-b300-000000000005",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Endpoints",
+        "metadata": {
+          "name": "api-gateway-svc",
+          "namespace": "platform-core",
+          "uid": "c1d2e3f4-3005-4aaa-b300-000000000005",
+          "resourceVersion": "52500",
+          "creationTimestamp": "2026-01-10T08:09:00Z"
+        },
+        "subsets": [
+          {
+            "addresses": [
+              {
+                "ip": "10.128.2.46",
+                "targetRef": {
+                  "kind": "Pod",
+                  "name": "api-gateway-3f4g5h6i7j-m8n9o",
+                  "namespace": "platform-core"
+                }
+              }
+            ],
+            "ports": [
+              {
+                "name": "http",
+                "port": 8080,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      },
+      "created_at": "2026-01-10T08:09:00Z",
+      "replicas": null
+    },
+    {
+      "id": 6,
+      "cluster_id": 1,
+      "api_resource_id": 7,
+      "namespace_id": 1,
+      "name": "api-gateway-svc-abcde",
+      "uid": "c1d2e3f4-3006-4aaa-b300-000000000006",
+      "manifest": {
+        "apiVersion": "discovery.k8s.io/v1",
+        "kind": "EndpointSlice",
+        "metadata": {
+          "name": "api-gateway-svc-abcde",
+          "namespace": "platform-core",
+          "uid": "c1d2e3f4-3006-4aaa-b300-000000000006",
+          "resourceVersion": "52600",
+          "creationTimestamp": "2026-01-10T08:09:00Z",
+          "labels": {
+            "kubernetes.io/service-name": "api-gateway-svc"
+          }
+        },
+        "addressType": "IPv4",
+        "endpoints": [
+          {
+            "addresses": [
+              "10.128.2.46"
+            ],
+            "conditions": {
+              "ready": true,
+              "serving": true,
+              "terminating": false
+            },
+            "targetRef": {
+              "kind": "Pod",
+              "name": "api-gateway-3f4g5h6i7j-m8n9o",
+              "namespace": "platform-core"
+            }
+          }
+        ],
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "protocol": "TCP"
+          }
+        ]
       },
       "created_at": "2026-01-10T08:09:00Z",
       "replicas": null

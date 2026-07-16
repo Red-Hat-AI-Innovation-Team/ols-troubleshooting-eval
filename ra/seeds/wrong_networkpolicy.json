@@ -89,6 +89,22 @@
       "kind": "NetworkPolicy",
       "is_namespaced": true,
       "is_scalable": false
+    },
+    {
+      "id": 6,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Endpoints",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 7,
+      "cluster_id": 1,
+      "api_version": "discovery.k8s.io/v1",
+      "kind": "EndpointSlice",
+      "is_namespaced": true,
+      "is_scalable": false
     }
   ],
   "namespaces": [
@@ -913,6 +929,97 @@
           ]
         },
         "status": {}
+      },
+      "created_at": "2026-01-20T10:04:00Z",
+      "replicas": null
+    },
+    {
+      "id": 5,
+      "cluster_id": 1,
+      "api_resource_id": 6,
+      "namespace_id": 1,
+      "name": "backend-service",
+      "uid": "c1d2e3f4-3005-4aaa-b300-000000000025",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Endpoints",
+        "metadata": {
+          "name": "backend-service",
+          "namespace": "service-mesh",
+          "uid": "c1d2e3f4-3005-4aaa-b300-000000000025",
+          "resourceVersion": "81500",
+          "creationTimestamp": "2026-01-20T10:04:00Z"
+        },
+        "subsets": [
+          {
+            "addresses": [
+              {
+                "ip": "10.128.2.61",
+                "targetRef": {
+                  "kind": "Pod",
+                  "name": "backend-5h6i7j8k9l-m0n1o",
+                  "namespace": "service-mesh"
+                }
+              }
+            ],
+            "ports": [
+              {
+                "name": "http",
+                "port": 8080,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      },
+      "created_at": "2026-01-20T10:04:00Z",
+      "replicas": null
+    },
+    {
+      "id": 6,
+      "cluster_id": 1,
+      "api_resource_id": 7,
+      "namespace_id": 1,
+      "name": "backend-service-xyz12",
+      "uid": "c1d2e3f4-3006-4aaa-b300-000000000026",
+      "manifest": {
+        "apiVersion": "discovery.k8s.io/v1",
+        "kind": "EndpointSlice",
+        "metadata": {
+          "name": "backend-service-xyz12",
+          "namespace": "service-mesh",
+          "uid": "c1d2e3f4-3006-4aaa-b300-000000000026",
+          "resourceVersion": "81600",
+          "creationTimestamp": "2026-01-20T10:04:00Z",
+          "labels": {
+            "kubernetes.io/service-name": "backend-service"
+          }
+        },
+        "addressType": "IPv4",
+        "endpoints": [
+          {
+            "addresses": [
+              "10.128.2.61"
+            ],
+            "conditions": {
+              "ready": true,
+              "serving": true,
+              "terminating": false
+            },
+            "targetRef": {
+              "kind": "Pod",
+              "name": "backend-5h6i7j8k9l-m0n1o",
+              "namespace": "service-mesh"
+            }
+          }
+        ],
+        "ports": [
+          {
+            "name": "http",
+            "port": 8080,
+            "protocol": "TCP"
+          }
+        ]
       },
       "created_at": "2026-01-20T10:04:00Z",
       "replicas": null
