@@ -432,7 +432,7 @@ def main():
     # Model
     model_kwargs = {
         "torch_dtype": torch.bfloat16 if args.bf16 else torch.float32,
-        "attn_implementation": "flash_attention_2" if not args.lora else "eager",
+        "attn_implementation": "sdpa",
         "trust_remote_code": True,
     }
 
