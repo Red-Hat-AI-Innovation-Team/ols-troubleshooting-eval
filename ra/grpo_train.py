@@ -142,6 +142,7 @@ class GRPORolloutDataset(Dataset):
                 if not messages:
                     continue
 
+                # Tokenize full conversation
                 text = tokenizer.apply_chat_template(
                     messages,
                     tokenize=False,
@@ -155,9 +156,36 @@ class GRPORolloutDataset(Dataset):
                     return_tensors=None,
                 )
 
+                input_ids = tokens["input_ids"]
+
+                # Build labels with masking: only train on assistant tokens.
+                # Tokenize each message individually to find role boundaries.
+                labels = [-100] * len(input_ids)
+                pos = 0
+                for msg in messages:
+                    # Tokenize this single message to find its length
+                    single_text = tokenizer.apply_chat_template(
+                        messages[: messages.index(msg) + 1],
+                        tokenize=False,
+                        add_generation_prompt=False,
+                    )
+                    end_pos = len(tokenizer(
+                        single_text,
+                        truncation=True,
+                        max_length=max_seq_length,
+                        return_tensors=None,
+                    )["input_ids"])
+
+                    if msg["role"] == "assistant":
+                        # Train on assistant tokens
+                        for i in range(pos, min(end_pos, len(labels))):
+                            labels[i] = input_ids[i]
+
+                    pos = end_pos
+
                 self.examples.append({
-                    "input_ids": tokens["input_ids"],
-                    "labels": tokens["input_ids"].copy(),
+                    "input_ids": input_ids,
+                    "labels": labels,
                     "attention_mask": tokens["attention_mask"],
                     "advantage": advantage,
                 })
