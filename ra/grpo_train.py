@@ -239,11 +239,14 @@ class GRPODataCollator:
 
     def __call__(self, features):
         advantages = torch.tensor(
-            [f.pop("advantage") for f in features], dtype=torch.float32,
+            [f["advantage"] for f in features], dtype=torch.float32,
         )
 
+        # Remove advantage before passing to tokenizer.pad (it only handles tensor fields)
+        pad_features = [{k: v for k, v in f.items() if k != "advantage"} for f in features]
+
         batch = self.tokenizer.pad(
-            features,
+            pad_features,
             padding=True,
             max_length=self.max_length,
             return_tensors="pt",
@@ -294,7 +297,7 @@ def main():
         quantization_config=bnb_config,
         device_map="auto",
         trust_remote_code=True,
-        attn_implementation="eager",
+        attn_implementation="flash_attention_2",
         torch_dtype=torch.bfloat16,
     )
 
