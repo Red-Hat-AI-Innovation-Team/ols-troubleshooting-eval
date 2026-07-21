@@ -132,10 +132,19 @@ def _make_tool_func(name: str, description: str, props: dict):
 
     params_str = ", ".join(param_parts)
 
+    # Build docstring with Args section (required by TRL's get_json_schema)
+    args_doc = ""
+    if props:
+        args_lines = []
+        for pname, pschema in props.items():
+            pdesc = pschema.get("description", f"The {pname} parameter")
+            args_lines.append(f"        {pname}: {pdesc}")
+        args_doc = "\n\n    Args:\n" + "\n".join(args_lines)
+
     # Build the function source
     func_source = f"""
 def {name}({params_str}) -> str:
-    \"\"\"{description}\"\"\"
+    \"\"\"{description}{args_doc}\"\"\"
     conn = _get_conn()
     if conn is None:
         return "Error: no database connection available for tool {name}"
