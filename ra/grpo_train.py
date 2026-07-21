@@ -29,9 +29,13 @@ from transformers import (
     AutoTokenizer,
     Trainer,
     TrainingArguments,
-    BitsAndBytesConfig,
 )
-from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+
+try:
+    from transformers import BitsAndBytesConfig
+    from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+except ImportError:
+    pass  # Only needed for --lora mode
 
 
 # ---------------------------------------------------------------------------
@@ -273,6 +277,7 @@ def main():
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--grad-accum", type=int, default=4)
     parser.add_argument("--max-seq-length", type=int, default=16384)
+    parser.add_argument("--lora", action="store_true", help="Use QLoRA instead of full-param")
     parser.add_argument("--lora-rank", type=int, default=16)
     parser.add_argument("--lora-alpha", type=int, default=64)
     args = parser.parse_args()
@@ -283,39 +288,52 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # Load model with 4-bit quantization
-    print(f"Loading model: {args.model} (4-bit QLoRA)")
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
-        bnb_4bit_use_double_quant=True,
-    )
+    if args.lora:
+        # QLoRA: 4-bit quantized base + LoRA adapter
+        print(f"Loading model: {args.model} (4-bit QLoRA)")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_use_double_quant=True,
+        )
 
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model,
-        quantization_config=bnb_config,
-        device_map="auto",
-        trust_remote_code=True,
-        attn_implementation="flash_attention_2",
-        torch_dtype=torch.bfloat16,
-    )
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model,
+            quantization_config=bnb_config,
+            device_map="auto",
+            trust_remote_code=True,
+            attn_implementation="flash_attention_2",
+            torch_dtype=torch.bfloat16,
+        )
 
-    model = prepare_model_for_kbit_training(model)
+        model = prepare_model_for_kbit_training(model)
 
-    # LoRA config
-    lora_config = LoraConfig(
-        r=args.lora_rank,
-        lora_alpha=args.lora_alpha,
-        lora_dropout=0.05,
-        target_modules=[
-            "q_proj", "k_proj", "v_proj", "o_proj",
-            "gate_proj", "up_proj", "down_proj",
-        ],
-        task_type="CAUSAL_LM",
-    )
-    model = get_peft_model(model, lora_config)
-    model.print_trainable_parameters()
+        lora_config = LoraConfig(
+            r=args.lora_rank,
+            lora_alpha=args.lora_alpha,
+            lora_dropout=0.05,
+            target_modules=[
+                "q_proj", "k_proj", "v_proj", "o_proj",
+                "gate_proj", "up_proj", "down_proj",
+            ],
+            task_type="CAUSAL_LM",
+        )
+        model = get_peft_model(model, lora_config)
+        model.print_trainable_parameters()
+    else:
+        # Full parameter training
+        print(f"Loading model: {args.model} (full-param bf16)")
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model,
+            device_map="auto",
+            trust_remote_code=True,
+            attn_implementation="flash_attention_2",
+            torch_dtype=torch.bfloat16,
+        )
+        total = sum(p.numel() for p in model.parameters())
+        trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        print(f"trainable params: {trainable:,} || all params: {total:,} || trainable%: 100.0")
 
     # Load dataset
     print(f"Loading rollouts from {args.rollouts}")
