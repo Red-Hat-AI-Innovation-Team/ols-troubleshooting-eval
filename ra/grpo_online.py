@@ -111,51 +111,41 @@ def _build_tool_functions() -> list:
     return functions
 
 
+def _json_type_to_python(json_type: str) -> str:
+    """Map JSON schema type to Python type hint string."""
+    return {"integer": "int", "number": "float", "boolean": "bool",
+            "array": "list", "object": "dict"}.get(json_type, "str")
+
+
 def _make_tool_func(name: str, description: str, props: dict):
-    """Create a single tool function with proper name, docstring, and annotations.
+    """Create a tool function with explicit typed parameters.
 
-    TRL uses inspect.getmembers and checks __name__, __doc__, and type
-    annotations to build the tool schema for the chat template.
+    TRL's get_json_schema uses inspect.signature() to extract parameter names
+    and types. Functions with **kwargs fail. We use exec() to create functions
+    with proper explicit signatures matching the tool's JSON schema.
     """
-    # Build the parameter string for the function signature
-    # TRL reads annotations to build JSON schema for the tool
-    param_names = list(props.keys())
-
-    # We create a function that takes **kwargs and dispatches to call_tool
-    def tool_func(**kwargs):
-        conn = _get_conn()
-        if conn is None:
-            return f"Error: no database connection available for tool {name}"
-        # Strip 'context' if present
-        clean = {k: v for k, v in kwargs.items() if k != "context"}
-        return call_tool(conn, name, clean)
-
-    # Set function metadata for TRL discovery
-    tool_func.__name__ = name
-    tool_func.__qualname__ = name
-    tool_func.__doc__ = description
-
-    # Build type annotations from schema properties
-    annotations = {}
+    # Build parameter list with type annotations and defaults
+    param_parts = []
     for pname, pschema in props.items():
-        json_type = pschema.get("type", "string")
-        if json_type == "integer":
-            annotations[pname] = int
-        elif json_type == "number":
-            annotations[pname] = float
-        elif json_type == "boolean":
-            annotations[pname] = bool
-        elif json_type == "array":
-            annotations[pname] = list
-        elif json_type == "object":
-            annotations[pname] = dict
-        else:
-            annotations[pname] = str
+        py_type = _json_type_to_python(pschema.get("type", "string"))
+        param_parts.append(f"{pname}: {py_type} = None")
 
-    annotations["return"] = str
-    tool_func.__annotations__ = annotations
+    params_str = ", ".join(param_parts)
 
-    return tool_func
+    # Build the function source
+    func_source = f"""
+def {name}({params_str}) -> str:
+    \"\"\"{description}\"\"\"
+    conn = _get_conn()
+    if conn is None:
+        return "Error: no database connection available for tool {name}"
+    params = {{k: v for k, v in locals().items() if v is not None and k != "conn"}}
+    return str(call_tool(conn, "{name}", params))
+"""
+    # Execute to create the function in a namespace with our helpers
+    namespace = {"_get_conn": _get_conn, "call_tool": call_tool}
+    exec(func_source, namespace)  # noqa: S102
+    return namespace[name]
 
 
 # Build tool functions at module level
