@@ -416,6 +416,10 @@ def parse_args():
         "--bf16", action="store_true", default=True,
         help="Use bfloat16 precision"
     )
+    parser.add_argument(
+        "--use-vllm", action="store_true",
+        help="Use vLLM for generation (requires vLLM on a separate GPU)"
+    )
     return parser.parse_args()
 
 
@@ -478,6 +482,7 @@ def main():
         max_completion_length=args.max_completion_length,
         max_tool_calling_iterations=args.max_tool_iterations,
         bf16=args.bf16,
+        gradient_checkpointing=True,
         logging_steps=1,
         save_strategy="epoch",
         report_to="none",
@@ -485,6 +490,9 @@ def main():
         model_init_kwargs=model_kwargs,
         # Use temperature > 0 for diverse generations
         temperature=0.7,
+        # vLLM for generation (separate GPU, avoids OOM)
+        use_vllm=args.use_vllm,
+        vllm_gpu_memory_utilization=0.9 if args.use_vllm else None,
     )
 
     # Trainer
