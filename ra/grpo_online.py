@@ -492,7 +492,7 @@ def main():
         temperature=0.7,
         # vLLM for generation (separate GPU, avoids OOM)
         use_vllm=args.use_vllm,
-        vllm_gpu_memory_utilization=0.9 if args.use_vllm else None,
+        vllm_gpu_memory_utilization=0.7 if args.use_vllm else None,
     )
 
     # Trainer
