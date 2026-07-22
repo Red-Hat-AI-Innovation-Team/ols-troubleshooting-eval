@@ -73,7 +73,7 @@ def run_scenario(
                         tool_defs=tool_defs,
                         tool_handler=tool_handler,
                         client=troubleshooter_client,
-                        max_tokens=4096,
+                        max_tokens=2048,
                     )
 
                 # Run the agent on this turn's query
