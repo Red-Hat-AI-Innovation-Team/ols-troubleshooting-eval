@@ -22,9 +22,7 @@ def _clean_parameters(params: dict) -> dict:
     """Remove the ``context`` param and rebuild required list."""
     props = {k: v for k, v in params.get("properties", {}).items() if k not in STRIP_PARAMS}
     required = [r for r in params.get("required", []) if r not in STRIP_PARAMS]
-    cleaned: dict = {"type": "object", "properties": props}
-    if required:
-        cleaned["required"] = required
+    cleaned: dict = {"type": "object", "properties": props, "required": required}
     return cleaned
 
 
@@ -91,7 +89,7 @@ def generate():
                     "function": {
                         "name": tool_name,
                         "description": f"Execute {tool_name} tool",
-                        "parameters": {"type": "object", "properties": {}},
+                        "parameters": {"type": "object", "properties": {}, "required": []},
                     },
                 },
             }
