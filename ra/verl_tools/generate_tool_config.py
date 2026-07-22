@@ -63,6 +63,9 @@ def generate():
 
     for extra in EXTRA_TOOL_DEFS:
         if extra.name not in seen_names:
+            params = dict(extra.parameters)
+            if "required" not in params:
+                params["required"] = []
             entry = {
                 "class_name": CLASS_NAME,
                 "config": {"type": "native"},
@@ -71,7 +74,7 @@ def generate():
                     "function": {
                         "name": extra.name,
                         "description": extra.description,
-                        "parameters": extra.parameters,
+                        "parameters": params,
                     },
                 },
             }
