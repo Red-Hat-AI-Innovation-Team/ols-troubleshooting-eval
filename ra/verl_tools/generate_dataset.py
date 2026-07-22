@@ -1,54 +1,66 @@
 """Generate a verl-compatible training dataset in parquet format.
 
-verl expects parquet with columns: data_source, prompt, reward_model, extra_info.
-Each row is one scenario instance (repeated ``--repeats`` times for training diversity).
+Uses HuggingFace datasets to produce parquet matching verl's expected schema:
+prompt as list[dict], extra_info as dict (not JSON strings).
 """
 
-import json
+import os
 import sys
 from pathlib import Path
 
-import pyarrow as pa
-import pyarrow.parquet as pq
+import datasets as hf_datasets
 
 # Ensure ra/ is importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 def generate_dataset(repeats: int = 50, output: str = "ols_train.parquet"):
-    from eval.scenarios import SCENARIOS
+    from eval.scenarios import SCENARIOS, list_scenarios
     from run_agent import SYSTEM_PROMPT
 
     rows: list[dict] = []
-    for scenario_id, scenario in SCENARIOS.items():
+    for idx, scenario_id in enumerate(list_scenarios()):
+        scenario = SCENARIOS[scenario_id]
         turn = scenario.turns[0]
-        for _ in range(repeats):
+        for rep in range(repeats):
+            # Build tools_kwargs: each tool gets scenario-specific create_kwargs
+            # All tools share the same create_kwargs per rollout
+            tools_kwargs = {}
+            # The OLSTroubleshootingTool.create() reads scenario_id from create_kwargs
+            # We set it for all tool names so any tool can init the DB
+            from mock_tools import TOOLS
+            for tool_name in TOOLS:
+                tools_kwargs[tool_name] = {
+                    "create_kwargs": {
+                        "scenario_id": scenario_id,
+                        "expected_response": turn.expected_response,
+                    },
+                }
+
             row = {
                 "data_source": "ols/troubleshooting",
-                "prompt": json.dumps([
+                "prompt": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": turn.query},
-                ]),
-                "reward_model": json.dumps({
+                ],
+                "reward_model": {
                     "ground_truth": turn.expected_response,
-                }),
-                "extra_info": json.dumps({
-                    "need_tools_kwargs": True,
+                },
+                "extra_info": {
+                    "split": "train",
+                    "index": idx * repeats + rep,
                     "query": turn.query,
                     "scenario_id": scenario_id,
                     "expected_response": turn.expected_response,
-                    "tools_kwargs": {},
-                }),
+                    "need_tools_kwargs": True,
+                    "tools_kwargs": tools_kwargs,
+                },
             }
             rows.append(row)
 
-    table = pa.table({
-        "data_source": [r["data_source"] for r in rows],
-        "prompt": [r["prompt"] for r in rows],
-        "reward_model": [r["reward_model"] for r in rows],
-        "extra_info": [r["extra_info"] for r in rows],
-    })
-    pq.write_table(table, output)
+    # Use HF datasets to create parquet (handles nested dicts properly)
+    ds = hf_datasets.Dataset.from_list(rows)
+    ds.to_parquet(output)
     print(f"Written {len(rows)} rows to {output}")
 
 
