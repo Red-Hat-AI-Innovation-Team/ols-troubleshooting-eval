@@ -107,6 +107,18 @@
       "is_openshift_project": true
     },
     {
+      "id": 9,
+      "cluster_id": 1,
+      "name": "telemetry-stack",
+      "uid": "b8c9d0e1-f2a3-4b4c-5d6e-7f8a9b0c1d2e",
+      "labels": {
+        "kubernetes.io/metadata.name": "telemetry-stack"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2026-01-01T00:10:00Z"
+    },
+    {
       "id": 100,
       "cluster_id": 1,
       "name": "openshift-monitoring",

@@ -113,14 +113,6 @@
       "kind": "ConfigMap",
       "is_namespaced": true,
       "is_scalable": false
-    },
-    {
-      "id": 125,
-      "cluster_id": 1,
-      "api_version": "networking.k8s.io/v1",
-      "kind": "NetworkPolicy",
-      "is_namespaced": true,
-      "is_scalable": false
     }
   ],
   "namespaces": [
@@ -138,6 +130,18 @@
         "openshift.io/description": "Service mesh evaluation namespace"
       },
       "is_openshift_project": true,
+      "created_at": "2026-01-20T10:00:00Z"
+    },
+    {
+      "id": 8,
+      "cluster_id": 1,
+      "name": "payment-services",
+      "uid": "a7b8c9d0-e1f2-4a3b-4c5d-6e7f8a9b0c1d",
+      "labels": {
+        "kubernetes.io/metadata.name": "payment-services"
+      },
+      "annotations": {},
+      "phase": "Active",
       "created_at": "2026-01-20T10:00:00Z"
     },
     {
@@ -8845,7 +8849,7 @@
       "id": 200,
       "cluster_id": 1,
       "namespace_id": 1,
-      "api_resource_id": 125,
+      "api_resource_id": 5,
       "name": "allow-backend",
       "uid": "b192530b-8871-4d34-ba0b-e8c3b1ea37f5",
       "manifest": {
@@ -8893,7 +8897,7 @@
       "id": 201,
       "cluster_id": 1,
       "namespace_id": 1,
-      "api_resource_id": 125,
+      "api_resource_id": 5,
       "name": "allow-ingress",
       "uid": "7102307f-9b34-482f-a937-8d6205d9b671",
       "manifest": {
@@ -8934,7 +8938,7 @@
       "id": 202,
       "cluster_id": 1,
       "namespace_id": 1,
-      "api_resource_id": 125,
+      "api_resource_id": 5,
       "name": "default-deny-ingress",
       "uid": "0103cea6-3d65-4116-963f-de825d444908",
       "manifest": {
@@ -8949,37 +8953,6 @@
           "policyTypes": [
             "Ingress"
           ]
-        }
-      },
-      "created_at": "2026-01-15T09:00:00Z",
-      "replicas": null
-    },
-    {
-      "id": 203,
-      "cluster_id": 1,
-      "namespace_id": 1,
-      "api_resource_id": 101,
-      "name": "backend-service",
-      "uid": "8c7fbc4d-67b1-48db-b5ec-f2b46555aa19",
-      "manifest": {
-        "apiVersion": "v1",
-        "kind": "Service",
-        "metadata": {
-          "name": "backend-service",
-          "namespace": "service-mesh"
-        },
-        "spec": {
-          "selector": {
-            "app": "backend"
-          },
-          "ports": [
-            {
-              "port": 3000,
-              "targetPort": 3000,
-              "protocol": "TCP"
-            }
-          ],
-          "clusterIP": "172.30.60.45"
         }
       },
       "created_at": "2026-01-15T09:00:00Z",

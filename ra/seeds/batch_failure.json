@@ -89,14 +89,6 @@
       "kind": "Service",
       "is_namespaced": true,
       "is_scalable": false
-    },
-    {
-      "id": 110,
-      "cluster_id": 1,
-      "api_version": "batch/v1",
-      "kind": "Job",
-      "is_namespaced": true,
-      "is_scalable": false
     }
   ],
   "namespaces": [
@@ -112,6 +104,18 @@
       "phase": "Active",
       "created_at": "2026-01-01T00:10:00Z",
       "is_openshift_project": true
+    },
+    {
+      "id": 2,
+      "cluster_id": 1,
+      "name": "infra-services",
+      "uid": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "labels": {
+        "kubernetes.io/metadata.name": "infra-services"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2026-01-01T00:10:00Z"
     },
     {
       "id": 100,
@@ -8190,7 +8194,7 @@
       "id": 200,
       "cluster_id": 1,
       "namespace_id": 2,
-      "api_resource_id": 110,
+      "api_resource_id": 1,
       "name": "inventory-sync-validator-27845123",
       "uid": "bc9c46a1-cfca-4624-a766-6e49fad8321f",
       "manifest": {

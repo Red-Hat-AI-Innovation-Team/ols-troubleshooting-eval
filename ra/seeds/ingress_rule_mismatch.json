@@ -113,14 +113,6 @@
       "kind": "ConfigMap",
       "is_namespaced": true,
       "is_scalable": false
-    },
-    {
-      "id": 115,
-      "cluster_id": 1,
-      "api_version": "v1",
-      "kind": "Endpoints",
-      "is_namespaced": true,
-      "is_scalable": false
     }
   ],
   "namespaces": [
@@ -138,6 +130,18 @@
         "openshift.io/description": "Platform core services"
       },
       "is_openshift_project": true,
+      "created_at": "2026-01-10T08:00:00Z"
+    },
+    {
+      "id": 6,
+      "cluster_id": 1,
+      "name": "auth-services",
+      "uid": "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b",
+      "labels": {
+        "kubernetes.io/metadata.name": "auth-services"
+      },
+      "annotations": {},
+      "phase": "Active",
       "created_at": "2026-01-10T08:00:00Z"
     },
     {
@@ -8839,7 +8843,7 @@
       "id": 200,
       "cluster_id": 1,
       "namespace_id": 1,
-      "api_resource_id": 101,
+      "api_resource_id": 4,
       "name": "api-gateway",
       "uid": "8da2cdb4-3e68-4ba3-8648-fba3b5fc3d6e",
       "manifest": {
@@ -8871,7 +8875,7 @@
       "id": 201,
       "cluster_id": 1,
       "namespace_id": 1,
-      "api_resource_id": 115,
+      "api_resource_id": 6,
       "name": "api-gateway",
       "uid": "53812c00-1d88-4a7c-9b6c-122f00443645",
       "manifest": {
