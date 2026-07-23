@@ -136,7 +136,7 @@
       "id": 100,
       "cluster_id": 1,
       "name": "openshift-monitoring",
-      "uid": "ns-0100-0000-0000-0000-000000000000",
+      "uid": "0b7ba548-7b3b-4c6f-8bc2-4c476486c376",
       "labels": {
         "kubernetes.io/metadata.name": "openshift-monitoring"
       },
@@ -149,7 +149,7 @@
       "id": 101,
       "cluster_id": 1,
       "name": "openshift-ingress",
-      "uid": "ns-0101-0000-0000-0000-000000000000",
+      "uid": "13a01844-31c8-410c-80bd-1c2344e4b554",
       "labels": {
         "kubernetes.io/metadata.name": "openshift-ingress"
       },
@@ -162,7 +162,7 @@
       "id": 102,
       "cluster_id": 1,
       "name": "openshift-console",
-      "uid": "ns-0102-0000-0000-0000-000000000000",
+      "uid": "a0ea07b7-96ee-4a54-8783-4d59cc01d5c8",
       "labels": {
         "kubernetes.io/metadata.name": "openshift-console"
       },
@@ -175,7 +175,7 @@
       "id": 103,
       "cluster_id": 1,
       "name": "kube-system",
-      "uid": "ns-0103-0000-0000-0000-000000000000",
+      "uid": "194e0e21-f51e-4a92-8073-d7f5bb6a393e",
       "labels": {
         "kubernetes.io/metadata.name": "kube-system"
       },
@@ -188,7 +188,7 @@
       "id": 104,
       "cluster_id": 1,
       "name": "openshift-operators",
-      "uid": "ns-0104-0000-0000-0000-000000000000",
+      "uid": "a09b3df6-2305-4601-87be-96ed489dd99e",
       "labels": {
         "kubernetes.io/metadata.name": "openshift-operators"
       },
@@ -458,7 +458,7 @@
       "namespace_id": 100,
       "node_id": 1,
       "name": "prometheus-k8s-0",
-      "uid": "pod-0100-0000-0000-0000-000000000000",
+      "uid": "14c9101e-4312-44b3-81df-dba0b1dfd139",
       "labels": {
         "app.kubernetes.io/component": "prometheus",
         "app.kubernetes.io/name": "prometheus",
@@ -576,7 +576,7 @@
       "namespace_id": 100,
       "node_id": 1,
       "name": "alertmanager-main-0",
-      "uid": "pod-0101-0000-0000-0000-000000000000",
+      "uid": "75e6ce8f-3cc4-423a-8494-5e46ea152a97",
       "labels": {
         "app.kubernetes.io/component": "alert-router",
         "app.kubernetes.io/name": "alertmanager",
@@ -694,7 +694,7 @@
       "namespace_id": 100,
       "node_id": 1,
       "name": "grafana-7f9bc4d8b5-x2k9m",
-      "uid": "pod-0102-0000-0000-0000-000000000000",
+      "uid": "d6efc646-c205-4e13-8344-3c8df902a061",
       "labels": {
         "app": "grafana",
         "app.kubernetes.io/component": "grafana"
@@ -811,7 +811,7 @@
       "namespace_id": 100,
       "node_id": 1,
       "name": "thanos-querier-6c8d7e9f0a-b3c4d",
-      "uid": "pod-0103-0000-0000-0000-000000000000",
+      "uid": "8b22a27c-b5cb-494f-880c-64ddc00d6af2",
       "labels": {
         "app.kubernetes.io/component": "query-layer",
         "app.kubernetes.io/name": "thanos-query"
@@ -928,7 +928,7 @@
       "namespace_id": 101,
       "node_id": 1,
       "name": "router-default-7b8c9d0e1f-a2b3c",
-      "uid": "pod-0104-0000-0000-0000-000000000000",
+      "uid": "333c6062-e274-4ef7-8ae7-f4359f297db0",
       "labels": {
         "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
       },
@@ -1044,7 +1044,7 @@
       "namespace_id": 101,
       "node_id": 1,
       "name": "router-default-7b8c9d0e1f-d4e5f",
-      "uid": "pod-0105-0000-0000-0000-000000000000",
+      "uid": "0a664100-3f9b-48a0-87ac-39879105d574",
       "labels": {
         "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
       },
@@ -1160,7 +1160,7 @@
       "namespace_id": 101,
       "node_id": 1,
       "name": "router-default-7b8c9d0e1f-g6h7i",
-      "uid": "pod-0106-0000-0000-0000-000000000000",
+      "uid": "c0deaa59-c8eb-4207-85a1-e41092d301e9",
       "labels": {
         "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
       },
@@ -1276,7 +1276,7 @@
       "namespace_id": 103,
       "node_id": 1,
       "name": "coredns-5d8b7c6a4f-k9l0m",
-      "uid": "pod-0107-0000-0000-0000-000000000000",
+      "uid": "f6c6a458-15ed-4fc7-8629-d86a31c8cd61",
       "labels": {
         "k8s-app": "kube-dns"
       },
@@ -1392,7 +1392,7 @@
       "namespace_id": 103,
       "node_id": 1,
       "name": "coredns-5d8b7c6a4f-n1o2p",
-      "uid": "pod-0108-0000-0000-0000-000000000000",
+      "uid": "4b0607d5-844b-4b39-86f5-88b99d6d73fb",
       "labels": {
         "k8s-app": "kube-dns"
       },
@@ -1508,7 +1508,7 @@
       "namespace_id": 103,
       "node_id": 1,
       "name": "kube-apiserver-master-0",
-      "uid": "pod-0109-0000-0000-0000-000000000000",
+      "uid": "3a0784db-68fa-4618-8aed-ae4642643e15",
       "labels": {
         "app": "openshift-kube-apiserver",
         "apiserver": "true"
@@ -1625,7 +1625,7 @@
       "namespace_id": 104,
       "node_id": 1,
       "name": "olm-operator-7a8b9c0d1e-f2g3h",
-      "uid": "pod-0110-0000-0000-0000-000000000000",
+      "uid": "ae08d909-4c0c-4db6-847f-d4ac5168475f",
       "labels": {
         "app": "olm-operator"
       },
@@ -1741,7 +1741,7 @@
       "namespace_id": 104,
       "node_id": 1,
       "name": "catalog-operator-6d7e8f9a0b-c4d5e",
-      "uid": "pod-0111-0000-0000-0000-000000000000",
+      "uid": "d929f5c0-28ff-4b2f-84fa-66a42c48b6ea",
       "labels": {
         "app": "catalog-operator"
       },
@@ -1857,7 +1857,7 @@
       "namespace_id": 104,
       "node_id": 1,
       "name": "packageserver-5c6d7e8f9a-b0c1d",
-      "uid": "pod-0112-0000-0000-0000-000000000000",
+      "uid": "57739008-681a-42a9-859c-865bce00470c",
       "labels": {
         "app": "packageserver"
       },
@@ -2779,7 +2779,7 @@
       "id": 100,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0100-0000-0000-0000-000000000000",
+      "uid": "271fafeb-d68e-4b2d-87de-01c54b64fbdf",
       "reason": "Scheduled",
       "message": "Successfully assigned openshift-monitoring/prometheus-k8s-0 to worker-0",
       "source_component": "kubelet",
@@ -2793,7 +2793,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "prometheus-k8s-0",
-      "involved_object_uid": "pod-0100-0000-0000-0000-000000000000",
+      "involved_object_uid": "14c9101e-4312-44b3-81df-dba0b1dfd139",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T06:00:00Z"
@@ -2802,7 +2802,7 @@
       "id": 101,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0101-0000-0000-0000-000000000000",
+      "uid": "80f42c4f-cbb4-41cb-8b83-a508e7718c56",
       "reason": "Pulled",
       "message": "Container image already present on machine",
       "source_component": "kubelet",
@@ -2816,7 +2816,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "prometheus-k8s-0",
-      "involved_object_uid": "pod-0100-0000-0000-0000-000000000000",
+      "involved_object_uid": "14c9101e-4312-44b3-81df-dba0b1dfd139",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T07:07:00Z"
@@ -2825,7 +2825,7 @@
       "id": 102,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0102-0000-0000-0000-000000000000",
+      "uid": "da823a24-b5e0-4afa-8f6a-be925d440ae3",
       "reason": "Started",
       "message": "Started container prometheus",
       "source_component": "kubelet",
@@ -2839,7 +2839,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "prometheus-k8s-0",
-      "involved_object_uid": "pod-0100-0000-0000-0000-000000000000",
+      "involved_object_uid": "14c9101e-4312-44b3-81df-dba0b1dfd139",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T08:14:00Z"
@@ -2848,7 +2848,7 @@
       "id": 103,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0103-0000-0000-0000-000000000000",
+      "uid": "bbaf3f6e-a37d-4a4d-8058-20a86357ef8a",
       "reason": "Scheduled",
       "message": "Successfully assigned openshift-monitoring/alertmanager-main-0 to worker-0",
       "source_component": "kubelet",
@@ -2862,7 +2862,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "alertmanager-main-0",
-      "involved_object_uid": "pod-0101-0000-0000-0000-000000000000",
+      "involved_object_uid": "75e6ce8f-3cc4-423a-8494-5e46ea152a97",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T09:21:00Z"
@@ -2871,7 +2871,7 @@
       "id": 104,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0104-0000-0000-0000-000000000000",
+      "uid": "c78212f0-48e2-462e-86b5-d5cd9c50a784",
       "reason": "Pulled",
       "message": "Container image already present on machine",
       "source_component": "kubelet",
@@ -2885,7 +2885,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "alertmanager-main-0",
-      "involved_object_uid": "pod-0101-0000-0000-0000-000000000000",
+      "involved_object_uid": "75e6ce8f-3cc4-423a-8494-5e46ea152a97",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T06:28:00Z"
@@ -2894,7 +2894,7 @@
       "id": 105,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0105-0000-0000-0000-000000000000",
+      "uid": "2d2cfa59-b9e2-4054-81d8-116243e439e7",
       "reason": "Started",
       "message": "Started container alertmanager",
       "source_component": "kubelet",
@@ -2908,7 +2908,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "alertmanager-main-0",
-      "involved_object_uid": "pod-0101-0000-0000-0000-000000000000",
+      "involved_object_uid": "75e6ce8f-3cc4-423a-8494-5e46ea152a97",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T07:35:00Z"
@@ -2917,7 +2917,7 @@
       "id": 106,
       "cluster_id": 1,
       "namespace_id": 101,
-      "uid": "ev-0106-0000-0000-0000-000000000000",
+      "uid": "471550ef-e5d5-478e-894c-199a68e89a4c",
       "reason": "Scheduled",
       "message": "Successfully assigned openshift-ingress/router-default-7b8c9d0e1f-a2b3c to worker-0",
       "source_component": "kubelet",
@@ -2931,7 +2931,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
-      "involved_object_uid": "pod-0104-0000-0000-0000-000000000000",
+      "involved_object_uid": "333c6062-e274-4ef7-8ae7-f4359f297db0",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T08:42:00Z"
@@ -2940,7 +2940,7 @@
       "id": 107,
       "cluster_id": 1,
       "namespace_id": 101,
-      "uid": "ev-0107-0000-0000-0000-000000000000",
+      "uid": "0e5526a8-4d91-46f7-889d-22e02cea29e2",
       "reason": "Started",
       "message": "Started container router",
       "source_component": "kubelet",
@@ -2954,7 +2954,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
-      "involved_object_uid": "pod-0104-0000-0000-0000-000000000000",
+      "involved_object_uid": "333c6062-e274-4ef7-8ae7-f4359f297db0",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T09:49:00Z"
@@ -2963,7 +2963,7 @@
       "id": 108,
       "cluster_id": 1,
       "namespace_id": 103,
-      "uid": "ev-0108-0000-0000-0000-000000000000",
+      "uid": "6f3dfcc5-c15d-40ea-8cd3-f00afaed9098",
       "reason": "Scheduled",
       "message": "Successfully assigned kube-system/coredns-5d8b7c6a4f-k9l0m to worker-0",
       "source_component": "kubelet",
@@ -2977,7 +2977,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
-      "involved_object_uid": "pod-0107-0000-0000-0000-000000000000",
+      "involved_object_uid": "f6c6a458-15ed-4fc7-8629-d86a31c8cd61",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T06:56:00Z"
@@ -2986,7 +2986,7 @@
       "id": 109,
       "cluster_id": 1,
       "namespace_id": 103,
-      "uid": "ev-0109-0000-0000-0000-000000000000",
+      "uid": "805819a0-7ecf-47de-854a-fdc739cc3e16",
       "reason": "Started",
       "message": "Started container coredns",
       "source_component": "kubelet",
@@ -3000,7 +3000,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
-      "involved_object_uid": "pod-0107-0000-0000-0000-000000000000",
+      "involved_object_uid": "f6c6a458-15ed-4fc7-8629-d86a31c8cd61",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T07:03:00Z"
@@ -3009,7 +3009,7 @@
       "id": 110,
       "cluster_id": 1,
       "namespace_id": 104,
-      "uid": "ev-0110-0000-0000-0000-000000000000",
+      "uid": "349fa0d8-dd5a-4804-86ea-23d04b41729e",
       "reason": "Scheduled",
       "message": "Successfully assigned openshift-operators/olm-operator-7a8b9c0d1e-f2g3h to worker-0",
       "source_component": "kubelet",
@@ -3023,7 +3023,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
-      "involved_object_uid": "pod-0110-0000-0000-0000-000000000000",
+      "involved_object_uid": "ae08d909-4c0c-4db6-847f-d4ac5168475f",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T08:10:00Z"
@@ -3032,7 +3032,7 @@
       "id": 111,
       "cluster_id": 1,
       "namespace_id": 104,
-      "uid": "ev-0111-0000-0000-0000-000000000000",
+      "uid": "d386228a-8a6f-4099-86de-718f2c8f576b",
       "reason": "Started",
       "message": "Started container olm-operator",
       "source_component": "kubelet",
@@ -3046,7 +3046,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
-      "involved_object_uid": "pod-0110-0000-0000-0000-000000000000",
+      "involved_object_uid": "ae08d909-4c0c-4db6-847f-d4ac5168475f",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T09:17:00Z"
@@ -3055,7 +3055,7 @@
       "id": 112,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0112-0000-0000-0000-000000000000",
+      "uid": "e7005aaf-8ce2-4551-88a1-50a7519d2b72",
       "reason": "Unhealthy",
       "message": "Liveness probe failed: HTTP probe failed with statuscode: 503",
       "source_component": "kubelet",
@@ -3069,7 +3069,7 @@
       "event_type": "Warning",
       "involved_object_kind": "Pod",
       "involved_object_name": "grafana-7f9bc4d8b5-x2k9m",
-      "involved_object_uid": "pod-0102-0000-0000-0000-000000000000",
+      "involved_object_uid": "d6efc646-c205-4e13-8344-3c8df902a061",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T06:24:00Z"
@@ -3078,7 +3078,7 @@
       "id": 113,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0113-0000-0000-0000-000000000000",
+      "uid": "af74e367-70fd-435d-87e9-6c69ab590931",
       "reason": "Unhealthy",
       "message": "Readiness probe failed: HTTP probe failed with statuscode: 503",
       "source_component": "kubelet",
@@ -3092,7 +3092,7 @@
       "event_type": "Warning",
       "involved_object_kind": "Pod",
       "involved_object_name": "grafana-7f9bc4d8b5-x2k9m",
-      "involved_object_uid": "pod-0102-0000-0000-0000-000000000000",
+      "involved_object_uid": "d6efc646-c205-4e13-8344-3c8df902a061",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T07:31:00Z"
@@ -3101,7 +3101,7 @@
       "id": 114,
       "cluster_id": 1,
       "namespace_id": 103,
-      "uid": "ev-0114-0000-0000-0000-000000000000",
+      "uid": "95d10886-4b73-4c6a-8036-7c8ecade52e3",
       "reason": "LeaderElection",
       "message": "kube-apiserver-master-0 became leader",
       "source_component": "kube-apiserver",
@@ -3115,7 +3115,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "kube-apiserver-master-0",
-      "involved_object_uid": "pod-0109-0000-0000-0000-000000000000",
+      "involved_object_uid": "3a0784db-68fa-4618-8aed-ae4642643e15",
       "involved_object_api_version": "v1",
       "reporting_component": "kube-apiserver",
       "series_last_observed": "2026-01-14T08:38:00Z"
@@ -3124,7 +3124,7 @@
       "id": 115,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0115-0000-0000-0000-000000000000",
+      "uid": "d0f0ac72-74da-4a4d-8338-bddbaaff6d66",
       "reason": "Pulled",
       "message": "Container image already present on machine",
       "source_component": "kubelet",
@@ -3138,7 +3138,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "thanos-querier-6c8d7e9f0a-b3c4d",
-      "involved_object_uid": "pod-0103-0000-0000-0000-000000000000",
+      "involved_object_uid": "8b22a27c-b5cb-494f-880c-64ddc00d6af2",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T09:45:00Z"
@@ -3147,7 +3147,7 @@
       "id": 116,
       "cluster_id": 1,
       "namespace_id": 100,
-      "uid": "ev-0116-0000-0000-0000-000000000000",
+      "uid": "db088f03-7623-475f-8cc6-90c243b4463c",
       "reason": "Started",
       "message": "Started container thanos-query",
       "source_component": "kubelet",
@@ -3161,7 +3161,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "thanos-querier-6c8d7e9f0a-b3c4d",
-      "involved_object_uid": "pod-0103-0000-0000-0000-000000000000",
+      "involved_object_uid": "8b22a27c-b5cb-494f-880c-64ddc00d6af2",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T06:52:00Z"
@@ -3170,7 +3170,7 @@
       "id": 117,
       "cluster_id": 1,
       "namespace_id": 103,
-      "uid": "ev-0117-0000-0000-0000-000000000000",
+      "uid": "1b26f8e9-1897-4ef3-825a-02dcd38eddda",
       "reason": "Started",
       "message": "Started container coredns",
       "source_component": "kubelet",
@@ -3184,7 +3184,7 @@
       "event_type": "Normal",
       "involved_object_kind": "Pod",
       "involved_object_name": "coredns-5d8b7c6a4f-n1o2p",
-      "involved_object_uid": "pod-0108-0000-0000-0000-000000000000",
+      "involved_object_uid": "4b0607d5-844b-4b39-86f5-88b99d6d73fb",
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T07:59:00Z"
@@ -3584,7 +3584,7 @@
       "namespace_id": 1,
       "api_resource_id": 100,
       "name": "kube-root-ca.crt",
-      "uid": "res-0100-0000-0000-0000-000000000000",
+      "uid": "b1a55563-1ccb-451c-884a-1dfa1c99f54c",
       "manifest": {
         "apiVersion": "v1",
         "kind": "ConfigMap",
@@ -3605,7 +3605,7 @@
       "namespace_id": 1,
       "api_resource_id": 100,
       "name": "openshift-service-ca.crt",
-      "uid": "res-0101-0000-0000-0000-000000000000",
+      "uid": "b2269fd4-5f4c-4013-8928-851007fe42bb",
       "manifest": {
         "apiVersion": "v1",
         "kind": "ConfigMap",
@@ -3626,7 +3626,7 @@
       "namespace_id": 100,
       "api_resource_id": 4,
       "name": "prometheus-k8s",
-      "uid": "res-0102-0000-0000-0000-000000000000",
+      "uid": "a8fb355c-a565-4151-8605-0c9e0c07719f",
       "manifest": {
         "apiVersion": "v1",
         "kind": "Service",
@@ -3663,7 +3663,7 @@
       "namespace_id": 100,
       "api_resource_id": 4,
       "name": "alertmanager-main",
-      "uid": "res-0103-0000-0000-0000-000000000000",
+      "uid": "f80dce89-0967-4861-855a-998fb4cc13c0",
       "manifest": {
         "apiVersion": "v1",
         "kind": "Service",
@@ -3700,7 +3700,7 @@
       "namespace_id": 103,
       "api_resource_id": 4,
       "name": "kube-dns",
-      "uid": "res-0104-0000-0000-0000-000000000000",
+      "uid": "4b298257-a7d5-432a-8165-babe25991b38",
       "manifest": {
         "apiVersion": "v1",
         "kind": "Service",
