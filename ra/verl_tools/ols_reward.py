@@ -1,7 +1,7 @@
 """verl reward function for OLS troubleshooting.
 
 Scores the model's final diagnosis against the expected answer using an
-LLM-as-judge (gpt-4o by default).
+LLM-as-judge (gpt-5-mini by default).
 
 Signature matches verl's custom reward function interface::
 
@@ -49,7 +49,7 @@ Score: [your score on a scale of 0.0 to 1.0]
 Reason: [your detailed explanation]"""
 
     response = client.chat.completions.create(
-        model=os.environ.get("JUDGE_MODEL", "gpt-4o"),
+        model=os.environ.get("JUDGE_MODEL", "gpt-5-mini"),
         messages=[
             {"role": "system", "content": "You are an evaluation judge."},
             {"role": "user", "content": prompt},

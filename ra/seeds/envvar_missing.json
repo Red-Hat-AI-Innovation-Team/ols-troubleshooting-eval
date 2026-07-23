@@ -183,7 +183,9 @@
         "app": "order-fulfillment-daemon",
         "pod-template-hash": "7f8b9c6d5e"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -321,7 +323,9 @@
         "app.kubernetes.io/name": "prometheus",
         "prometheus": "k8s"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -439,7 +443,9 @@
         "app.kubernetes.io/name": "alertmanager",
         "alertmanager": "main"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -556,7 +562,9 @@
         "app": "grafana",
         "app.kubernetes.io/component": "grafana"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -673,7 +681,9 @@
         "app.kubernetes.io/component": "query-layer",
         "app.kubernetes.io/name": "thanos-query"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -789,7 +799,9 @@
       "labels": {
         "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -905,7 +917,9 @@
       "labels": {
         "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1021,7 +1035,9 @@
       "labels": {
         "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1137,7 +1153,9 @@
       "labels": {
         "k8s-app": "kube-dns"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1253,7 +1271,9 @@
       "labels": {
         "k8s-app": "kube-dns"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1370,7 +1390,9 @@
         "app": "openshift-kube-apiserver",
         "apiserver": "true"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1486,7 +1508,9 @@
       "labels": {
         "app": "olm-operator"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1602,7 +1626,9 @@
       "labels": {
         "app": "catalog-operator"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1718,7 +1744,9 @@
       "labels": {
         "app": "packageserver"
       },
-      "annotations": {},
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
       "phase": "Running",
       "qos_class": "Burstable",
       "restart_policy": "Always",
@@ -1821,6 +1849,3044 @@
       ],
       "host_ip": "10.0.0.1",
       "pod_ip": "10.128.5.13",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 200,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "prometheus-k8s-1",
+      "uid": "f81f2bdf-f2d4-4e44-bd52-5588e85c1ddc",
+      "labels": {
+        "app.kubernetes.io/component": "prometheus",
+        "app.kubernetes.io/name": "prometheus",
+        "prometheus": "k8s"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "prometheus",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:prom0002",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "prometheus",
+        "serviceAccount": "prometheus",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.30",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "prometheus",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.30",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 201,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "node-exporter-worker0",
+      "uid": "c42b03de-06d8-485e-a72d-6f6f7f90404f",
+      "labels": {
+        "app.kubernetes.io/name": "node-exporter",
+        "app.kubernetes.io/component": "exporter"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "node",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nodeexp01",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "node-exporter",
+        "serviceAccount": "node-exporter",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.31",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "node-exporter",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.31",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 202,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "node-exporter-worker1",
+      "uid": "7a2ede1a-9446-474a-826b-d134aca7daea",
+      "labels": {
+        "app.kubernetes.io/name": "node-exporter",
+        "app.kubernetes.io/component": "exporter"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "node",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nodeexp02",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "node-exporter",
+        "serviceAccount": "node-exporter",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.32",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "node-exporter",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.32",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 203,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "node-exporter-master0",
+      "uid": "150023ae-4c47-4d72-8b3e-fdb90a4474eb",
+      "labels": {
+        "app.kubernetes.io/name": "node-exporter",
+        "app.kubernetes.io/component": "exporter"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "node",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nodeexp03",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "node-exporter",
+        "serviceAccount": "node-exporter",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.33",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "node-exporter",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.33",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 204,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "kube-state-metrics-6f7d8e9a0b-x1y2z",
+      "uid": "0ed0bce8-6716-4da6-bce7-212971c3eee9",
+      "labels": {
+        "app.kubernetes.io/name": "kube-state-metrics"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "kube",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ksm0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "kube-state-metrics",
+        "serviceAccount": "kube-state-metrics",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.34",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "kube-state-metrics",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.34",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 205,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "cluster-monitoring-operator-7a8b9c0d1e-m3n4o",
+      "uid": "9d7739a9-4cd3-4582-9523-4a40bc6cb004",
+      "labels": {
+        "app": "cluster-monitoring-operator"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "cluster",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cmo0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "cluster-monitoring-operator",
+        "serviceAccount": "cluster-monitoring-operator",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.35",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "cluster-monitoring-operator",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.35",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 206,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "prometheus-operator-6b7c8d9e0f-p5q6r",
+      "uid": "4124ac12-ce60-4ebd-b397-4e5fb2d363a4",
+      "labels": {
+        "app.kubernetes.io/name": "prometheus-operator"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "prometheus",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:promop01",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "prometheus-operator",
+        "serviceAccount": "prometheus-operator",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.36",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "prometheus-operator",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.36",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 207,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "telemeter-client-5c6d7e8f9a-s7t8u",
+      "uid": "5d1e9594-ad7f-4d8b-8371-11f3b3da14ad",
+      "labels": {
+        "app.kubernetes.io/name": "telemeter-client"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "telemeter",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:telem001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "telemeter-client",
+        "serviceAccount": "telemeter-client",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.37",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "telemeter-client",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.37",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 208,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "prometheus-adapter-7d8e9f0a1b-v9w0x",
+      "uid": "9acbdeda-c8a9-41ba-8e05-0caddc35ff8e",
+      "labels": {
+        "app.kubernetes.io/name": "prometheus-adapter"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "prometheus",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:promadp1",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "prometheus-adapter",
+        "serviceAccount": "prometheus-adapter",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.38",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "prometheus-adapter",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.38",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 209,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "openshift-state-metrics-8e9f0a1b2c-y1z2a",
+      "uid": "6faf969c-9661-4507-9da4-b6a3055dbe6b",
+      "labels": {
+        "app.kubernetes.io/name": "openshift-state-metrics"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "openshift",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:osm0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "openshift-state-metrics",
+        "serviceAccount": "openshift-state-metrics",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.39",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "openshift-state-metrics",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.39",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 210,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "monitoring-plugin-9f0a1b2c3d-b3c4d",
+      "uid": "3ea67346-f1cc-41ed-8b40-01d8242139a8",
+      "labels": {
+        "app": "monitoring-plugin"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "monitoring",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:monplu01",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "monitoring-plugin",
+        "serviceAccount": "monitoring-plugin",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.40",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "monitoring-plugin",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.40",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 211,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "alertmanager-main-1",
+      "uid": "3459f9fc-ed55-443c-b0d7-8262bd23fdc6",
+      "labels": {
+        "app.kubernetes.io/name": "alertmanager",
+        "alertmanager": "main"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "alertmanager",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:am0002",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "alertmanager",
+        "serviceAccount": "alertmanager",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.41",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "alertmanager",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.41",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 220,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "node_id": 1,
+      "name": "router-default-7b8c9d0e1f-j8k9l",
+      "uid": "8b548f11-23bd-44d2-b6b3-0cce309e645a",
+      "labels": {
+        "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "router",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rtr0004",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "router",
+        "serviceAccount": "router",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.50",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "router",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.50",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 221,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "node_id": 1,
+      "name": "router-default-7b8c9d0e1f-m0n1o",
+      "uid": "ba8b8962-3fd3-43b9-b359-7f4e71011b9d",
+      "labels": {
+        "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "router",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rtr0005",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "router",
+        "serviceAccount": "router",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.51",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "router",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.51",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 222,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "node_id": 1,
+      "name": "ingress-canary-8c9d0e1f2g-p2q3r",
+      "uid": "b6d8d15e-e05b-49b6-a9b9-183b243d3b7c",
+      "labels": {
+        "app": "ingress-canary"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "ingress",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:canary01",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "ingress-canary",
+        "serviceAccount": "ingress-canary",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.52",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "ingress-canary",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.52",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 230,
+      "cluster_id": 1,
+      "namespace_id": 102,
+      "node_id": 1,
+      "name": "console-7d8e9f0a1b-s4t5u",
+      "uid": "20375411-32f2-44df-a63b-b621807be69d",
+      "labels": {
+        "app": "console",
+        "component": "ui"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "console",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:con0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "console",
+        "serviceAccount": "console",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.60",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "console",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.60",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 231,
+      "cluster_id": 1,
+      "namespace_id": 102,
+      "node_id": 1,
+      "name": "downloads-8e9f0a1b2c-v6w7x",
+      "uid": "ee2a4f1a-c4c4-4ad4-af4f-d14e8508e529",
+      "labels": {
+        "app": "downloads"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "downloads",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:dl0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "downloads",
+        "serviceAccount": "downloads",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.61",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "downloads",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.61",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 240,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "etcd-master-0",
+      "uid": "205fd049-049a-466a-9f75-92ad99d7fc15",
+      "labels": {
+        "app": "etcd",
+        "k8s-app": "etcd"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "etcd",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:etcd0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "etcd",
+        "serviceAccount": "etcd",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.70",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "etcd",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.70",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 241,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "kube-controller-manager-master-0",
+      "uid": "d9bd2cb6-5c5d-439e-9535-8bcb75005aa2",
+      "labels": {
+        "k8s-app": "kube-controller-manager"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "kube",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:kcm0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "kube-controller-manager",
+        "serviceAccount": "kube-controller-manager",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.71",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "kube-controller-manager",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.71",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 242,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "kube-scheduler-master-0",
+      "uid": "a6f2f32f-699a-4f96-9272-2fe512ab6cc4",
+      "labels": {
+        "k8s-app": "kube-scheduler"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "kube",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ks0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "kube-scheduler",
+        "serviceAccount": "kube-scheduler",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.72",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "kube-scheduler",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.72",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 243,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "openshift-apiserver-6a7b8c9d0e-y8z9a",
+      "uid": "b53075ee-ff73-458b-95e9-31e3c74f3aeb",
+      "labels": {
+        "app": "openshift-apiserver"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "openshift",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:oapi001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "openshift-apiserver",
+        "serviceAccount": "openshift-apiserver",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.73",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "openshift-apiserver",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.73",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 244,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "openshift-controller-manager-7b8c9d0e1f-b0c1d",
+      "uid": "ed1486dd-99a1-4465-a45e-3e63fcbc3f77",
+      "labels": {
+        "app": "openshift-controller-manager"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "openshift",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ocm0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "openshift-controller-manager",
+        "serviceAccount": "openshift-controller-manager",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.74",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "openshift-controller-manager",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.74",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 245,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "dns-default-8c9d0e1f2g-e2f3g",
+      "uid": "b7c987f9-53b6-459b-90ff-e56e56d253e5",
+      "labels": {
+        "dns.operator.openshift.io/daemonset-dns": "default"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "dns",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:dns0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "dns",
+        "serviceAccount": "dns",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.75",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "dns",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.75",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 246,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "node-resolver-h4i5j",
+      "uid": "fff3e719-858f-4a65-b663-b582337a1c5f",
+      "labels": {
+        "dns.operator.openshift.io/daemonset-node-resolver": "default"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "node",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nr0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "node-resolver",
+        "serviceAccount": "node-resolver",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.76",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "node-resolver",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.76",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 250,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "certified-operators-catalog-7c8d9e0f1g-k6l7m",
+      "uid": "7a5d43c3-17eb-4c68-92be-94df97e90c0c",
+      "labels": {
+        "olm.catalogSource": "certified-operators"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "certified",
+            "image": "registry.redhat.io/redhat/certified-operator-index:v4.14",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "certified-operators",
+        "serviceAccount": "certified-operators",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.80",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "certified-operators",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.80",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 251,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "community-operators-catalog-8d9e0f1g2h-n8o9p",
+      "uid": "8affdacb-73dd-4c51-b028-48d7b8b36ff1",
+      "labels": {
+        "olm.catalogSource": "community-operators"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "community",
+            "image": "registry.redhat.io/redhat/community-operator-index:v4.14",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "community-operators",
+        "serviceAccount": "community-operators",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.81",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "community-operators",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.81",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 252,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "redhat-marketplace-catalog-9e0f1g2h3i-q0r1s",
+      "uid": "1ad7f936-50d9-4836-b797-caa1665faa61",
+      "labels": {
+        "olm.catalogSource": "redhat-marketplace"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "redhat",
+            "image": "registry.redhat.io/redhat/redhat-marketplace-index:v4.14",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "redhat-marketplace",
+        "serviceAccount": "redhat-marketplace",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.82",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "redhat-marketplace",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.82",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 253,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "redhat-operators-catalog-0f1g2h3i4j-t2u3v",
+      "uid": "27deb15c-0959-4e80-91c4-f0366f596e42",
+      "labels": {
+        "olm.catalogSource": "redhat-operators"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "redhat",
+            "image": "registry.redhat.io/redhat/redhat-operator-index:v4.14",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "redhat-operators",
+        "serviceAccount": "redhat-operators",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.83",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "redhat-operators",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.83",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 254,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "collect-profiles-28445600-w4x5y",
+      "uid": "8e2e2a62-99b2-44e7-91ab-5750d120be3f",
+      "labels": {
+        "app": "collect-profiles"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "collect",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cp0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "collect-profiles",
+        "serviceAccount": "collect-profiles",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.84",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "collect-profiles",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.84",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 255,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "machine-api-operator-6e7f8a9b0c-z6a7b",
+      "uid": "7775c549-8e63-4b24-86c2-a0b6207c1724",
+      "labels": {
+        "app": "machine-api-operator",
+        "k8s-app": "machine-api-operator"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "machine",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:mao001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "machine-api-operator",
+        "serviceAccount": "machine-api-operator",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.85",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "machine-api-operator",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.85",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 256,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "cluster-autoscaler-operator-7f8a9b0c1d-c8d9e",
+      "uid": "07a066c3-c262-451f-b3b7-f7075ef40b8e",
+      "labels": {
+        "app": "cluster-autoscaler-operator"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "cluster",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cao001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "cluster-autoscaler-operator",
+        "serviceAccount": "cluster-autoscaler-operator",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.86",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "cluster-autoscaler-operator",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.86",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 257,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "machine-config-operator-8a9b0c1d2e-f0g1h",
+      "uid": "4a130f9e-2679-41aa-91c0-787c7c9f2fd2",
+      "labels": {
+        "app": "machine-config-operator"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "machine",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:mco001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "machine-config-operator",
+        "serviceAccount": "machine-config-operator",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.0.87",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "machine-config-operator",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.0.87",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 10,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "node_id": 1,
+      "name": "web-frontend-5a6b7c8d9e-r2s3t",
+      "uid": "338c210c-58b4-4516-82f6-745c4cca745a",
+      "labels": {
+        "app": "web-frontend",
+        "tier": "frontend"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "web",
+            "image": "nginx:1.25-alpine",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.2.20",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "default",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.2.20",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 11,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "node_id": 1,
+      "name": "redis-cache-6b7c8d9e0f-u4v5w",
+      "uid": "32785728-f7d9-4761-ae92-793b1fb58511",
+      "labels": {
+        "app": "redis-cache",
+        "tier": "cache"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "redis",
+            "image": "redis:7.2-alpine",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.2.21",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "default",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.2.21",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 12,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "node_id": 1,
+      "name": "postgres-primary-0",
+      "uid": "cba94d2e-0419-4ffe-9f9f-2c17b012b9dd",
+      "labels": {
+        "app": "postgres",
+        "role": "primary",
+        "tier": "database"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "postgres",
+            "image": "postgres:15.4-alpine",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.2.22",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "default",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.2.22",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 13,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "node_id": 1,
+      "name": "worker-queue-7c8d9e0f1g-x6y7z",
+      "uid": "26cb933c-6609-4f52-b77a-774f12eb9433",
+      "labels": {
+        "app": "worker-queue",
+        "tier": "messaging"
+      },
+      "annotations": {
+        "openshift.io/scc": "restricted-v2"
+      },
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "worker",
+            "image": "rabbitmq:3.12-management",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "default",
+        "serviceAccount": "default",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "podIP": "10.129.2.23",
+        "hostIP": "192.168.126.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "qosClass": "Burstable",
+        "conditions": [
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastProbeTime": null,
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          }
+        ]
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "default",
+      "conditions": [],
+      "host_ip": "192.168.126.11",
+      "pod_ip": "10.129.2.23",
       "scheduler_name": "default-scheduler",
       "start_time": "2026-01-10T06:00:00Z"
     }
@@ -2052,6 +5118,618 @@
       "pod_id": 112,
       "name": "packageserver",
       "image": "quay.io/operator-framework/olm@sha256:pkg00001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 200,
+      "pod_id": 200,
+      "name": "prometheus",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:prom0002",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 201,
+      "pod_id": 201,
+      "name": "node",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nodeexp01",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 202,
+      "pod_id": 202,
+      "name": "node",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nodeexp02",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 203,
+      "pod_id": 203,
+      "name": "node",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nodeexp03",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 204,
+      "pod_id": 204,
+      "name": "kube",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ksm0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 205,
+      "pod_id": 205,
+      "name": "cluster",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cmo0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 206,
+      "pod_id": 206,
+      "name": "prometheus",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:promop01",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 207,
+      "pod_id": 207,
+      "name": "telemeter",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:telem001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 208,
+      "pod_id": 208,
+      "name": "prometheus",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:promadp1",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 209,
+      "pod_id": 209,
+      "name": "openshift",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:osm0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 210,
+      "pod_id": 210,
+      "name": "monitoring",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:monplu01",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 211,
+      "pod_id": 211,
+      "name": "alertmanager",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:am0002",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 220,
+      "pod_id": 220,
+      "name": "router",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rtr0004",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 221,
+      "pod_id": 221,
+      "name": "router",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rtr0005",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 222,
+      "pod_id": 222,
+      "name": "ingress",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:canary01",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 230,
+      "pod_id": 230,
+      "name": "console",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:con0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 231,
+      "pod_id": 231,
+      "name": "downloads",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:dl0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 240,
+      "pod_id": 240,
+      "name": "etcd",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:etcd0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 241,
+      "pod_id": 241,
+      "name": "kube",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:kcm0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 242,
+      "pod_id": 242,
+      "name": "kube",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ks0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 243,
+      "pod_id": 243,
+      "name": "openshift",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:oapi001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 244,
+      "pod_id": 244,
+      "name": "openshift",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:ocm0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 245,
+      "pod_id": 245,
+      "name": "dns",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:dns0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 246,
+      "pod_id": 246,
+      "name": "node",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:nr0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 250,
+      "pod_id": 250,
+      "name": "certified",
+      "image": "registry.redhat.io/redhat/certified-operator-index:v4.14",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 251,
+      "pod_id": 251,
+      "name": "community",
+      "image": "registry.redhat.io/redhat/community-operator-index:v4.14",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 252,
+      "pod_id": 252,
+      "name": "redhat",
+      "image": "registry.redhat.io/redhat/redhat-marketplace-index:v4.14",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 253,
+      "pod_id": 253,
+      "name": "redhat",
+      "image": "registry.redhat.io/redhat/redhat-operator-index:v4.14",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 254,
+      "pod_id": 254,
+      "name": "collect",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cp0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 255,
+      "pod_id": 255,
+      "name": "machine",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:mao001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 256,
+      "pod_id": 256,
+      "name": "cluster",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:cao001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 257,
+      "pod_id": 257,
+      "name": "machine",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:mco001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 10,
+      "pod_id": 10,
+      "name": "web",
+      "image": "nginx:1.25-alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 11,
+      "pod_id": 11,
+      "name": "redis",
+      "image": "redis:7.2-alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 12,
+      "pod_id": 12,
+      "name": "postgres",
+      "image": "postgres:15.4-alpine",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 13,
+      "pod_id": 13,
+      "name": "worker",
+      "image": "rabbitmq:3.12-management",
       "state": "running",
       "ready": true,
       "restart_count": 0,
@@ -2828,6 +6506,1616 @@
       "involved_object_api_version": "v1",
       "reporting_component": "kubelet",
       "series_last_observed": "2026-01-14T07:59:00Z"
+    },
+    {
+      "id": 500,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "d2f839fe-1911-46ba-9250-312e894b47a5",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-monitoring/prometheus-k8s-0 to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_uid": "7b8d1116-1fd3-4c4f-ae4f-14ea0a5378fe",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 501,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "850a9a27-cdad-49f8-8db1-033c2376cf47",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_uid": "ce2371ef-e1f4-45b2-82b5-eb8278209ab0",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 502,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "b6c6e49b-73d4-43d8-9fc6-9f46804f948c",
+      "reason": "Created",
+      "message": "Created container prometheus",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_uid": "6243b4ea-1a6a-4a08-9ec2-666498d7ccd6",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 503,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "cfdc5fac-f0c9-4150-8178-5de122b42d5d",
+      "reason": "Started",
+      "message": "Started container prometheus",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_uid": "d007be2e-8a80-4f3e-826a-2201b23e7e7b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 504,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "e1c6f6cb-1d4d-4a70-b538-621ee4d82f41",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-monitoring/prometheus-k8s-1 to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-1",
+      "involved_object_uid": "75e2f7d3-153f-4831-99ad-b9cb0c19fc45",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 505,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "e7b80e6d-9364-4e42-a86e-1a8937165ae8",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-1",
+      "involved_object_uid": "72223080-814a-4a65-957b-5859f378689b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 506,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "835ee41e-1eaf-444a-961b-3500a688511b",
+      "reason": "Created",
+      "message": "Created container prometheus",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-1",
+      "involved_object_uid": "4b8114d8-3b16-4122-8d25-41853cd64463",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 507,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "abd48003-8db0-4c8e-9a1b-1fa94b012652",
+      "reason": "Started",
+      "message": "Started container prometheus",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-1",
+      "involved_object_uid": "860aee8c-5e5a-4ea9-b6d4-00394daebc5f",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 508,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "17cdf51e-bf2a-48e3-8d61-f8e04043f881",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-monitoring/node-exporter-worker0 to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "node-exporter-worker0",
+      "involved_object_uid": "65eceabd-7046-439c-832e-024bfa922f9d",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 509,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ff6e80ce-d9d6-4ac1-b57e-2b7648e2a2ae",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "node-exporter-worker0",
+      "involved_object_uid": "f09c6468-382d-4d0c-b702-58589457b73b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 510,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ff88a874-b62e-40d9-9cf0-5fd5809617c6",
+      "reason": "Created",
+      "message": "Created container node",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "node-exporter-worker0",
+      "involved_object_uid": "a2d5a8b3-e19a-4e27-b25f-f6a09b106c7f",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 511,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "f7d8dcd1-2192-448a-b907-5a2b84324538",
+      "reason": "Started",
+      "message": "Started container node",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "node-exporter-worker0",
+      "involved_object_uid": "454bfe71-1f51-42fd-b2b7-4adfb1c6ab7f",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 512,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "145f20e0-087b-4c1e-9fb5-14737ea6ed95",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-monitoring/kube-state-metrics-6f7d8e9a0b-x1y2z to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-state-metrics-6f7d8e9a0b-x1y2z",
+      "involved_object_uid": "e4020073-dffc-4ca0-a92b-902efef82fcd",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 513,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "83804b69-d544-48d5-9115-4109da7b47b2",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-state-metrics-6f7d8e9a0b-x1y2z",
+      "involved_object_uid": "da8a1cf8-c1f5-405e-9fbf-350745eda90f",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 514,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "b698a62e-cb54-4066-b1d8-551fa313fe80",
+      "reason": "Created",
+      "message": "Created container kube",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-state-metrics-6f7d8e9a0b-x1y2z",
+      "involved_object_uid": "9e3c0a9b-0f66-4b19-91ac-5dbfe60255ee",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 515,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "7287b106-60eb-4e2b-8db3-d94adb191b1b",
+      "reason": "Started",
+      "message": "Started container kube",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-state-metrics-6f7d8e9a0b-x1y2z",
+      "involved_object_uid": "49dab592-e06f-4a60-8a0f-bea83fab5ceb",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 516,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "8da5f3c8-a257-4950-927d-3c578c3e85b4",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-monitoring/cluster-monitoring-operator-7a8b9c0d1e-m3n4o to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "cluster-monitoring-operator-7a8b9c0d1e-m3n4o",
+      "involved_object_uid": "2ad3a627-1037-4dbd-98f0-5774311acd49",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 517,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "527aa893-d585-4a5a-ac38-b4435209fb2f",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "cluster-monitoring-operator-7a8b9c0d1e-m3n4o",
+      "involved_object_uid": "ca4f8604-5c8a-4e19-9ebd-dd60f79920ab",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 518,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "f5aea561-50d1-4a00-8d89-79b1942a15bd",
+      "reason": "Created",
+      "message": "Created container cluster",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "cluster-monitoring-operator-7a8b9c0d1e-m3n4o",
+      "involved_object_uid": "ce6f3535-10b4-4697-a7bc-4346165de806",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 519,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "4948750b-3b74-406b-ad31-2a62d3cdd026",
+      "reason": "Started",
+      "message": "Started container cluster",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "cluster-monitoring-operator-7a8b9c0d1e-m3n4o",
+      "involved_object_uid": "70420972-b784-48aa-bc33-fe4c99cbc272",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 520,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "0b749fca-8bcf-4776-bc8a-d76b1a2354f2",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-ingress/router-default-7b8c9d0e1f-a2b3c to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
+      "involved_object_uid": "f869aa22-710a-4222-99d2-50c426adfb25",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 521,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "58ee66d4-88ee-4aa2-a826-33984cb75816",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
+      "involved_object_uid": "87cfb642-fbe8-4d46-ac8e-126d2fff2561",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 522,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "b7da9fa8-930a-4960-867f-10bf68e007df",
+      "reason": "Created",
+      "message": "Created container router",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
+      "involved_object_uid": "fdb9c05e-31c4-44b4-b316-21cc5cc219fc",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 523,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "927ef2cf-9594-4bf5-967a-99a37d5a7ddd",
+      "reason": "Started",
+      "message": "Started container router",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
+      "involved_object_uid": "d063e8e7-afa2-4129-9431-c9621aaab344",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 524,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "22cc3ee3-f78a-4ec1-bd40-07df8e677355",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-ingress/router-default-7b8c9d0e1f-j8k9l to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-j8k9l",
+      "involved_object_uid": "5e90a6bc-c478-4208-8d94-3184d8043918",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 525,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "f01d7305-724e-4c16-bce3-25e620629a85",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-j8k9l",
+      "involved_object_uid": "48229cbf-9136-4db4-baa3-27dbf9b0b32c",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 526,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "5864265b-af14-48d2-9c26-b45cb0d411bc",
+      "reason": "Created",
+      "message": "Created container router",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-j8k9l",
+      "involved_object_uid": "abcd8aa0-5bd9-452d-bb0a-30f4a5df2a8b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 527,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "7d3d8719-6466-4264-8fb7-08c7e333a7f8",
+      "reason": "Started",
+      "message": "Started container router",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-j8k9l",
+      "involved_object_uid": "2c12a7f3-34c8-47ef-ba92-7219c84893e8",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 528,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "84bc69e2-6bbf-4338-be8d-141ee542d684",
+      "reason": "Scheduled",
+      "message": "Successfully assigned kube-system/coredns-5d8b7c6a4f-k9l0m to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
+      "involved_object_uid": "8412b609-158e-496b-9eac-bc23b4f23ff0",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 529,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "0d1b6d5f-b8d8-478b-8306-341112c3a120",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
+      "involved_object_uid": "c9cb3770-b81f-431b-8e24-e315c271655d",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 530,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "28ad59fa-fb6a-4d25-a008-5fedcbe83b32",
+      "reason": "Created",
+      "message": "Created container coredns",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
+      "involved_object_uid": "c2dc8bdf-3465-4005-a18b-0aed899345df",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 531,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "52d619b5-ae13-4dd7-9901-05e8197201f8",
+      "reason": "Started",
+      "message": "Started container coredns",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
+      "involved_object_uid": "6fe27d38-25fa-4bec-ba7d-c28060333a44",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 532,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "9a7107b5-1761-4058-968b-aa836bbda015",
+      "reason": "Scheduled",
+      "message": "Successfully assigned kube-system/etcd-master-0 to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "etcd-master-0",
+      "involved_object_uid": "6bdc697c-1c00-4b2b-9c5b-11c10fec6b38",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 533,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "f585c8ba-09ec-497f-9659-25e7bb4ea290",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "etcd-master-0",
+      "involved_object_uid": "49fbf997-ee20-431b-b0bc-89b9f86ca50b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 534,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "5d050b45-a91f-478e-8406-d8b519a70690",
+      "reason": "Created",
+      "message": "Created container etcd",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "etcd-master-0",
+      "involved_object_uid": "113869ac-b62a-41f3-b22f-68c118e8416f",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 535,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "8c7ad592-f3fc-40d5-b0fc-d57339dae7c3",
+      "reason": "Started",
+      "message": "Started container etcd",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "etcd-master-0",
+      "involved_object_uid": "08072981-aecf-4964-8be2-4a34f1c7c1aa",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 536,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "ca85e44b-cb3b-4c7e-bc86-fc74d04591ce",
+      "reason": "Scheduled",
+      "message": "Successfully assigned kube-system/kube-controller-manager-master-0 to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-controller-manager-master-0",
+      "involved_object_uid": "e21f77b0-fe94-4776-ac9f-f085a4722a51",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 537,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "81347231-5bbc-433e-8f35-c1da07e7c7f4",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-controller-manager-master-0",
+      "involved_object_uid": "52fe7374-3725-4ab6-b88e-9e7afc093089",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 538,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "b8fd3d19-0a37-4df6-b0c4-89b15423c986",
+      "reason": "Created",
+      "message": "Created container kube",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-controller-manager-master-0",
+      "involved_object_uid": "69397e2e-704b-471f-b2d9-31e5233a5ce8",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 539,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "ddb0372f-5313-4422-be3a-81e30d843b64",
+      "reason": "Started",
+      "message": "Started container kube",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-controller-manager-master-0",
+      "involved_object_uid": "23eedb69-34c7-485d-a884-d551f28e8051",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 540,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "bbae28b2-ae29-414c-92f5-afee4a88f557",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-operators/olm-operator-7a8b9c0d1e-f2g3h to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
+      "involved_object_uid": "93b6bd1a-29e7-4152-a013-5b1b74591c13",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 541,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "2129467d-7e3f-46e6-b84e-8ea6bbbbc6d7",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
+      "involved_object_uid": "09562b1b-99ce-42ed-9fe0-770dba76c3cf",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 542,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "45b99ef1-327a-4502-8f64-3adb1b7ab25b",
+      "reason": "Created",
+      "message": "Created container olm",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
+      "involved_object_uid": "85bd1923-46e0-4f66-a901-789a265dc3a1",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 543,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "0e84622d-2295-4ae7-bc4d-0370f7a31c28",
+      "reason": "Started",
+      "message": "Started container olm",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
+      "involved_object_uid": "587a6739-9799-464d-8085-47ff9ff84054",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 544,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "1e444283-7420-433e-8cf8-7a2329d1b72d",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-operators/certified-operators-catalog-7c8d9e0f1g-k6l7m to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:00Z",
+      "first_timestamp": "2026-01-10T06:00:00Z",
+      "last_timestamp": "2026-01-10T06:00:00Z",
+      "resolved_timestamp": "2026-01-10T06:00:00Z",
+      "created_at": "2026-01-10T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "certified-operators-catalog-7c8d9e0f1g-k6l7m",
+      "involved_object_uid": "b48aa38d-4220-45f9-b8b0-ee239d6c79f6",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 545,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "4bec90c2-bf8d-4d94-8f47-3bf75215a748",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:05Z",
+      "first_timestamp": "2026-01-10T06:00:05Z",
+      "last_timestamp": "2026-01-10T06:00:05Z",
+      "resolved_timestamp": "2026-01-10T06:00:05Z",
+      "created_at": "2026-01-10T06:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "certified-operators-catalog-7c8d9e0f1g-k6l7m",
+      "involved_object_uid": "48dc14a1-c59d-4124-873a-363246c9b5db",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:05Z"
+    },
+    {
+      "id": 546,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "574ffa57-77eb-4db2-8d85-f35ce0feac16",
+      "reason": "Created",
+      "message": "Created container certified",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:06Z",
+      "first_timestamp": "2026-01-10T06:00:06Z",
+      "last_timestamp": "2026-01-10T06:00:06Z",
+      "resolved_timestamp": "2026-01-10T06:00:06Z",
+      "created_at": "2026-01-10T06:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "certified-operators-catalog-7c8d9e0f1g-k6l7m",
+      "involved_object_uid": "ab6a633f-1abd-4b7a-9095-17ded45d5441",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:06Z"
+    },
+    {
+      "id": 547,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "01147599-218e-4165-8674-88ba4b66cd1a",
+      "reason": "Started",
+      "message": "Started container certified",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-10T06:00:07Z",
+      "first_timestamp": "2026-01-10T06:00:07Z",
+      "last_timestamp": "2026-01-10T06:00:07Z",
+      "resolved_timestamp": "2026-01-10T06:00:07Z",
+      "created_at": "2026-01-10T06:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "certified-operators-catalog-7c8d9e0f1g-k6l7m",
+      "involved_object_uid": "e97bf5bd-5eee-4738-8a85-852d671011f1",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-10T06:00:07Z"
+    },
+    {
+      "id": 548,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "42ee5d18-3153-4f69-9094-04882f9ea5d6",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: Get \"http://10.129.0.31:9100/healthz\": dial tcp 10.129.0.31:9100: connect: connection refused",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-12T03:15:00Z",
+      "first_timestamp": "2026-01-12T03:15:00Z",
+      "last_timestamp": "2026-01-12T03:15:00Z",
+      "resolved_timestamp": "2026-01-12T03:15:00Z",
+      "created_at": "2026-01-12T03:15:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "node-exporter-worker0",
+      "involved_object_uid": "d12ec328-7bbb-4dbe-8f25-c1d55c03beb9",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-12T03:15:00Z"
+    },
+    {
+      "id": 549,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "ea855b9a-aa08-40fb-8306-1f4221bc5ccb",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: Get \"http://10.129.0.50:1936/healthz/ready\": context deadline exceeded",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-11T14:22:00Z",
+      "first_timestamp": "2026-01-11T14:22:00Z",
+      "last_timestamp": "2026-01-11T14:22:00Z",
+      "resolved_timestamp": "2026-01-11T14:22:00Z",
+      "created_at": "2026-01-11T14:22:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-j8k9l",
+      "involved_object_uid": "251a6882-ce52-418b-80ba-8cf1b7127734",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-11T14:22:00Z"
+    },
+    {
+      "id": 550,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "de6c26ba-2649-4e50-8760-fd0d9757f546",
+      "reason": "Unhealthy",
+      "message": "Liveness probe failed: Get \"http://10.129.0.75:8080/health\": dial tcp 10.129.0.75:8080: connect: connection refused",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-13T08:45:00Z",
+      "first_timestamp": "2026-01-13T08:45:00Z",
+      "last_timestamp": "2026-01-13T08:45:00Z",
+      "resolved_timestamp": "2026-01-13T08:45:00Z",
+      "created_at": "2026-01-13T08:45:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
+      "involved_object_uid": "ae8b6142-bd72-46ae-9a07-c307f319a4d1",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-13T08:45:00Z"
+    },
+    {
+      "id": 551,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "4bb81867-5a05-4e55-b488-fb884da10f8c",
+      "reason": "FailedMount",
+      "message": "MountVolume.SetUp failed for volume \"tmpdir\" : mkdir /tmp/certified-operators: file exists",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-12T11:30:00Z",
+      "first_timestamp": "2026-01-12T11:30:00Z",
+      "last_timestamp": "2026-01-12T11:30:00Z",
+      "resolved_timestamp": "2026-01-12T11:30:00Z",
+      "created_at": "2026-01-12T11:30:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "certified-operators-catalog-7c8d9e0f1g-k6l7m",
+      "involved_object_uid": "a0b24d2d-b214-46cb-9f52-1322ad8ef34f",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-12T11:30:00Z"
+    },
+    {
+      "id": 700,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "576e664c-f0ba-449d-bd0c-d6b2c1a8139b",
+      "reason": "Scheduled",
+      "message": "Successfully assigned warehouse-ops/web-frontend-5a6b7c8d9e-r2s3t to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:00Z",
+      "first_timestamp": "2026-01-15T09:00:00Z",
+      "last_timestamp": "2026-01-15T09:00:00Z",
+      "resolved_timestamp": "2026-01-15T09:00:00Z",
+      "created_at": "2026-01-15T09:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "web-frontend-5a6b7c8d9e-r2s3t",
+      "involved_object_uid": "80789369-bcf2-48c7-85f8-5ea338280e7a",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:00Z"
+    },
+    {
+      "id": 701,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "41ffc8f6-539b-4bfe-b1a7-533e2f3cfe04",
+      "reason": "Pulled",
+      "message": "Container image \"nginx:1.25-alpine\" already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:05Z",
+      "first_timestamp": "2026-01-15T09:00:05Z",
+      "last_timestamp": "2026-01-15T09:00:05Z",
+      "resolved_timestamp": "2026-01-15T09:00:05Z",
+      "created_at": "2026-01-15T09:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "web-frontend-5a6b7c8d9e-r2s3t",
+      "involved_object_uid": "df40f2be-cb27-4e2e-baa7-0bab71d2d96b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:05Z"
+    },
+    {
+      "id": 702,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "d9eae226-9190-4d61-92b3-1a2c6e1b9111",
+      "reason": "Created",
+      "message": "Created container web",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:06Z",
+      "first_timestamp": "2026-01-15T09:00:06Z",
+      "last_timestamp": "2026-01-15T09:00:06Z",
+      "resolved_timestamp": "2026-01-15T09:00:06Z",
+      "created_at": "2026-01-15T09:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "web-frontend-5a6b7c8d9e-r2s3t",
+      "involved_object_uid": "9ca27ddf-8d5f-4e01-b11c-7af30d5aa5d5",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:06Z"
+    },
+    {
+      "id": 703,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "be521f97-fcef-45b2-bb98-f34a36271f25",
+      "reason": "Started",
+      "message": "Started container web",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:07Z",
+      "first_timestamp": "2026-01-15T09:00:07Z",
+      "last_timestamp": "2026-01-15T09:00:07Z",
+      "resolved_timestamp": "2026-01-15T09:00:07Z",
+      "created_at": "2026-01-15T09:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "web-frontend-5a6b7c8d9e-r2s3t",
+      "involved_object_uid": "526ccafe-eeec-43a6-8d68-b706adf6a65b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:07Z"
+    },
+    {
+      "id": 704,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "37cfa386-8378-486e-8833-833d5d3b51da",
+      "reason": "Scheduled",
+      "message": "Successfully assigned warehouse-ops/redis-cache-6b7c8d9e0f-u4v5w to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:00Z",
+      "first_timestamp": "2026-01-15T09:00:00Z",
+      "last_timestamp": "2026-01-15T09:00:00Z",
+      "resolved_timestamp": "2026-01-15T09:00:00Z",
+      "created_at": "2026-01-15T09:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "redis-cache-6b7c8d9e0f-u4v5w",
+      "involved_object_uid": "596dd9c9-49bd-4b70-b70c-cd5a9177d247",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:00Z"
+    },
+    {
+      "id": 705,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "6447b86c-2e9b-48c6-b9b0-9b2599a4a32a",
+      "reason": "Pulled",
+      "message": "Container image \"redis:7.2-alpine\" already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:05Z",
+      "first_timestamp": "2026-01-15T09:00:05Z",
+      "last_timestamp": "2026-01-15T09:00:05Z",
+      "resolved_timestamp": "2026-01-15T09:00:05Z",
+      "created_at": "2026-01-15T09:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "redis-cache-6b7c8d9e0f-u4v5w",
+      "involved_object_uid": "0d6a8686-1111-4779-8bbb-645bd31f3ea3",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:05Z"
+    },
+    {
+      "id": 706,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "0bbef53e-f3e0-44a1-a71f-e50e053e26c5",
+      "reason": "Created",
+      "message": "Created container redis",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:06Z",
+      "first_timestamp": "2026-01-15T09:00:06Z",
+      "last_timestamp": "2026-01-15T09:00:06Z",
+      "resolved_timestamp": "2026-01-15T09:00:06Z",
+      "created_at": "2026-01-15T09:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "redis-cache-6b7c8d9e0f-u4v5w",
+      "involved_object_uid": "17d57251-34ca-4b48-a807-bed49fbec619",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:06Z"
+    },
+    {
+      "id": 707,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "f1a283b9-a9c2-46be-a62e-1675051879c0",
+      "reason": "Started",
+      "message": "Started container redis",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:07Z",
+      "first_timestamp": "2026-01-15T09:00:07Z",
+      "last_timestamp": "2026-01-15T09:00:07Z",
+      "resolved_timestamp": "2026-01-15T09:00:07Z",
+      "created_at": "2026-01-15T09:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "redis-cache-6b7c8d9e0f-u4v5w",
+      "involved_object_uid": "7855690a-58bb-4465-8d71-18095043781e",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:07Z"
+    },
+    {
+      "id": 708,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "aa8dffc4-ee52-4bb9-936d-7b6bddb5d70d",
+      "reason": "Scheduled",
+      "message": "Successfully assigned warehouse-ops/postgres-primary-0 to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:00Z",
+      "first_timestamp": "2026-01-15T09:00:00Z",
+      "last_timestamp": "2026-01-15T09:00:00Z",
+      "resolved_timestamp": "2026-01-15T09:00:00Z",
+      "created_at": "2026-01-15T09:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "postgres-primary-0",
+      "involved_object_uid": "3a25c7b0-6db0-49eb-a8e0-42d54ab1d614",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:00Z"
+    },
+    {
+      "id": 709,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "f8dda28b-f066-4354-87e1-68c1e8d9e603",
+      "reason": "Pulled",
+      "message": "Container image \"postgres:15.4-alpine\" already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:05Z",
+      "first_timestamp": "2026-01-15T09:00:05Z",
+      "last_timestamp": "2026-01-15T09:00:05Z",
+      "resolved_timestamp": "2026-01-15T09:00:05Z",
+      "created_at": "2026-01-15T09:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "postgres-primary-0",
+      "involved_object_uid": "e29a9432-cdca-4ea1-acc2-3ee900c5f00c",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:05Z"
+    },
+    {
+      "id": 710,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e9535118-b1dc-4916-a2cc-08f74ee22822",
+      "reason": "Created",
+      "message": "Created container postgres",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:06Z",
+      "first_timestamp": "2026-01-15T09:00:06Z",
+      "last_timestamp": "2026-01-15T09:00:06Z",
+      "resolved_timestamp": "2026-01-15T09:00:06Z",
+      "created_at": "2026-01-15T09:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "postgres-primary-0",
+      "involved_object_uid": "3cdaff86-fdd6-434d-a732-6890b3625de9",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:06Z"
+    },
+    {
+      "id": 711,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "32fbd0c9-ed13-40ae-852a-39df98772980",
+      "reason": "Started",
+      "message": "Started container postgres",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:07Z",
+      "first_timestamp": "2026-01-15T09:00:07Z",
+      "last_timestamp": "2026-01-15T09:00:07Z",
+      "resolved_timestamp": "2026-01-15T09:00:07Z",
+      "created_at": "2026-01-15T09:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "postgres-primary-0",
+      "involved_object_uid": "efb2cba1-a46a-4ab3-9d6b-eac311a1be2c",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:07Z"
+    },
+    {
+      "id": 712,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "98112189-a83a-463d-9c45-2b3434581db8",
+      "reason": "Scheduled",
+      "message": "Successfully assigned warehouse-ops/worker-queue-7c8d9e0f1g-x6y7z to worker-0.eval-cluster.example.com",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:00Z",
+      "first_timestamp": "2026-01-15T09:00:00Z",
+      "last_timestamp": "2026-01-15T09:00:00Z",
+      "resolved_timestamp": "2026-01-15T09:00:00Z",
+      "created_at": "2026-01-15T09:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "worker-queue-7c8d9e0f1g-x6y7z",
+      "involved_object_uid": "0efa7258-b277-4e49-99ec-dad48a54ddcb",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:00Z"
+    },
+    {
+      "id": 713,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "41a24b0c-6a6b-456e-8d8a-35e3003c6620",
+      "reason": "Pulled",
+      "message": "Container image \"rabbitmq:3.12-management\" already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:05Z",
+      "first_timestamp": "2026-01-15T09:00:05Z",
+      "last_timestamp": "2026-01-15T09:00:05Z",
+      "resolved_timestamp": "2026-01-15T09:00:05Z",
+      "created_at": "2026-01-15T09:00:05Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "worker-queue-7c8d9e0f1g-x6y7z",
+      "involved_object_uid": "4ab90237-c1c6-48eb-b41d-5a95cbb10290",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:05Z"
+    },
+    {
+      "id": 714,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "ced7eb12-ead4-43a2-a460-3b08354ce011",
+      "reason": "Created",
+      "message": "Created container worker",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:06Z",
+      "first_timestamp": "2026-01-15T09:00:06Z",
+      "last_timestamp": "2026-01-15T09:00:06Z",
+      "resolved_timestamp": "2026-01-15T09:00:06Z",
+      "created_at": "2026-01-15T09:00:06Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "worker-queue-7c8d9e0f1g-x6y7z",
+      "involved_object_uid": "b478e64a-5f8c-4de7-9251-e6d5cd73f62b",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:06Z"
+    },
+    {
+      "id": 715,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "e10c2dc7-6068-4559-be75-a1d86d53afe9",
+      "reason": "Started",
+      "message": "Started container worker",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:00:07Z",
+      "first_timestamp": "2026-01-15T09:00:07Z",
+      "last_timestamp": "2026-01-15T09:00:07Z",
+      "resolved_timestamp": "2026-01-15T09:00:07Z",
+      "created_at": "2026-01-15T09:00:07Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "worker-queue-7c8d9e0f1g-x6y7z",
+      "involved_object_uid": "b7698b6d-c237-4b36-9a65-3f2499e6fb77",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:00:07Z"
+    },
+    {
+      "id": 716,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "139213a6-4785-42ab-8f6b-762edf317739",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: Get \"http://10.129.2.21:8080/healthz\": dial tcp 10.129.2.21:8080: connect: connection refused",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:02:00Z",
+      "first_timestamp": "2026-01-15T09:02:00Z",
+      "last_timestamp": "2026-01-15T09:02:00Z",
+      "resolved_timestamp": "2026-01-15T09:02:00Z",
+      "created_at": "2026-01-15T09:02:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "redis-cache-6b7c8d9e0f-u4v5w",
+      "involved_object_uid": "9cbce408-4afd-4ce3-8e57-6dbf579e2988",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:02:00Z"
+    },
+    {
+      "id": 717,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "uid": "7ac399d2-5d83-4f80-93ac-53a98ee0334d",
+      "reason": "Started",
+      "message": "Started container redis (recovered)",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-15T09:02:30Z",
+      "first_timestamp": "2026-01-15T09:02:30Z",
+      "last_timestamp": "2026-01-15T09:02:30Z",
+      "resolved_timestamp": "2026-01-15T09:02:30Z",
+      "created_at": "2026-01-15T09:02:30Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "redis-cache-6b7c8d9e0f-u4v5w",
+      "involved_object_uid": "a58afea2-7399-4fa4-a380-17fc251208e7",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-15T09:02:30Z"
     }
   ],
   "resources": [

@@ -35,8 +35,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--judge-model",
-        default="gpt-4o-mini",
-        help="Judge LLM model (default: gpt-4o-mini)",
+        default="gpt-5-mini",
+        help="Judge LLM model (default: gpt-5-mini)",
     )
     parser.add_argument(
         "--concurrency",

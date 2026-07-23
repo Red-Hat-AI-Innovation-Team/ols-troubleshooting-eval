@@ -25,7 +25,7 @@ def rollout(
     troubleshooter_client: LLMClient,
     troubleshooter_model: str,
     judge_client: LLMClient,
-    judge_model: str = "gpt-4o-mini",
+    judge_model: str = "gpt-5-mini",
     db_name: str | None = None,
 ) -> RolloutResult:
     """Single rollout for RL. Wraps run_scenario and returns simplified result."""
@@ -56,7 +56,7 @@ def batch_rollout(
     troubleshooter_client: LLMClient,
     troubleshooter_model: str,
     judge_client: LLMClient,
-    judge_model: str = "gpt-4o-mini",
+    judge_model: str = "gpt-5-mini",
     concurrency: int = 5,
 ) -> list[RolloutResult]:
     """Batch rollouts for RL batch collection."""

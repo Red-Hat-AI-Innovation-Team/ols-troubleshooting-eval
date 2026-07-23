@@ -39,7 +39,7 @@ def run_scenario(
     troubleshooter_client: LLMClient,
     troubleshooter_model: str,
     judge_client: LLMClient,
-    judge_model: str = "gpt-4o-mini",
+    judge_model: str = "gpt-5-mini",
     db_name: str | None = None,
 ) -> ScenarioResult:
     """Run a single scenario through the agent and judge each turn.
@@ -118,7 +118,7 @@ def run_all_scenarios(
     troubleshooter_client: LLMClient,
     troubleshooter_model: str,
     judge_client: LLMClient,
-    judge_model: str = "gpt-4o-mini",
+    judge_model: str = "gpt-5-mini",
     concurrency: int = 5,
     scenarios: list[str] | None = None,
 ) -> dict[str, ScenarioResult]:
