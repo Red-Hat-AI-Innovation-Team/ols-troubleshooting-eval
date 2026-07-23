@@ -73,6 +73,22 @@
       "kind": "Event",
       "is_namespaced": true,
       "is_scalable": false
+    },
+    {
+      "id": 100,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "ConfigMap",
+      "is_namespaced": true,
+      "is_scalable": false
+    },
+    {
+      "id": 101,
+      "cluster_id": 1,
+      "api_version": "v1",
+      "kind": "Service",
+      "is_namespaced": true,
+      "is_scalable": false
     }
   ],
   "namespaces": [
@@ -89,6 +105,71 @@
       "phase": "Active",
       "created_at": "2026-01-01T00:10:00Z",
       "is_openshift_project": true
+    },
+    {
+      "id": 100,
+      "cluster_id": 1,
+      "name": "openshift-monitoring",
+      "uid": "ns-0100-0000-0000-0000-000000000000",
+      "labels": {
+        "kubernetes.io/metadata.name": "openshift-monitoring"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2025-12-01T00:00:00Z",
+      "is_openshift_project": false
+    },
+    {
+      "id": 101,
+      "cluster_id": 1,
+      "name": "openshift-ingress",
+      "uid": "ns-0101-0000-0000-0000-000000000000",
+      "labels": {
+        "kubernetes.io/metadata.name": "openshift-ingress"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2025-12-01T00:00:00Z",
+      "is_openshift_project": false
+    },
+    {
+      "id": 102,
+      "cluster_id": 1,
+      "name": "openshift-console",
+      "uid": "ns-0102-0000-0000-0000-000000000000",
+      "labels": {
+        "kubernetes.io/metadata.name": "openshift-console"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2025-12-01T00:00:00Z",
+      "is_openshift_project": false
+    },
+    {
+      "id": 103,
+      "cluster_id": 1,
+      "name": "kube-system",
+      "uid": "ns-0103-0000-0000-0000-000000000000",
+      "labels": {
+        "kubernetes.io/metadata.name": "kube-system"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2025-12-01T00:00:00Z",
+      "is_openshift_project": false
+    },
+    {
+      "id": 104,
+      "cluster_id": 1,
+      "name": "openshift-operators",
+      "uid": "ns-0104-0000-0000-0000-000000000000",
+      "labels": {
+        "kubernetes.io/metadata.name": "openshift-operators"
+      },
+      "annotations": {},
+      "phase": "Active",
+      "created_at": "2025-12-01T00:00:00Z",
+      "is_openshift_project": false
     }
   ],
   "pods": [
@@ -243,6 +324,1521 @@
       "scheduler_name": "default-scheduler",
       "start_time": "2026-01-14T08:00:00Z",
       "node_id": 1
+    },
+    {
+      "id": 100,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "prometheus-k8s-0",
+      "uid": "pod-0100-0000-0000-0000-000000000000",
+      "labels": {
+        "app.kubernetes.io/component": "prometheus",
+        "app.kubernetes.io/name": "prometheus",
+        "prometheus": "k8s"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "prometheus",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:prom0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "prometheus",
+        "serviceAccount": "prometheus",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.1.1",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "prometheus",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:prom0001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:prom0001",
+            "containerID": "cri-o://distractor0100",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "prometheus",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.1.1",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 101,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "alertmanager-main-0",
+      "uid": "pod-0101-0000-0000-0000-000000000000",
+      "labels": {
+        "app.kubernetes.io/component": "alert-router",
+        "app.kubernetes.io/name": "alertmanager",
+        "alertmanager": "main"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "alertmanager",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:alert001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "alertmanager",
+        "serviceAccount": "alertmanager",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.1.2",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "alertmanager",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:alert001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:alert001",
+            "containerID": "cri-o://distractor0101",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "alertmanager",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.1.2",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 102,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "grafana-7f9bc4d8b5-x2k9m",
+      "uid": "pod-0102-0000-0000-0000-000000000000",
+      "labels": {
+        "app": "grafana",
+        "app.kubernetes.io/component": "grafana"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "grafana",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:graf0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "grafana",
+        "serviceAccount": "grafana",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.1.3",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "grafana",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:graf0001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:graf0001",
+            "containerID": "cri-o://distractor0102",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "grafana",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.1.3",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 103,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "node_id": 1,
+      "name": "thanos-querier-6c8d7e9f0a-b3c4d",
+      "uid": "pod-0103-0000-0000-0000-000000000000",
+      "labels": {
+        "app.kubernetes.io/component": "query-layer",
+        "app.kubernetes.io/name": "thanos-query"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "thanos-query",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:than0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "thanos-query",
+        "serviceAccount": "thanos-query",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.1.4",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "thanos-query",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:than0001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:than0001",
+            "containerID": "cri-o://distractor0103",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "thanos-query",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.1.4",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 104,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "node_id": 1,
+      "name": "router-default-7b8c9d0e1f-a2b3c",
+      "uid": "pod-0104-0000-0000-0000-000000000000",
+      "labels": {
+        "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "router",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "router",
+        "serviceAccount": "router",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.2.5",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "router",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "containerID": "cri-o://distractor0104",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "router",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.2.5",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 105,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "node_id": 1,
+      "name": "router-default-7b8c9d0e1f-d4e5f",
+      "uid": "pod-0105-0000-0000-0000-000000000000",
+      "labels": {
+        "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "router",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "router",
+        "serviceAccount": "router",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.2.6",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "router",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "containerID": "cri-o://distractor0105",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "router",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.2.6",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 106,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "node_id": 1,
+      "name": "router-default-7b8c9d0e1f-g6h7i",
+      "uid": "pod-0106-0000-0000-0000-000000000000",
+      "labels": {
+        "ingresscontroller.operator.openshift.io/deployment-ingresscontroller": "default"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "router",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "router",
+        "serviceAccount": "router",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.2.7",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "router",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+            "containerID": "cri-o://distractor0106",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "router",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.2.7",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 107,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "coredns-5d8b7c6a4f-k9l0m",
+      "uid": "pod-0107-0000-0000-0000-000000000000",
+      "labels": {
+        "k8s-app": "kube-dns"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "coredns",
+            "image": "registry.k8s.io/coredns/coredns:v1.10.1",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "coredns",
+        "serviceAccount": "coredns",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.4.8",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "coredns",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "registry.k8s.io/coredns/coredns:v1.10.1",
+            "imageID": "registry.k8s.io/coredns/coredns:v1.10.1",
+            "containerID": "cri-o://distractor0107",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "coredns",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.4.8",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 108,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "coredns-5d8b7c6a4f-n1o2p",
+      "uid": "pod-0108-0000-0000-0000-000000000000",
+      "labels": {
+        "k8s-app": "kube-dns"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "coredns",
+            "image": "registry.k8s.io/coredns/coredns:v1.10.1",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "coredns",
+        "serviceAccount": "coredns",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.4.9",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "coredns",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "registry.k8s.io/coredns/coredns:v1.10.1",
+            "imageID": "registry.k8s.io/coredns/coredns:v1.10.1",
+            "containerID": "cri-o://distractor0108",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "coredns",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.4.9",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 109,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "node_id": 1,
+      "name": "kube-apiserver-master-0",
+      "uid": "pod-0109-0000-0000-0000-000000000000",
+      "labels": {
+        "app": "openshift-kube-apiserver",
+        "apiserver": "true"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "kube-apiserver",
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:kapi0001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "kube-apiserver",
+        "serviceAccount": "kube-apiserver",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.4.10",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "kube-apiserver",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:kapi0001",
+            "imageID": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:kapi0001",
+            "containerID": "cri-o://distractor0109",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "kube-apiserver",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.4.10",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 110,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "olm-operator-7a8b9c0d1e-f2g3h",
+      "uid": "pod-0110-0000-0000-0000-000000000000",
+      "labels": {
+        "app": "olm-operator"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "olm-operator",
+            "image": "quay.io/operator-framework/olm@sha256:olm00001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "olm-operator",
+        "serviceAccount": "olm-operator",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.5.11",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "olm-operator",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/operator-framework/olm@sha256:olm00001",
+            "imageID": "quay.io/operator-framework/olm@sha256:olm00001",
+            "containerID": "cri-o://distractor0110",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "olm-operator",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.5.11",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 111,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "catalog-operator-6d7e8f9a0b-c4d5e",
+      "uid": "pod-0111-0000-0000-0000-000000000000",
+      "labels": {
+        "app": "catalog-operator"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "catalog-operator",
+            "image": "quay.io/operator-framework/olm@sha256:cat00001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "catalog-operator",
+        "serviceAccount": "catalog-operator",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.5.12",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "catalog-operator",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/operator-framework/olm@sha256:cat00001",
+            "imageID": "quay.io/operator-framework/olm@sha256:cat00001",
+            "containerID": "cri-o://distractor0111",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "catalog-operator",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.5.12",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
+    },
+    {
+      "id": 112,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "node_id": 1,
+      "name": "packageserver-5c6d7e8f9a-b0c1d",
+      "uid": "pod-0112-0000-0000-0000-000000000000",
+      "labels": {
+        "app": "packageserver"
+      },
+      "annotations": {},
+      "phase": "Running",
+      "qos_class": "Burstable",
+      "restart_policy": "Always",
+      "spec_json": {
+        "containers": [
+          {
+            "name": "packageserver",
+            "image": "quay.io/operator-framework/olm@sha256:pkg00001",
+            "resources": {
+              "requests": {
+                "cpu": "10m",
+                "memory": "64Mi"
+              },
+              "limits": {
+                "cpu": "200m",
+                "memory": "256Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "serviceAccountName": "packageserver",
+        "serviceAccount": "packageserver",
+        "schedulerName": "default-scheduler"
+      },
+      "status_json": {
+        "phase": "Running",
+        "conditions": [
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "Initialized",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:00Z"
+          },
+          {
+            "type": "ContainersReady",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2026-01-10T06:00:30Z"
+          }
+        ],
+        "hostIP": "10.0.0.1",
+        "podIP": "10.128.5.13",
+        "startTime": "2026-01-10T06:00:00Z",
+        "containerStatuses": [
+          {
+            "name": "packageserver",
+            "state": {
+              "running": {
+                "startedAt": "2026-01-10T06:00:05Z"
+              }
+            },
+            "lastState": {},
+            "ready": true,
+            "restartCount": 0,
+            "image": "quay.io/operator-framework/olm@sha256:pkg00001",
+            "imageID": "quay.io/operator-framework/olm@sha256:pkg00001",
+            "containerID": "cri-o://distractor0112",
+            "started": true
+          }
+        ],
+        "qosClass": "Burstable"
+      },
+      "created_at": "2026-01-10T06:00:00Z",
+      "service_account_name": "packageserver",
+      "conditions": [
+        {
+          "type": "PodScheduled",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "Initialized",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:00Z"
+        },
+        {
+          "type": "ContainersReady",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        },
+        {
+          "type": "Ready",
+          "status": "True",
+          "lastTransitionTime": "2026-01-10T06:00:30Z"
+        }
+      ],
+      "host_ip": "10.0.0.1",
+      "pod_ip": "10.128.5.13",
+      "scheduler_name": "default-scheduler",
+      "start_time": "2026-01-10T06:00:00Z"
     }
   ],
   "containers": [
@@ -262,6 +1858,227 @@
       "started": true,
       "filesystem_json": {},
       "network_json": {}
+    },
+    {
+      "id": 100,
+      "pod_id": 100,
+      "name": "prometheus",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:prom0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 101,
+      "pod_id": 101,
+      "name": "alertmanager",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:alert001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 102,
+      "pod_id": 102,
+      "name": "grafana",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:graf0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 103,
+      "pod_id": 103,
+      "name": "thanos-query",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:than0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 104,
+      "pod_id": 104,
+      "name": "router",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 105,
+      "pod_id": 105,
+      "name": "router",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 106,
+      "pod_id": 106,
+      "name": "router",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:rout0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 107,
+      "pod_id": 107,
+      "name": "coredns",
+      "image": "registry.k8s.io/coredns/coredns:v1.10.1",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 108,
+      "pod_id": 108,
+      "name": "coredns",
+      "image": "registry.k8s.io/coredns/coredns:v1.10.1",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 109,
+      "pod_id": 109,
+      "name": "kube-apiserver",
+      "image": "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:kapi0001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 110,
+      "pod_id": 110,
+      "name": "olm-operator",
+      "image": "quay.io/operator-framework/olm@sha256:olm00001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 111,
+      "pod_id": 111,
+      "name": "catalog-operator",
+      "image": "quay.io/operator-framework/olm@sha256:cat00001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
+    },
+    {
+      "id": 112,
+      "pod_id": 112,
+      "name": "packageserver",
+      "image": "quay.io/operator-framework/olm@sha256:pkg00001",
+      "state": "running",
+      "ready": true,
+      "restart_count": 0,
+      "request_cpu_millicores": 10,
+      "request_memory_bytes": 67108864,
+      "limit_cpu_millicores": 200,
+      "limit_memory_bytes": 268435456,
+      "ports": [],
+      "started": true,
+      "filesystem_json": {},
+      "network_json": {}
     }
   ],
   "pod_logs": [
@@ -270,643 +2087,3352 @@
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 1,
-      "timestamp": "2026-01-14T08:00:01.000Z",
-      "message": "2026-01-14T08:00:01.000Z [INFO] 200 GET /api/users - 12ms"
+      "timestamp": "2026-01-14T08:00:02.000Z",
+      "message": "2026-01-14T08:00:02.000Z [INFO] 200 POST /api/orders - 11ms",
+      "is_previous": false
     },
     {
       "id": 2,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 2,
-      "timestamp": "2026-01-14T08:05:00.000Z",
-      "message": "2026-01-14T08:05:00.000Z [INFO] 200 POST /api/orders - 45ms"
+      "timestamp": "2026-01-14T08:02:03.000Z",
+      "message": "2026-01-14T08:02:03.000Z [INFO] 200 GET /api/products - 12ms",
+      "is_previous": false
     },
     {
       "id": 3,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 3,
-      "timestamp": "2026-01-14T08:10:12.000Z",
-      "message": "2026-01-14T08:10:12.000Z [INFO] 200 GET /api/products - 18ms"
+      "timestamp": "2026-01-14T08:04:04.000Z",
+      "message": "2026-01-14T08:04:04.000Z [INFO] 200 GET /api/health - 13ms",
+      "is_previous": false
     },
     {
       "id": 4,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 4,
-      "timestamp": "2026-01-14T08:15:30.000Z",
-      "message": "2026-01-14T08:15:30.000Z [INFO] 200 GET /api/health - 3ms"
+      "timestamp": "2026-01-14T08:06:05.000Z",
+      "message": "2026-01-14T08:06:05.000Z [INFO] 200 GET /api/inventory - 14ms",
+      "is_previous": false
     },
     {
       "id": 5,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 5,
-      "timestamp": "2026-01-14T08:20:45.000Z",
-      "message": "2026-01-14T08:20:45.000Z [INFO] 200 POST /api/orders - 52ms"
+      "timestamp": "2026-01-14T08:08:06.000Z",
+      "message": "2026-01-14T08:08:06.000Z [INFO] 200 GET /api/sessions - 15ms",
+      "is_previous": false
     },
     {
       "id": 6,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 6,
-      "timestamp": "2026-01-14T08:25:18.000Z",
-      "message": "2026-01-14T08:25:18.000Z [INFO] 200 GET /api/users/123 - 9ms"
+      "timestamp": "2026-01-14T08:10:07.000Z",
+      "message": "2026-01-14T08:10:07.000Z [INFO] 200 POST /api/auth/token - 16ms",
+      "is_previous": false
     },
     {
       "id": 7,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 7,
-      "timestamp": "2026-01-14T08:30:33.000Z",
-      "message": "2026-01-14T08:30:33.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T08:12:08.000Z",
+      "message": "2026-01-14T08:12:08.000Z [INFO] 200 GET /api/users - 17ms",
+      "is_previous": false
     },
     {
       "id": 8,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 8,
-      "timestamp": "2026-01-14T08:35:47.000Z",
-      "message": "2026-01-14T08:35:47.000Z [INFO] 200 DELETE /api/orders/456 - 31ms"
+      "timestamp": "2026-01-14T08:14:09.000Z",
+      "message": "2026-01-14T08:14:09.000Z [INFO] 200 POST /api/orders - 18ms",
+      "is_previous": false
     },
     {
       "id": 9,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 9,
-      "timestamp": "2026-01-14T08:40:02.000Z",
-      "message": "2026-01-14T08:40:02.000Z [INFO] 200 GET /api/products - 15ms"
+      "timestamp": "2026-01-14T08:16:10.000Z",
+      "message": "2026-01-14T08:16:10.000Z [INFO] 200 GET /api/products - 19ms",
+      "is_previous": false
     },
     {
       "id": 10,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 10,
-      "timestamp": "2026-01-14T08:45:16.000Z",
-      "message": "2026-01-14T08:45:16.000Z [INFO] 200 POST /api/users - 38ms"
+      "timestamp": "2026-01-14T08:18:11.000Z",
+      "message": "2026-01-14T08:18:11.000Z [INFO] 200 GET /api/health - 20ms",
+      "is_previous": false
     },
     {
       "id": 11,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 11,
-      "timestamp": "2026-01-14T08:50:29.000Z",
-      "message": "2026-01-14T08:50:29.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T08:20:12.000Z",
+      "message": "2026-01-14T08:20:12.000Z [INFO] 200 GET /api/inventory - 21ms",
+      "is_previous": false
     },
     {
       "id": 12,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 12,
-      "timestamp": "2026-01-14T08:55:43.000Z",
-      "message": "2026-01-14T08:55:43.000Z [INFO] 200 GET /api/orders - 22ms"
+      "timestamp": "2026-01-14T08:22:13.000Z",
+      "message": "2026-01-14T08:22:13.000Z [INFO] 200 GET /api/sessions - 22ms",
+      "is_previous": false
     },
     {
       "id": 13,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 13,
-      "timestamp": "2026-01-14T09:00:57.000Z",
-      "message": "2026-01-14T09:00:57.000Z [INFO] 200 POST /api/orders - 48ms"
+      "timestamp": "2026-01-14T08:24:14.000Z",
+      "message": "2026-01-14T08:24:14.000Z [INFO] 200 POST /api/auth/token - 23ms",
+      "is_previous": false
     },
     {
       "id": 14,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 14,
-      "timestamp": "2026-01-14T09:10:11.000Z",
-      "message": "2026-01-14T09:10:11.000Z [INFO] 200 GET /api/users - 11ms"
+      "timestamp": "2026-01-14T08:26:15.000Z",
+      "message": "2026-01-14T08:26:15.000Z [INFO] 200 GET /api/users - 24ms",
+      "is_previous": false
     },
     {
       "id": 15,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 15,
-      "timestamp": "2026-01-14T09:20:25.000Z",
-      "message": "2026-01-14T09:20:25.000Z [INFO] 200 GET /api/health - 3ms"
+      "timestamp": "2026-01-14T08:28:16.000Z",
+      "message": "2026-01-14T08:28:16.000Z [INFO] 200 POST /api/orders - 25ms",
+      "is_previous": false
     },
     {
       "id": 16,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 16,
-      "timestamp": "2026-01-14T09:30:39.000Z",
-      "message": "2026-01-14T09:30:39.000Z [INFO] 200 GET /api/products/789 - 14ms"
+      "timestamp": "2026-01-14T08:30:17.000Z",
+      "message": "2026-01-14T08:30:17.000Z [INFO] 200 GET /api/products - 26ms",
+      "is_previous": false
     },
     {
       "id": 17,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 17,
-      "timestamp": "2026-01-14T09:40:53.000Z",
-      "message": "2026-01-14T09:40:53.000Z [INFO] 200 PUT /api/users/123 - 27ms"
+      "timestamp": "2026-01-14T08:32:18.000Z",
+      "message": "2026-01-14T08:32:18.000Z [INFO] 200 GET /api/health - 27ms",
+      "is_previous": false
     },
     {
       "id": 18,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 18,
-      "timestamp": "2026-01-14T09:50:07.000Z",
-      "message": "2026-01-14T09:50:07.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T08:34:19.000Z",
+      "message": "2026-01-14T08:34:19.000Z [INFO] 200 GET /api/inventory - 28ms",
+      "is_previous": false
     },
     {
       "id": 19,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 19,
-      "timestamp": "2026-01-14T10:00:21.000Z",
-      "message": "2026-01-14T10:00:21.000Z [INFO] 200 POST /api/orders - 41ms"
+      "timestamp": "2026-01-14T08:36:20.000Z",
+      "message": "2026-01-14T08:36:20.000Z [INFO] 200 GET /api/sessions - 29ms",
+      "is_previous": false
     },
     {
       "id": 20,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 20,
-      "timestamp": "2026-01-14T10:10:35.000Z",
-      "message": "2026-01-14T10:10:35.000Z [INFO] 200 GET /api/users - 10ms"
+      "timestamp": "2026-01-14T08:38:21.000Z",
+      "message": "2026-01-14T08:38:21.000Z [INFO] 200 POST /api/auth/token - 30ms",
+      "is_previous": false
     },
     {
       "id": 21,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 21,
-      "timestamp": "2026-01-14T10:20:49.000Z",
-      "message": "2026-01-14T10:20:49.000Z [INFO] 200 GET /api/products - 16ms"
+      "timestamp": "2026-01-14T08:40:22.000Z",
+      "message": "2026-01-14T08:40:22.000Z [INFO] 200 GET /api/users - 31ms",
+      "is_previous": false
     },
     {
       "id": 22,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 22,
-      "timestamp": "2026-01-14T10:30:03.000Z",
-      "message": "2026-01-14T10:30:03.000Z [INFO] 200 GET /api/health - 3ms"
+      "timestamp": "2026-01-14T08:42:23.000Z",
+      "message": "2026-01-14T08:42:23.000Z [INFO] 200 POST /api/orders - 32ms",
+      "is_previous": false
     },
     {
       "id": 23,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 23,
-      "timestamp": "2026-01-14T10:40:17.000Z",
-      "message": "2026-01-14T10:40:17.000Z [INFO] 200 POST /api/users - 35ms"
+      "timestamp": "2026-01-14T08:44:24.000Z",
+      "message": "2026-01-14T08:44:24.000Z [INFO] 200 GET /api/products - 33ms",
+      "is_previous": false
     },
     {
       "id": 24,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 24,
-      "timestamp": "2026-01-14T10:50:31.000Z",
-      "message": "2026-01-14T10:50:31.000Z [INFO] 200 DELETE /api/products/101 - 19ms"
+      "timestamp": "2026-01-14T08:46:25.000Z",
+      "message": "2026-01-14T08:46:25.000Z [INFO] 200 GET /api/health - 34ms",
+      "is_previous": false
     },
     {
       "id": 25,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 25,
-      "timestamp": "2026-01-14T11:00:45.000Z",
-      "message": "2026-01-14T11:00:45.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T08:48:26.000Z",
+      "message": "2026-01-14T08:48:26.000Z [INFO] 200 GET /api/inventory - 35ms",
+      "is_previous": false
     },
     {
       "id": 26,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 26,
-      "timestamp": "2026-01-14T11:10:59.000Z",
-      "message": "2026-01-14T11:10:59.000Z [INFO] 200 GET /api/orders - 24ms"
+      "timestamp": "2026-01-14T08:50:27.000Z",
+      "message": "2026-01-14T08:50:27.000Z [INFO] 200 GET /api/sessions - 36ms",
+      "is_previous": false
     },
     {
       "id": 27,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 27,
-      "timestamp": "2026-01-14T11:20:13.000Z",
-      "message": "2026-01-14T11:20:13.000Z [INFO] 200 POST /api/orders - 47ms"
+      "timestamp": "2026-01-14T08:52:28.000Z",
+      "message": "2026-01-14T08:52:28.000Z [INFO] 200 POST /api/auth/token - 37ms",
+      "is_previous": false
     },
     {
       "id": 28,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 28,
-      "timestamp": "2026-01-14T11:30:27.000Z",
-      "message": "2026-01-14T11:30:27.000Z [INFO] 200 GET /api/users/456 - 8ms"
+      "timestamp": "2026-01-14T08:54:29.000Z",
+      "message": "2026-01-14T08:54:29.000Z [INFO] 200 GET /api/users - 38ms",
+      "is_previous": false
     },
     {
       "id": 29,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 29,
-      "timestamp": "2026-01-14T11:40:41.000Z",
-      "message": "2026-01-14T11:40:41.000Z [INFO] 200 GET /api/health - 3ms"
+      "timestamp": "2026-01-14T08:56:30.000Z",
+      "message": "2026-01-14T08:56:30.000Z [INFO] 200 POST /api/orders - 39ms",
+      "is_previous": false
     },
     {
       "id": 30,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 30,
-      "timestamp": "2026-01-14T11:50:55.000Z",
-      "message": "2026-01-14T11:50:55.000Z [INFO] 200 GET /api/products - 17ms"
+      "timestamp": "2026-01-14T08:58:31.000Z",
+      "message": "2026-01-14T08:58:31.000Z [INFO] 200 GET /api/products - 40ms",
+      "is_previous": false
     },
     {
       "id": 31,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 31,
-      "timestamp": "2026-01-14T12:00:09.000Z",
-      "message": "2026-01-14T12:00:09.000Z [INFO] 200 PUT /api/orders/789 - 33ms"
+      "timestamp": "2026-01-14T09:00:32.000Z",
+      "message": "2026-01-14T09:00:32.000Z [INFO] 200 GET /api/health - 41ms",
+      "is_previous": false
     },
     {
       "id": 32,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 32,
-      "timestamp": "2026-01-14T12:10:23.000Z",
-      "message": "2026-01-14T12:10:23.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T09:02:33.000Z",
+      "message": "2026-01-14T09:02:33.000Z [INFO] 200 GET /api/inventory - 42ms",
+      "is_previous": false
     },
     {
       "id": 33,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 33,
-      "timestamp": "2026-01-14T12:20:37.000Z",
-      "message": "2026-01-14T12:20:37.000Z [INFO] 200 GET /api/users - 13ms"
+      "timestamp": "2026-01-14T09:04:34.000Z",
+      "message": "2026-01-14T09:04:34.000Z [INFO] 200 GET /api/sessions - 43ms",
+      "is_previous": false
     },
     {
       "id": 34,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 34,
-      "timestamp": "2026-01-14T12:30:51.000Z",
-      "message": "2026-01-14T12:30:51.000Z [INFO] 200 POST /api/products - 29ms"
+      "timestamp": "2026-01-14T09:06:35.000Z",
+      "message": "2026-01-14T09:06:35.000Z [INFO] 200 POST /api/auth/token - 44ms",
+      "is_previous": false
     },
     {
       "id": 35,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 35,
-      "timestamp": "2026-01-14T12:40:05.000Z",
-      "message": "2026-01-14T12:40:05.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T09:08:36.000Z",
+      "message": "2026-01-14T09:08:36.000Z [INFO] 200 GET /api/users - 45ms",
+      "is_previous": false
     },
     {
       "id": 36,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 36,
-      "timestamp": "2026-01-14T12:50:19.000Z",
-      "message": "2026-01-14T12:50:19.000Z [INFO] 200 GET /api/orders/101 - 11ms"
+      "timestamp": "2026-01-14T09:10:37.000Z",
+      "message": "2026-01-14T09:10:37.000Z [INFO] 200 POST /api/orders - 46ms",
+      "is_previous": false
     },
     {
       "id": 37,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 37,
-      "timestamp": "2026-01-14T13:00:33.000Z",
-      "message": "2026-01-14T13:00:33.000Z [INFO] 200 POST /api/orders - 43ms"
+      "timestamp": "2026-01-14T09:12:38.000Z",
+      "message": "2026-01-14T09:12:38.000Z [INFO] 200 GET /api/products - 47ms",
+      "is_previous": false
     },
     {
       "id": 38,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 38,
-      "timestamp": "2026-01-14T13:10:47.000Z",
-      "message": "2026-01-14T13:10:47.000Z [INFO] 200 GET /api/health - 3ms"
+      "timestamp": "2026-01-14T09:14:39.000Z",
+      "message": "2026-01-14T09:14:39.000Z [INFO] 200 GET /api/health - 48ms",
+      "is_previous": false
     },
     {
       "id": 39,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 39,
-      "timestamp": "2026-01-14T13:20:01.000Z",
-      "message": "2026-01-14T13:20:01.000Z [INFO] 200 GET /api/users - 10ms"
+      "timestamp": "2026-01-14T09:16:40.000Z",
+      "message": "2026-01-14T09:16:40.000Z [INFO] 200 GET /api/inventory - 49ms",
+      "is_previous": false
     },
     {
       "id": 40,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 40,
-      "timestamp": "2026-01-14T13:30:15.000Z",
-      "message": "2026-01-14T13:30:15.000Z [INFO] 200 GET /api/products - 15ms"
+      "timestamp": "2026-01-14T09:18:41.000Z",
+      "message": "2026-01-14T09:18:41.000Z [INFO] 200 GET /api/sessions - 50ms",
+      "is_previous": false
     },
     {
       "id": 41,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 41,
-      "timestamp": "2026-01-14T13:40:29.000Z",
-      "message": "2026-01-14T13:40:29.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T09:20:42.000Z",
+      "message": "2026-01-14T09:20:42.000Z [INFO] 200 POST /api/auth/token - 51ms",
+      "is_previous": false
     },
     {
       "id": 42,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 42,
-      "timestamp": "2026-01-14T13:50:43.000Z",
-      "message": "2026-01-14T13:50:43.000Z [INFO] 200 POST /api/users - 36ms"
+      "timestamp": "2026-01-14T09:22:43.000Z",
+      "message": "2026-01-14T09:22:43.000Z [INFO] 200 GET /api/users - 52ms",
+      "is_previous": false
     },
     {
       "id": 43,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 43,
-      "timestamp": "2026-01-14T14:00:57.000Z",
-      "message": "2026-01-14T14:00:57.000Z [INFO] 200 GET /api/orders - 21ms"
+      "timestamp": "2026-01-14T09:24:44.000Z",
+      "message": "2026-01-14T09:24:44.000Z [INFO] 200 POST /api/orders - 53ms",
+      "is_previous": false
     },
     {
       "id": 44,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 44,
-      "timestamp": "2026-01-14T14:05:11.000Z",
-      "message": "2026-01-14T14:05:11.000Z [INFO] 200 GET /api/health - 3ms"
+      "timestamp": "2026-01-14T09:26:45.000Z",
+      "message": "2026-01-14T09:26:45.000Z [INFO] 200 GET /api/products - 54ms",
+      "is_previous": false
     },
     {
       "id": 45,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 45,
-      "timestamp": "2026-01-14T14:10:25.000Z",
-      "message": "2026-01-14T14:10:25.000Z [INFO] 200 POST /api/orders - 39ms"
+      "timestamp": "2026-01-14T09:28:46.000Z",
+      "message": "2026-01-14T09:28:46.000Z [INFO] 200 GET /api/health - 55ms",
+      "is_previous": false
     },
     {
       "id": 46,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 46,
-      "timestamp": "2026-01-14T14:15:39.000Z",
-      "message": "2026-01-14T14:15:39.000Z [INFO] 200 GET /api/users/789 - 7ms"
+      "timestamp": "2026-01-14T09:30:47.000Z",
+      "message": "2026-01-14T09:30:47.000Z [INFO] 200 GET /api/inventory - 56ms",
+      "is_previous": false
     },
     {
       "id": 47,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 47,
-      "timestamp": "2026-01-14T14:20:53.000Z",
-      "message": "2026-01-14T14:20:53.000Z [INFO] 200 GET /api/health - 2ms"
+      "timestamp": "2026-01-14T09:32:48.000Z",
+      "message": "2026-01-14T09:32:48.000Z [INFO] 200 GET /api/sessions - 57ms",
+      "is_previous": false
     },
     {
       "id": 48,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 48,
-      "timestamp": "2026-01-14T14:25:07.000Z",
-      "message": "2026-01-14T14:25:07.000Z [INFO] 200 GET /api/products - 16ms"
+      "timestamp": "2026-01-14T09:34:49.000Z",
+      "message": "2026-01-14T09:34:49.000Z [INFO] 200 POST /api/auth/token - 58ms",
+      "is_previous": false
     },
     {
       "id": 49,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 49,
-      "timestamp": "2026-01-14T14:28:00.000Z",
-      "message": "2026-01-14T14:28:00.000Z [INFO] 200 POST /api/orders - 44ms"
+      "timestamp": "2026-01-14T09:36:50.000Z",
+      "message": "2026-01-14T09:36:50.000Z [INFO] 200 GET /api/users - 59ms",
+      "is_previous": false
     },
     {
       "id": 50,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 50,
-      "timestamp": "2026-01-14T14:29:30.000Z",
-      "message": "2026-01-14T14:29:30.000Z [INFO] 200 GET /api/health - 3ms"
+      "timestamp": "2026-01-14T09:38:01.000Z",
+      "message": "2026-01-14T09:38:01.000Z [INFO] 200 POST /api/orders - 10ms",
+      "is_previous": false
     },
     {
       "id": 51,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 51,
-      "timestamp": "2026-01-14T14:30:00.000Z",
-      "message": "2026-01-14T14:30:00.000Z [WARN] Configuration file change detected path=/etc/gateway/config.yaml"
+      "timestamp": "2026-01-14T09:40:02.000Z",
+      "message": "2026-01-14T09:40:02.000Z [INFO] 200 GET /api/products - 11ms",
+      "is_previous": false
     },
     {
       "id": 52,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 52,
-      "timestamp": "2026-01-14T14:30:01.000Z",
-      "message": "2026-01-14T14:30:01.000Z [INFO] [CONFIG RELOAD] Loading config from staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:42:03.000Z",
+      "message": "2026-01-14T09:42:03.000Z [INFO] 200 GET /api/health - 12ms",
+      "is_previous": false
     },
     {
       "id": 53,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 53,
-      "timestamp": "2026-01-14T14:30:02.000Z",
-      "message": "2026-01-14T14:30:02.000Z [INFO] [CONFIG RELOAD] Backend pool updated: production-db.internal:5432 -> staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:44:04.000Z",
+      "message": "2026-01-14T09:44:04.000Z [INFO] 200 GET /api/inventory - 13ms",
+      "is_previous": false
     },
     {
       "id": 54,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 54,
-      "timestamp": "2026-01-14T14:30:03.000Z",
-      "message": "2026-01-14T14:30:03.000Z [INFO] [CONFIG RELOAD] Configuration reload completed successfully"
+      "timestamp": "2026-01-14T09:46:05.000Z",
+      "message": "2026-01-14T09:46:05.000Z [INFO] 200 GET /api/sessions - 14ms",
+      "is_previous": false
     },
     {
       "id": 55,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 55,
-      "timestamp": "2026-01-14T14:30:05.000Z",
-      "message": "2026-01-14T14:30:05.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:48:06.000Z",
+      "message": "2026-01-14T09:48:06.000Z [INFO] 200 POST /api/auth/token - 15ms",
+      "is_previous": false
     },
     {
       "id": 56,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 56,
-      "timestamp": "2026-01-14T14:30:15.000Z",
-      "message": "2026-01-14T14:30:15.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:50:07.000Z",
+      "message": "2026-01-14T09:50:07.000Z [INFO] 200 GET /api/users - 16ms",
+      "is_previous": false
     },
     {
       "id": 57,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 57,
-      "timestamp": "2026-01-14T14:30:25.000Z",
-      "message": "2026-01-14T14:30:25.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:52:08.000Z",
+      "message": "2026-01-14T09:52:08.000Z [INFO] 200 POST /api/orders - 17ms",
+      "is_previous": false
     },
     {
       "id": 58,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 58,
-      "timestamp": "2026-01-14T14:30:35.000Z",
-      "message": "2026-01-14T14:30:35.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:54:09.000Z",
+      "message": "2026-01-14T09:54:09.000Z [INFO] 200 GET /api/products - 18ms",
+      "is_previous": false
     },
     {
       "id": 59,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 59,
-      "timestamp": "2026-01-14T14:30:45.000Z",
-      "message": "2026-01-14T14:30:45.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:56:10.000Z",
+      "message": "2026-01-14T09:56:10.000Z [INFO] 200 GET /api/health - 19ms",
+      "is_previous": false
     },
     {
       "id": 60,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 60,
-      "timestamp": "2026-01-14T14:30:55.000Z",
-      "message": "2026-01-14T14:30:55.000Z [ERROR] 500 POST /api/users - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T09:58:11.000Z",
+      "message": "2026-01-14T09:58:11.000Z [INFO] 200 GET /api/inventory - 20ms",
+      "is_previous": false
     },
     {
       "id": 61,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 61,
-      "timestamp": "2026-01-14T14:31:05.000Z",
-      "message": "2026-01-14T14:31:05.000Z [ERROR] 500 GET /api/orders - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:00:12.000Z",
+      "message": "2026-01-14T10:00:12.000Z [INFO] 200 GET /api/sessions - 21ms",
+      "is_previous": false
     },
     {
       "id": 62,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 62,
-      "timestamp": "2026-01-14T14:31:15.000Z",
-      "message": "2026-01-14T14:31:15.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:02:13.000Z",
+      "message": "2026-01-14T10:02:13.000Z [INFO] 200 POST /api/auth/token - 22ms",
+      "is_previous": false
     },
     {
       "id": 63,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 63,
-      "timestamp": "2026-01-14T14:31:25.000Z",
-      "message": "2026-01-14T14:31:25.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:04:14.000Z",
+      "message": "2026-01-14T10:04:14.000Z [INFO] 200 GET /api/users - 23ms",
+      "is_previous": false
     },
     {
       "id": 64,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 64,
-      "timestamp": "2026-01-14T14:31:35.000Z",
-      "message": "2026-01-14T14:31:35.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:06:15.000Z",
+      "message": "2026-01-14T10:06:15.000Z [INFO] 200 POST /api/orders - 24ms",
+      "is_previous": false
     },
     {
       "id": 65,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 65,
-      "timestamp": "2026-01-14T14:31:45.000Z",
-      "message": "2026-01-14T14:31:45.000Z [ERROR] 500 GET /api/users/123 - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:08:16.000Z",
+      "message": "2026-01-14T10:08:16.000Z [INFO] 200 GET /api/products - 25ms",
+      "is_previous": false
     },
     {
       "id": 66,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 66,
-      "timestamp": "2026-01-14T14:31:55.000Z",
-      "message": "2026-01-14T14:31:55.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:10:17.000Z",
+      "message": "2026-01-14T10:10:17.000Z [INFO] 200 GET /api/health - 26ms",
+      "is_previous": false
     },
     {
       "id": 67,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 67,
-      "timestamp": "2026-01-14T14:32:05.000Z",
-      "message": "2026-01-14T14:32:05.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:12:18.000Z",
+      "message": "2026-01-14T10:12:18.000Z [INFO] 200 GET /api/inventory - 27ms",
+      "is_previous": false
     },
     {
       "id": 68,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 68,
-      "timestamp": "2026-01-14T14:32:15.000Z",
-      "message": "2026-01-14T14:32:15.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:14:19.000Z",
+      "message": "2026-01-14T10:14:19.000Z [INFO] 200 GET /api/sessions - 28ms",
+      "is_previous": false
     },
     {
       "id": 69,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 69,
-      "timestamp": "2026-01-14T14:32:25.000Z",
-      "message": "2026-01-14T14:32:25.000Z [ERROR] 500 DELETE /api/orders/202 - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:16:20.000Z",
+      "message": "2026-01-14T10:16:20.000Z [INFO] 200 POST /api/auth/token - 29ms",
+      "is_previous": false
     },
     {
       "id": 70,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 70,
-      "timestamp": "2026-01-14T14:32:35.000Z",
-      "message": "2026-01-14T14:32:35.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:18:21.000Z",
+      "message": "2026-01-14T10:18:21.000Z [INFO] 200 GET /api/users - 30ms",
+      "is_previous": false
     },
     {
       "id": 71,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 71,
-      "timestamp": "2026-01-14T14:32:45.000Z",
-      "message": "2026-01-14T14:32:45.000Z [ERROR] 500 POST /api/products - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:20:22.000Z",
+      "message": "2026-01-14T10:20:22.000Z [INFO] 200 POST /api/orders - 31ms",
+      "is_previous": false
     },
     {
       "id": 72,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 72,
-      "timestamp": "2026-01-14T14:32:55.000Z",
-      "message": "2026-01-14T14:32:55.000Z [ERROR] 500 GET /api/orders - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:22:23.000Z",
+      "message": "2026-01-14T10:22:23.000Z [INFO] 200 GET /api/products - 32ms",
+      "is_previous": false
     },
     {
       "id": 73,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 73,
-      "timestamp": "2026-01-14T14:33:05.000Z",
-      "message": "2026-01-14T14:33:05.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:24:24.000Z",
+      "message": "2026-01-14T10:24:24.000Z [INFO] 200 GET /api/health - 33ms",
+      "is_previous": false
     },
     {
       "id": 74,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 74,
-      "timestamp": "2026-01-14T14:33:15.000Z",
-      "message": "2026-01-14T14:33:15.000Z [ERROR] 500 PUT /api/users/456 - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:26:25.000Z",
+      "message": "2026-01-14T10:26:25.000Z [INFO] 200 GET /api/inventory - 34ms",
+      "is_previous": false
     },
     {
       "id": 75,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 75,
-      "timestamp": "2026-01-14T14:33:25.000Z",
-      "message": "2026-01-14T14:33:25.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:28:26.000Z",
+      "message": "2026-01-14T10:28:26.000Z [INFO] 200 GET /api/sessions - 35ms",
+      "is_previous": false
     },
     {
       "id": 76,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 76,
-      "timestamp": "2026-01-14T14:33:35.000Z",
-      "message": "2026-01-14T14:33:35.000Z [ERROR] 500 GET /api/products/303 - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:30:27.000Z",
+      "message": "2026-01-14T10:30:27.000Z [INFO] 200 POST /api/auth/token - 36ms",
+      "is_previous": false
     },
     {
       "id": 77,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 77,
-      "timestamp": "2026-01-14T14:33:45.000Z",
-      "message": "2026-01-14T14:33:45.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:32:28.000Z",
+      "message": "2026-01-14T10:32:28.000Z [INFO] 200 GET /api/users - 37ms",
+      "is_previous": false
     },
     {
       "id": 78,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 78,
-      "timestamp": "2026-01-14T14:33:55.000Z",
-      "message": "2026-01-14T14:33:55.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:34:29.000Z",
+      "message": "2026-01-14T10:34:29.000Z [INFO] 200 POST /api/orders - 38ms",
+      "is_previous": false
     },
     {
       "id": 79,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 79,
-      "timestamp": "2026-01-14T14:34:05.000Z",
-      "message": "2026-01-14T14:34:05.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432"
+      "timestamp": "2026-01-14T10:36:30.000Z",
+      "message": "2026-01-14T10:36:30.000Z [INFO] 200 GET /api/products - 39ms",
+      "is_previous": false
     },
     {
       "id": 80,
       "pod_id": 1,
       "container_name": "log-emitter",
       "line_number": 80,
+      "timestamp": "2026-01-14T10:38:31.000Z",
+      "message": "2026-01-14T10:38:31.000Z [INFO] 200 GET /api/health - 40ms",
+      "is_previous": false
+    },
+    {
+      "id": 81,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 81,
+      "timestamp": "2026-01-14T10:40:32.000Z",
+      "message": "2026-01-14T10:40:32.000Z [INFO] 200 GET /api/inventory - 41ms",
+      "is_previous": false
+    },
+    {
+      "id": 82,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 82,
+      "timestamp": "2026-01-14T10:42:33.000Z",
+      "message": "2026-01-14T10:42:33.000Z [INFO] 200 GET /api/sessions - 42ms",
+      "is_previous": false
+    },
+    {
+      "id": 83,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 83,
+      "timestamp": "2026-01-14T10:44:34.000Z",
+      "message": "2026-01-14T10:44:34.000Z [INFO] 200 POST /api/auth/token - 43ms",
+      "is_previous": false
+    },
+    {
+      "id": 84,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 84,
+      "timestamp": "2026-01-14T10:46:35.000Z",
+      "message": "2026-01-14T10:46:35.000Z [INFO] 200 GET /api/users - 44ms",
+      "is_previous": false
+    },
+    {
+      "id": 85,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 85,
+      "timestamp": "2026-01-14T10:48:36.000Z",
+      "message": "2026-01-14T10:48:36.000Z [INFO] 200 POST /api/orders - 45ms",
+      "is_previous": false
+    },
+    {
+      "id": 86,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 86,
+      "timestamp": "2026-01-14T10:50:37.000Z",
+      "message": "2026-01-14T10:50:37.000Z [INFO] 200 GET /api/products - 46ms",
+      "is_previous": false
+    },
+    {
+      "id": 87,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 87,
+      "timestamp": "2026-01-14T10:52:38.000Z",
+      "message": "2026-01-14T10:52:38.000Z [INFO] 200 GET /api/health - 47ms",
+      "is_previous": false
+    },
+    {
+      "id": 88,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 88,
+      "timestamp": "2026-01-14T10:54:39.000Z",
+      "message": "2026-01-14T10:54:39.000Z [INFO] 200 GET /api/inventory - 48ms",
+      "is_previous": false
+    },
+    {
+      "id": 89,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 89,
+      "timestamp": "2026-01-14T10:56:40.000Z",
+      "message": "2026-01-14T10:56:40.000Z [INFO] 200 GET /api/sessions - 49ms",
+      "is_previous": false
+    },
+    {
+      "id": 90,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 90,
+      "timestamp": "2026-01-14T10:58:41.000Z",
+      "message": "2026-01-14T10:58:41.000Z [INFO] 200 POST /api/auth/token - 50ms",
+      "is_previous": false
+    },
+    {
+      "id": 91,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 91,
+      "timestamp": "2026-01-14T11:00:42.000Z",
+      "message": "2026-01-14T11:00:42.000Z [INFO] 200 GET /api/users - 51ms",
+      "is_previous": false
+    },
+    {
+      "id": 92,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 92,
+      "timestamp": "2026-01-14T11:02:43.000Z",
+      "message": "2026-01-14T11:02:43.000Z [INFO] 200 POST /api/orders - 52ms",
+      "is_previous": false
+    },
+    {
+      "id": 93,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 93,
+      "timestamp": "2026-01-14T11:04:44.000Z",
+      "message": "2026-01-14T11:04:44.000Z [INFO] 200 GET /api/products - 53ms",
+      "is_previous": false
+    },
+    {
+      "id": 94,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 94,
+      "timestamp": "2026-01-14T11:06:45.000Z",
+      "message": "2026-01-14T11:06:45.000Z [INFO] 200 GET /api/health - 54ms",
+      "is_previous": false
+    },
+    {
+      "id": 95,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 95,
+      "timestamp": "2026-01-14T11:08:46.000Z",
+      "message": "2026-01-14T11:08:46.000Z [INFO] 200 GET /api/inventory - 55ms",
+      "is_previous": false
+    },
+    {
+      "id": 96,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 96,
+      "timestamp": "2026-01-14T11:10:47.000Z",
+      "message": "2026-01-14T11:10:47.000Z [INFO] 200 GET /api/sessions - 56ms",
+      "is_previous": false
+    },
+    {
+      "id": 97,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 97,
+      "timestamp": "2026-01-14T11:12:48.000Z",
+      "message": "2026-01-14T11:12:48.000Z [INFO] 200 POST /api/auth/token - 57ms",
+      "is_previous": false
+    },
+    {
+      "id": 98,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 98,
+      "timestamp": "2026-01-14T11:14:49.000Z",
+      "message": "2026-01-14T11:14:49.000Z [INFO] 200 GET /api/users - 58ms",
+      "is_previous": false
+    },
+    {
+      "id": 99,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 99,
+      "timestamp": "2026-01-14T11:16:50.000Z",
+      "message": "2026-01-14T11:16:50.000Z [INFO] 200 POST /api/orders - 59ms",
+      "is_previous": false
+    },
+    {
+      "id": 100,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 100,
+      "timestamp": "2026-01-14T11:18:01.000Z",
+      "message": "2026-01-14T11:18:01.000Z [INFO] 200 GET /api/products - 10ms",
+      "is_previous": false
+    },
+    {
+      "id": 101,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 101,
+      "timestamp": "2026-01-14T11:20:02.000Z",
+      "message": "2026-01-14T11:20:02.000Z [INFO] 200 GET /api/health - 11ms",
+      "is_previous": false
+    },
+    {
+      "id": 102,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 102,
+      "timestamp": "2026-01-14T11:22:03.000Z",
+      "message": "2026-01-14T11:22:03.000Z [INFO] 200 GET /api/inventory - 12ms",
+      "is_previous": false
+    },
+    {
+      "id": 103,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 103,
+      "timestamp": "2026-01-14T11:24:04.000Z",
+      "message": "2026-01-14T11:24:04.000Z [INFO] 200 GET /api/sessions - 13ms",
+      "is_previous": false
+    },
+    {
+      "id": 104,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 104,
+      "timestamp": "2026-01-14T11:26:05.000Z",
+      "message": "2026-01-14T11:26:05.000Z [INFO] 200 POST /api/auth/token - 14ms",
+      "is_previous": false
+    },
+    {
+      "id": 105,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 105,
+      "timestamp": "2026-01-14T11:28:06.000Z",
+      "message": "2026-01-14T11:28:06.000Z [INFO] 200 GET /api/users - 15ms",
+      "is_previous": false
+    },
+    {
+      "id": 106,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 106,
+      "timestamp": "2026-01-14T11:30:07.000Z",
+      "message": "2026-01-14T11:30:07.000Z [INFO] 200 POST /api/orders - 16ms",
+      "is_previous": false
+    },
+    {
+      "id": 107,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 107,
+      "timestamp": "2026-01-14T11:32:08.000Z",
+      "message": "2026-01-14T11:32:08.000Z [INFO] 200 GET /api/products - 17ms",
+      "is_previous": false
+    },
+    {
+      "id": 108,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 108,
+      "timestamp": "2026-01-14T11:34:09.000Z",
+      "message": "2026-01-14T11:34:09.000Z [INFO] 200 GET /api/health - 18ms",
+      "is_previous": false
+    },
+    {
+      "id": 109,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 109,
+      "timestamp": "2026-01-14T11:36:10.000Z",
+      "message": "2026-01-14T11:36:10.000Z [INFO] 200 GET /api/inventory - 19ms",
+      "is_previous": false
+    },
+    {
+      "id": 110,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 110,
+      "timestamp": "2026-01-14T11:38:11.000Z",
+      "message": "2026-01-14T11:38:11.000Z [INFO] 200 GET /api/sessions - 20ms",
+      "is_previous": false
+    },
+    {
+      "id": 111,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 111,
+      "timestamp": "2026-01-14T11:40:12.000Z",
+      "message": "2026-01-14T11:40:12.000Z [INFO] 200 POST /api/auth/token - 21ms",
+      "is_previous": false
+    },
+    {
+      "id": 112,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 112,
+      "timestamp": "2026-01-14T11:42:13.000Z",
+      "message": "2026-01-14T11:42:13.000Z [INFO] 200 GET /api/users - 22ms",
+      "is_previous": false
+    },
+    {
+      "id": 113,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 113,
+      "timestamp": "2026-01-14T11:44:14.000Z",
+      "message": "2026-01-14T11:44:14.000Z [INFO] 200 POST /api/orders - 23ms",
+      "is_previous": false
+    },
+    {
+      "id": 114,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 114,
+      "timestamp": "2026-01-14T11:46:15.000Z",
+      "message": "2026-01-14T11:46:15.000Z [INFO] 200 GET /api/products - 24ms",
+      "is_previous": false
+    },
+    {
+      "id": 115,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 115,
+      "timestamp": "2026-01-14T11:48:16.000Z",
+      "message": "2026-01-14T11:48:16.000Z [INFO] 200 GET /api/health - 25ms",
+      "is_previous": false
+    },
+    {
+      "id": 116,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 116,
+      "timestamp": "2026-01-14T11:50:17.000Z",
+      "message": "2026-01-14T11:50:17.000Z [INFO] 200 GET /api/inventory - 26ms",
+      "is_previous": false
+    },
+    {
+      "id": 117,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 117,
+      "timestamp": "2026-01-14T11:52:18.000Z",
+      "message": "2026-01-14T11:52:18.000Z [INFO] 200 GET /api/sessions - 27ms",
+      "is_previous": false
+    },
+    {
+      "id": 118,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 118,
+      "timestamp": "2026-01-14T11:54:19.000Z",
+      "message": "2026-01-14T11:54:19.000Z [INFO] 200 POST /api/auth/token - 28ms",
+      "is_previous": false
+    },
+    {
+      "id": 119,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 119,
+      "timestamp": "2026-01-14T11:56:20.000Z",
+      "message": "2026-01-14T11:56:20.000Z [INFO] 200 GET /api/users - 29ms",
+      "is_previous": false
+    },
+    {
+      "id": 120,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 120,
+      "timestamp": "2026-01-14T11:58:21.000Z",
+      "message": "2026-01-14T11:58:21.000Z [INFO] 200 POST /api/orders - 30ms",
+      "is_previous": false
+    },
+    {
+      "id": 121,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 121,
+      "timestamp": "2026-01-14T12:00:22.000Z",
+      "message": "2026-01-14T12:00:22.000Z [INFO] 200 GET /api/products - 31ms",
+      "is_previous": false
+    },
+    {
+      "id": 122,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 122,
+      "timestamp": "2026-01-14T12:02:23.000Z",
+      "message": "2026-01-14T12:02:23.000Z [INFO] 200 GET /api/health - 32ms",
+      "is_previous": false
+    },
+    {
+      "id": 123,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 123,
+      "timestamp": "2026-01-14T12:04:24.000Z",
+      "message": "2026-01-14T12:04:24.000Z [INFO] 200 GET /api/inventory - 33ms",
+      "is_previous": false
+    },
+    {
+      "id": 124,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 124,
+      "timestamp": "2026-01-14T12:06:25.000Z",
+      "message": "2026-01-14T12:06:25.000Z [INFO] 200 GET /api/sessions - 34ms",
+      "is_previous": false
+    },
+    {
+      "id": 125,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 125,
+      "timestamp": "2026-01-14T12:08:26.000Z",
+      "message": "2026-01-14T12:08:26.000Z [INFO] 200 POST /api/auth/token - 35ms",
+      "is_previous": false
+    },
+    {
+      "id": 126,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 126,
+      "timestamp": "2026-01-14T12:10:27.000Z",
+      "message": "2026-01-14T12:10:27.000Z [INFO] 200 GET /api/users - 36ms",
+      "is_previous": false
+    },
+    {
+      "id": 127,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 127,
+      "timestamp": "2026-01-14T12:12:28.000Z",
+      "message": "2026-01-14T12:12:28.000Z [INFO] 200 POST /api/orders - 37ms",
+      "is_previous": false
+    },
+    {
+      "id": 128,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 128,
+      "timestamp": "2026-01-14T12:14:29.000Z",
+      "message": "2026-01-14T12:14:29.000Z [INFO] 200 GET /api/products - 38ms",
+      "is_previous": false
+    },
+    {
+      "id": 129,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 129,
+      "timestamp": "2026-01-14T12:16:30.000Z",
+      "message": "2026-01-14T12:16:30.000Z [INFO] 200 GET /api/health - 39ms",
+      "is_previous": false
+    },
+    {
+      "id": 130,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 130,
+      "timestamp": "2026-01-14T12:18:31.000Z",
+      "message": "2026-01-14T12:18:31.000Z [INFO] 200 GET /api/inventory - 40ms",
+      "is_previous": false
+    },
+    {
+      "id": 131,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 131,
+      "timestamp": "2026-01-14T12:20:32.000Z",
+      "message": "2026-01-14T12:20:32.000Z [INFO] 200 GET /api/sessions - 41ms",
+      "is_previous": false
+    },
+    {
+      "id": 132,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 132,
+      "timestamp": "2026-01-14T12:22:33.000Z",
+      "message": "2026-01-14T12:22:33.000Z [INFO] 200 POST /api/auth/token - 42ms",
+      "is_previous": false
+    },
+    {
+      "id": 133,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 133,
+      "timestamp": "2026-01-14T12:24:34.000Z",
+      "message": "2026-01-14T12:24:34.000Z [INFO] 200 GET /api/users - 43ms",
+      "is_previous": false
+    },
+    {
+      "id": 134,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 134,
+      "timestamp": "2026-01-14T12:26:35.000Z",
+      "message": "2026-01-14T12:26:35.000Z [INFO] 200 POST /api/orders - 44ms",
+      "is_previous": false
+    },
+    {
+      "id": 135,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 135,
+      "timestamp": "2026-01-14T12:28:36.000Z",
+      "message": "2026-01-14T12:28:36.000Z [INFO] 200 GET /api/products - 45ms",
+      "is_previous": false
+    },
+    {
+      "id": 136,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 136,
+      "timestamp": "2026-01-14T12:30:37.000Z",
+      "message": "2026-01-14T12:30:37.000Z [INFO] 200 GET /api/health - 46ms",
+      "is_previous": false
+    },
+    {
+      "id": 137,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 137,
+      "timestamp": "2026-01-14T12:32:38.000Z",
+      "message": "2026-01-14T12:32:38.000Z [INFO] 200 GET /api/inventory - 47ms",
+      "is_previous": false
+    },
+    {
+      "id": 138,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 138,
+      "timestamp": "2026-01-14T12:34:39.000Z",
+      "message": "2026-01-14T12:34:39.000Z [INFO] 200 GET /api/sessions - 48ms",
+      "is_previous": false
+    },
+    {
+      "id": 139,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 139,
+      "timestamp": "2026-01-14T12:36:40.000Z",
+      "message": "2026-01-14T12:36:40.000Z [INFO] 200 POST /api/auth/token - 49ms",
+      "is_previous": false
+    },
+    {
+      "id": 140,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 140,
+      "timestamp": "2026-01-14T12:38:41.000Z",
+      "message": "2026-01-14T12:38:41.000Z [INFO] 200 GET /api/users - 50ms",
+      "is_previous": false
+    },
+    {
+      "id": 141,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 141,
+      "timestamp": "2026-01-14T12:40:42.000Z",
+      "message": "2026-01-14T12:40:42.000Z [INFO] 200 POST /api/orders - 51ms",
+      "is_previous": false
+    },
+    {
+      "id": 142,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 142,
+      "timestamp": "2026-01-14T12:42:43.000Z",
+      "message": "2026-01-14T12:42:43.000Z [INFO] 200 GET /api/products - 52ms",
+      "is_previous": false
+    },
+    {
+      "id": 143,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 143,
+      "timestamp": "2026-01-14T12:44:44.000Z",
+      "message": "2026-01-14T12:44:44.000Z [INFO] 200 GET /api/health - 53ms",
+      "is_previous": false
+    },
+    {
+      "id": 144,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 144,
+      "timestamp": "2026-01-14T12:46:45.000Z",
+      "message": "2026-01-14T12:46:45.000Z [INFO] 200 GET /api/inventory - 54ms",
+      "is_previous": false
+    },
+    {
+      "id": 145,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 145,
+      "timestamp": "2026-01-14T12:48:46.000Z",
+      "message": "2026-01-14T12:48:46.000Z [INFO] 200 GET /api/sessions - 55ms",
+      "is_previous": false
+    },
+    {
+      "id": 146,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 146,
+      "timestamp": "2026-01-14T12:50:47.000Z",
+      "message": "2026-01-14T12:50:47.000Z [INFO] 200 POST /api/auth/token - 56ms",
+      "is_previous": false
+    },
+    {
+      "id": 147,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 147,
+      "timestamp": "2026-01-14T12:52:48.000Z",
+      "message": "2026-01-14T12:52:48.000Z [INFO] 200 GET /api/users - 57ms",
+      "is_previous": false
+    },
+    {
+      "id": 148,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 148,
+      "timestamp": "2026-01-14T12:54:49.000Z",
+      "message": "2026-01-14T12:54:49.000Z [INFO] 200 POST /api/orders - 58ms",
+      "is_previous": false
+    },
+    {
+      "id": 149,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 149,
+      "timestamp": "2026-01-14T12:56:50.000Z",
+      "message": "2026-01-14T12:56:50.000Z [INFO] 200 GET /api/products - 59ms",
+      "is_previous": false
+    },
+    {
+      "id": 150,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 150,
+      "timestamp": "2026-01-14T12:58:01.000Z",
+      "message": "2026-01-14T12:58:01.000Z [INFO] 200 GET /api/health - 10ms",
+      "is_previous": false
+    },
+    {
+      "id": 151,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 151,
+      "timestamp": "2026-01-14T13:00:02.000Z",
+      "message": "2026-01-14T13:00:02.000Z [INFO] 200 GET /api/inventory - 11ms",
+      "is_previous": false
+    },
+    {
+      "id": 152,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 152,
+      "timestamp": "2026-01-14T13:02:03.000Z",
+      "message": "2026-01-14T13:02:03.000Z [INFO] 200 GET /api/sessions - 12ms",
+      "is_previous": false
+    },
+    {
+      "id": 153,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 153,
+      "timestamp": "2026-01-14T13:04:04.000Z",
+      "message": "2026-01-14T13:04:04.000Z [INFO] 200 POST /api/auth/token - 13ms",
+      "is_previous": false
+    },
+    {
+      "id": 154,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 154,
+      "timestamp": "2026-01-14T13:06:05.000Z",
+      "message": "2026-01-14T13:06:05.000Z [INFO] 200 GET /api/users - 14ms",
+      "is_previous": false
+    },
+    {
+      "id": 155,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 155,
+      "timestamp": "2026-01-14T13:08:06.000Z",
+      "message": "2026-01-14T13:08:06.000Z [INFO] 200 POST /api/orders - 15ms",
+      "is_previous": false
+    },
+    {
+      "id": 156,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 156,
+      "timestamp": "2026-01-14T13:10:07.000Z",
+      "message": "2026-01-14T13:10:07.000Z [INFO] 200 GET /api/products - 16ms",
+      "is_previous": false
+    },
+    {
+      "id": 157,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 157,
+      "timestamp": "2026-01-14T13:12:08.000Z",
+      "message": "2026-01-14T13:12:08.000Z [INFO] 200 GET /api/health - 17ms",
+      "is_previous": false
+    },
+    {
+      "id": 158,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 158,
+      "timestamp": "2026-01-14T13:14:09.000Z",
+      "message": "2026-01-14T13:14:09.000Z [INFO] 200 GET /api/inventory - 18ms",
+      "is_previous": false
+    },
+    {
+      "id": 159,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 159,
+      "timestamp": "2026-01-14T13:16:10.000Z",
+      "message": "2026-01-14T13:16:10.000Z [INFO] 200 GET /api/sessions - 19ms",
+      "is_previous": false
+    },
+    {
+      "id": 160,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 160,
+      "timestamp": "2026-01-14T13:18:11.000Z",
+      "message": "2026-01-14T13:18:11.000Z [INFO] 200 POST /api/auth/token - 20ms",
+      "is_previous": false
+    },
+    {
+      "id": 161,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 161,
+      "timestamp": "2026-01-14T13:20:12.000Z",
+      "message": "2026-01-14T13:20:12.000Z [INFO] 200 GET /api/users - 21ms",
+      "is_previous": false
+    },
+    {
+      "id": 162,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 162,
+      "timestamp": "2026-01-14T13:22:13.000Z",
+      "message": "2026-01-14T13:22:13.000Z [INFO] 200 POST /api/orders - 22ms",
+      "is_previous": false
+    },
+    {
+      "id": 163,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 163,
+      "timestamp": "2026-01-14T13:24:14.000Z",
+      "message": "2026-01-14T13:24:14.000Z [INFO] 200 GET /api/products - 23ms",
+      "is_previous": false
+    },
+    {
+      "id": 164,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 164,
+      "timestamp": "2026-01-14T13:26:15.000Z",
+      "message": "2026-01-14T13:26:15.000Z [INFO] 200 GET /api/health - 24ms",
+      "is_previous": false
+    },
+    {
+      "id": 165,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 165,
+      "timestamp": "2026-01-14T13:28:16.000Z",
+      "message": "2026-01-14T13:28:16.000Z [INFO] 200 GET /api/inventory - 25ms",
+      "is_previous": false
+    },
+    {
+      "id": 166,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 166,
+      "timestamp": "2026-01-14T13:30:17.000Z",
+      "message": "2026-01-14T13:30:17.000Z [INFO] 200 GET /api/sessions - 26ms",
+      "is_previous": false
+    },
+    {
+      "id": 167,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 167,
+      "timestamp": "2026-01-14T13:32:18.000Z",
+      "message": "2026-01-14T13:32:18.000Z [INFO] 200 POST /api/auth/token - 27ms",
+      "is_previous": false
+    },
+    {
+      "id": 168,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 168,
+      "timestamp": "2026-01-14T13:34:19.000Z",
+      "message": "2026-01-14T13:34:19.000Z [INFO] 200 GET /api/users - 28ms",
+      "is_previous": false
+    },
+    {
+      "id": 169,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 169,
+      "timestamp": "2026-01-14T13:36:20.000Z",
+      "message": "2026-01-14T13:36:20.000Z [INFO] 200 POST /api/orders - 29ms",
+      "is_previous": false
+    },
+    {
+      "id": 170,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 170,
+      "timestamp": "2026-01-14T13:38:21.000Z",
+      "message": "2026-01-14T13:38:21.000Z [INFO] 200 GET /api/products - 30ms",
+      "is_previous": false
+    },
+    {
+      "id": 171,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 171,
+      "timestamp": "2026-01-14T13:40:22.000Z",
+      "message": "2026-01-14T13:40:22.000Z [INFO] 200 GET /api/health - 31ms",
+      "is_previous": false
+    },
+    {
+      "id": 172,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 172,
+      "timestamp": "2026-01-14T13:42:23.000Z",
+      "message": "2026-01-14T13:42:23.000Z [INFO] 200 GET /api/inventory - 32ms",
+      "is_previous": false
+    },
+    {
+      "id": 173,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 173,
+      "timestamp": "2026-01-14T13:44:24.000Z",
+      "message": "2026-01-14T13:44:24.000Z [INFO] 200 GET /api/sessions - 33ms",
+      "is_previous": false
+    },
+    {
+      "id": 174,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 174,
+      "timestamp": "2026-01-14T13:46:25.000Z",
+      "message": "2026-01-14T13:46:25.000Z [INFO] 200 POST /api/auth/token - 34ms",
+      "is_previous": false
+    },
+    {
+      "id": 175,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 175,
+      "timestamp": "2026-01-14T13:48:26.000Z",
+      "message": "2026-01-14T13:48:26.000Z [INFO] 200 GET /api/users - 35ms",
+      "is_previous": false
+    },
+    {
+      "id": 176,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 176,
+      "timestamp": "2026-01-14T13:50:27.000Z",
+      "message": "2026-01-14T13:50:27.000Z [INFO] 200 POST /api/orders - 36ms",
+      "is_previous": false
+    },
+    {
+      "id": 177,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 177,
+      "timestamp": "2026-01-14T13:52:28.000Z",
+      "message": "2026-01-14T13:52:28.000Z [INFO] 200 GET /api/products - 37ms",
+      "is_previous": false
+    },
+    {
+      "id": 178,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 178,
+      "timestamp": "2026-01-14T13:54:29.000Z",
+      "message": "2026-01-14T13:54:29.000Z [INFO] 200 GET /api/health - 38ms",
+      "is_previous": false
+    },
+    {
+      "id": 179,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 179,
+      "timestamp": "2026-01-14T13:56:30.000Z",
+      "message": "2026-01-14T13:56:30.000Z [INFO] 200 GET /api/inventory - 39ms",
+      "is_previous": false
+    },
+    {
+      "id": 180,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 180,
+      "timestamp": "2026-01-14T13:58:31.000Z",
+      "message": "2026-01-14T13:58:31.000Z [INFO] 200 GET /api/sessions - 40ms",
+      "is_previous": false
+    },
+    {
+      "id": 181,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 181,
+      "timestamp": "2026-01-14T14:00:32.000Z",
+      "message": "2026-01-14T14:00:32.000Z [INFO] 200 POST /api/auth/token - 41ms",
+      "is_previous": false
+    },
+    {
+      "id": 182,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 182,
+      "timestamp": "2026-01-14T14:02:33.000Z",
+      "message": "2026-01-14T14:02:33.000Z [INFO] 200 GET /api/users - 42ms",
+      "is_previous": false
+    },
+    {
+      "id": 183,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 183,
+      "timestamp": "2026-01-14T14:04:34.000Z",
+      "message": "2026-01-14T14:04:34.000Z [INFO] 200 POST /api/orders - 43ms",
+      "is_previous": false
+    },
+    {
+      "id": 184,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 184,
+      "timestamp": "2026-01-14T14:06:35.000Z",
+      "message": "2026-01-14T14:06:35.000Z [INFO] 200 GET /api/products - 44ms",
+      "is_previous": false
+    },
+    {
+      "id": 185,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 185,
+      "timestamp": "2026-01-14T14:08:36.000Z",
+      "message": "2026-01-14T14:08:36.000Z [INFO] 200 GET /api/health - 45ms",
+      "is_previous": false
+    },
+    {
+      "id": 186,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 186,
+      "timestamp": "2026-01-14T14:10:37.000Z",
+      "message": "2026-01-14T14:10:37.000Z [INFO] 200 GET /api/inventory - 46ms",
+      "is_previous": false
+    },
+    {
+      "id": 187,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 187,
+      "timestamp": "2026-01-14T14:12:38.000Z",
+      "message": "2026-01-14T14:12:38.000Z [INFO] 200 GET /api/sessions - 47ms",
+      "is_previous": false
+    },
+    {
+      "id": 188,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 188,
+      "timestamp": "2026-01-14T14:14:39.000Z",
+      "message": "2026-01-14T14:14:39.000Z [INFO] 200 POST /api/auth/token - 48ms",
+      "is_previous": false
+    },
+    {
+      "id": 189,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 189,
+      "timestamp": "2026-01-14T14:16:40.000Z",
+      "message": "2026-01-14T14:16:40.000Z [INFO] 200 GET /api/users - 49ms",
+      "is_previous": false
+    },
+    {
+      "id": 190,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 190,
+      "timestamp": "2026-01-14T14:18:41.000Z",
+      "message": "2026-01-14T14:18:41.000Z [INFO] 200 POST /api/orders - 50ms",
+      "is_previous": false
+    },
+    {
+      "id": 191,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 191,
+      "timestamp": "2026-01-14T14:20:42.000Z",
+      "message": "2026-01-14T14:20:42.000Z [INFO] 200 GET /api/products - 51ms",
+      "is_previous": false
+    },
+    {
+      "id": 192,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 192,
+      "timestamp": "2026-01-14T14:22:43.000Z",
+      "message": "2026-01-14T14:22:43.000Z [INFO] 200 GET /api/health - 52ms",
+      "is_previous": false
+    },
+    {
+      "id": 193,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 193,
+      "timestamp": "2026-01-14T14:24:44.000Z",
+      "message": "2026-01-14T14:24:44.000Z [INFO] 200 GET /api/inventory - 53ms",
+      "is_previous": false
+    },
+    {
+      "id": 194,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 194,
+      "timestamp": "2026-01-14T14:26:45.000Z",
+      "message": "2026-01-14T14:26:45.000Z [INFO] 200 GET /api/sessions - 54ms",
+      "is_previous": false
+    },
+    {
+      "id": 195,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 195,
+      "timestamp": "2026-01-14T14:28:46.000Z",
+      "message": "2026-01-14T14:28:46.000Z [INFO] 200 POST /api/auth/token - 55ms",
+      "is_previous": false
+    },
+    {
+      "id": 196,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 196,
+      "timestamp": "2026-01-14T14:30:01.000Z",
+      "message": "2026-01-14T14:30:01.000Z [INFO] [CONFIG RELOAD] Loading config from staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 197,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 197,
+      "timestamp": "2026-01-14T14:30:02.000Z",
+      "message": "2026-01-14T14:30:02.000Z [INFO] [CONFIG RELOAD] Backend pool updated: production-db.internal:5432 -> staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 198,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 198,
+      "timestamp": "2026-01-14T14:30:03.000Z",
+      "message": "2026-01-14T14:30:03.000Z [INFO] [CONFIG RELOAD] Configuration reload completed successfully",
+      "is_previous": false
+    },
+    {
+      "id": 199,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 199,
+      "timestamp": "2026-01-14T14:30:05.000Z",
+      "message": "2026-01-14T14:30:05.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 200,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 200,
+      "timestamp": "2026-01-14T14:30:15.000Z",
+      "message": "2026-01-14T14:30:15.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 201,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 201,
+      "timestamp": "2026-01-14T14:30:25.000Z",
+      "message": "2026-01-14T14:30:25.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 202,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 202,
+      "timestamp": "2026-01-14T14:30:35.000Z",
+      "message": "2026-01-14T14:30:35.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 203,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 203,
+      "timestamp": "2026-01-14T14:30:45.000Z",
+      "message": "2026-01-14T14:30:45.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 204,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 204,
+      "timestamp": "2026-01-14T14:30:55.000Z",
+      "message": "2026-01-14T14:30:55.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 205,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 205,
+      "timestamp": "2026-01-14T14:31:05.000Z",
+      "message": "2026-01-14T14:31:05.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 206,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 206,
+      "timestamp": "2026-01-14T14:31:15.000Z",
+      "message": "2026-01-14T14:31:15.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 207,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 207,
+      "timestamp": "2026-01-14T14:31:25.000Z",
+      "message": "2026-01-14T14:31:25.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 208,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 208,
+      "timestamp": "2026-01-14T14:31:35.000Z",
+      "message": "2026-01-14T14:31:35.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 209,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 209,
+      "timestamp": "2026-01-14T14:31:45.000Z",
+      "message": "2026-01-14T14:31:45.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 210,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 210,
+      "timestamp": "2026-01-14T14:31:55.000Z",
+      "message": "2026-01-14T14:31:55.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 211,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 211,
+      "timestamp": "2026-01-14T14:32:05.000Z",
+      "message": "2026-01-14T14:32:05.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 212,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 212,
+      "timestamp": "2026-01-14T14:32:15.000Z",
+      "message": "2026-01-14T14:32:15.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 213,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 213,
+      "timestamp": "2026-01-14T14:32:25.000Z",
+      "message": "2026-01-14T14:32:25.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 214,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 214,
+      "timestamp": "2026-01-14T14:32:35.000Z",
+      "message": "2026-01-14T14:32:35.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 215,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 215,
+      "timestamp": "2026-01-14T14:32:45.000Z",
+      "message": "2026-01-14T14:32:45.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 216,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 216,
+      "timestamp": "2026-01-14T14:32:55.000Z",
+      "message": "2026-01-14T14:32:55.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 217,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 217,
+      "timestamp": "2026-01-14T14:33:05.000Z",
+      "message": "2026-01-14T14:33:05.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 218,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 218,
+      "timestamp": "2026-01-14T14:33:15.000Z",
+      "message": "2026-01-14T14:33:15.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 219,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 219,
+      "timestamp": "2026-01-14T14:33:25.000Z",
+      "message": "2026-01-14T14:33:25.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 220,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 220,
+      "timestamp": "2026-01-14T14:33:35.000Z",
+      "message": "2026-01-14T14:33:35.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 221,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 221,
+      "timestamp": "2026-01-14T14:33:45.000Z",
+      "message": "2026-01-14T14:33:45.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 222,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 222,
+      "timestamp": "2026-01-14T14:33:55.000Z",
+      "message": "2026-01-14T14:33:55.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 223,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 223,
+      "timestamp": "2026-01-14T14:34:05.000Z",
+      "message": "2026-01-14T14:34:05.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 224,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 224,
       "timestamp": "2026-01-14T14:34:15.000Z",
-      "message": "2026-01-14T14:34:15.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432"
+      "message": "2026-01-14T14:34:15.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 225,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 225,
+      "timestamp": "2026-01-14T14:34:25.000Z",
+      "message": "2026-01-14T14:34:25.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 226,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 226,
+      "timestamp": "2026-01-14T14:34:35.000Z",
+      "message": "2026-01-14T14:34:35.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 227,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 227,
+      "timestamp": "2026-01-14T15:00:32.000Z",
+      "message": "2026-01-14T15:00:32.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 228,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 228,
+      "timestamp": "2026-01-14T15:04:33.000Z",
+      "message": "2026-01-14T15:04:33.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 229,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 229,
+      "timestamp": "2026-01-14T15:08:34.000Z",
+      "message": "2026-01-14T15:08:34.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 230,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 230,
+      "timestamp": "2026-01-14T15:12:35.000Z",
+      "message": "2026-01-14T15:12:35.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 231,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 231,
+      "timestamp": "2026-01-14T15:16:36.000Z",
+      "message": "2026-01-14T15:16:36.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 232,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 232,
+      "timestamp": "2026-01-14T15:20:37.000Z",
+      "message": "2026-01-14T15:20:37.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 233,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 233,
+      "timestamp": "2026-01-14T15:24:38.000Z",
+      "message": "2026-01-14T15:24:38.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 234,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 234,
+      "timestamp": "2026-01-14T15:28:39.000Z",
+      "message": "2026-01-14T15:28:39.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 235,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 235,
+      "timestamp": "2026-01-14T15:32:40.000Z",
+      "message": "2026-01-14T15:32:40.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 236,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 236,
+      "timestamp": "2026-01-14T15:36:41.000Z",
+      "message": "2026-01-14T15:36:41.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 237,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 237,
+      "timestamp": "2026-01-14T15:40:42.000Z",
+      "message": "2026-01-14T15:40:42.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 238,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 238,
+      "timestamp": "2026-01-14T15:44:43.000Z",
+      "message": "2026-01-14T15:44:43.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 239,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 239,
+      "timestamp": "2026-01-14T15:48:44.000Z",
+      "message": "2026-01-14T15:48:44.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 240,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 240,
+      "timestamp": "2026-01-14T15:52:45.000Z",
+      "message": "2026-01-14T15:52:45.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 241,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 241,
+      "timestamp": "2026-01-14T15:56:46.000Z",
+      "message": "2026-01-14T15:56:46.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 242,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 242,
+      "timestamp": "2026-01-14T16:00:47.000Z",
+      "message": "2026-01-14T16:00:47.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 243,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 243,
+      "timestamp": "2026-01-14T16:04:48.000Z",
+      "message": "2026-01-14T16:04:48.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 244,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 244,
+      "timestamp": "2026-01-14T16:08:49.000Z",
+      "message": "2026-01-14T16:08:49.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 245,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 245,
+      "timestamp": "2026-01-14T16:12:50.000Z",
+      "message": "2026-01-14T16:12:50.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 246,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 246,
+      "timestamp": "2026-01-14T16:16:51.000Z",
+      "message": "2026-01-14T16:16:51.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 247,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 247,
+      "timestamp": "2026-01-14T16:20:52.000Z",
+      "message": "2026-01-14T16:20:52.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 248,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 248,
+      "timestamp": "2026-01-14T16:24:53.000Z",
+      "message": "2026-01-14T16:24:53.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 249,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 249,
+      "timestamp": "2026-01-14T16:28:54.000Z",
+      "message": "2026-01-14T16:28:54.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 250,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 250,
+      "timestamp": "2026-01-14T16:32:05.000Z",
+      "message": "2026-01-14T16:32:05.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 251,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 251,
+      "timestamp": "2026-01-14T16:36:06.000Z",
+      "message": "2026-01-14T16:36:06.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 252,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 252,
+      "timestamp": "2026-01-14T16:40:07.000Z",
+      "message": "2026-01-14T16:40:07.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 253,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 253,
+      "timestamp": "2026-01-14T16:44:08.000Z",
+      "message": "2026-01-14T16:44:08.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 254,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 254,
+      "timestamp": "2026-01-14T16:48:09.000Z",
+      "message": "2026-01-14T16:48:09.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 255,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 255,
+      "timestamp": "2026-01-14T16:52:10.000Z",
+      "message": "2026-01-14T16:52:10.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 256,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 256,
+      "timestamp": "2026-01-14T16:56:11.000Z",
+      "message": "2026-01-14T16:56:11.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 257,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 257,
+      "timestamp": "2026-01-14T17:00:12.000Z",
+      "message": "2026-01-14T17:00:12.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 258,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 258,
+      "timestamp": "2026-01-14T17:04:13.000Z",
+      "message": "2026-01-14T17:04:13.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 259,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 259,
+      "timestamp": "2026-01-14T17:08:14.000Z",
+      "message": "2026-01-14T17:08:14.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 260,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 260,
+      "timestamp": "2026-01-14T17:12:15.000Z",
+      "message": "2026-01-14T17:12:15.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 261,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 261,
+      "timestamp": "2026-01-14T17:16:16.000Z",
+      "message": "2026-01-14T17:16:16.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 262,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 262,
+      "timestamp": "2026-01-14T17:20:17.000Z",
+      "message": "2026-01-14T17:20:17.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 263,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 263,
+      "timestamp": "2026-01-14T17:24:18.000Z",
+      "message": "2026-01-14T17:24:18.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 264,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 264,
+      "timestamp": "2026-01-14T17:28:19.000Z",
+      "message": "2026-01-14T17:28:19.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 265,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 265,
+      "timestamp": "2026-01-14T17:32:20.000Z",
+      "message": "2026-01-14T17:32:20.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 266,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 266,
+      "timestamp": "2026-01-14T17:36:21.000Z",
+      "message": "2026-01-14T17:36:21.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 267,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 267,
+      "timestamp": "2026-01-14T17:40:22.000Z",
+      "message": "2026-01-14T17:40:22.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 268,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 268,
+      "timestamp": "2026-01-14T17:44:23.000Z",
+      "message": "2026-01-14T17:44:23.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 269,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 269,
+      "timestamp": "2026-01-14T17:48:24.000Z",
+      "message": "2026-01-14T17:48:24.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 270,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 270,
+      "timestamp": "2026-01-14T17:52:25.000Z",
+      "message": "2026-01-14T17:52:25.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 271,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 271,
+      "timestamp": "2026-01-14T17:56:26.000Z",
+      "message": "2026-01-14T17:56:26.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 272,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 272,
+      "timestamp": "2026-01-14T18:00:27.000Z",
+      "message": "2026-01-14T18:00:27.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 273,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 273,
+      "timestamp": "2026-01-14T18:04:28.000Z",
+      "message": "2026-01-14T18:04:28.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 274,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 274,
+      "timestamp": "2026-01-14T18:08:29.000Z",
+      "message": "2026-01-14T18:08:29.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 275,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 275,
+      "timestamp": "2026-01-14T18:12:30.000Z",
+      "message": "2026-01-14T18:12:30.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 276,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 276,
+      "timestamp": "2026-01-14T18:16:31.000Z",
+      "message": "2026-01-14T18:16:31.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 277,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 277,
+      "timestamp": "2026-01-14T18:20:32.000Z",
+      "message": "2026-01-14T18:20:32.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 278,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 278,
+      "timestamp": "2026-01-14T18:24:33.000Z",
+      "message": "2026-01-14T18:24:33.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 279,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 279,
+      "timestamp": "2026-01-14T18:28:34.000Z",
+      "message": "2026-01-14T18:28:34.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 280,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 280,
+      "timestamp": "2026-01-14T18:32:35.000Z",
+      "message": "2026-01-14T18:32:35.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 281,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 281,
+      "timestamp": "2026-01-14T18:36:36.000Z",
+      "message": "2026-01-14T18:36:36.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 282,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 282,
+      "timestamp": "2026-01-14T18:40:37.000Z",
+      "message": "2026-01-14T18:40:37.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 283,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 283,
+      "timestamp": "2026-01-14T18:44:38.000Z",
+      "message": "2026-01-14T18:44:38.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 284,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 284,
+      "timestamp": "2026-01-14T18:48:39.000Z",
+      "message": "2026-01-14T18:48:39.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 285,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 285,
+      "timestamp": "2026-01-14T18:52:40.000Z",
+      "message": "2026-01-14T18:52:40.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 286,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 286,
+      "timestamp": "2026-01-14T18:56:41.000Z",
+      "message": "2026-01-14T18:56:41.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 287,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 287,
+      "timestamp": "2026-01-14T19:00:42.000Z",
+      "message": "2026-01-14T19:00:42.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 288,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 288,
+      "timestamp": "2026-01-14T19:04:43.000Z",
+      "message": "2026-01-14T19:04:43.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 289,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 289,
+      "timestamp": "2026-01-14T19:08:44.000Z",
+      "message": "2026-01-14T19:08:44.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 290,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 290,
+      "timestamp": "2026-01-14T19:12:45.000Z",
+      "message": "2026-01-14T19:12:45.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 291,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 291,
+      "timestamp": "2026-01-14T19:16:46.000Z",
+      "message": "2026-01-14T19:16:46.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 292,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 292,
+      "timestamp": "2026-01-14T19:20:47.000Z",
+      "message": "2026-01-14T19:20:47.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 293,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 293,
+      "timestamp": "2026-01-14T19:24:48.000Z",
+      "message": "2026-01-14T19:24:48.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 294,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 294,
+      "timestamp": "2026-01-14T19:28:49.000Z",
+      "message": "2026-01-14T19:28:49.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 295,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 295,
+      "timestamp": "2026-01-14T19:32:50.000Z",
+      "message": "2026-01-14T19:32:50.000Z [ERROR] 500 POST /api/orders - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 296,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 296,
+      "timestamp": "2026-01-14T19:36:51.000Z",
+      "message": "2026-01-14T19:36:51.000Z [ERROR] 500 GET /api/products - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 297,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 297,
+      "timestamp": "2026-01-14T19:40:52.000Z",
+      "message": "2026-01-14T19:40:52.000Z [ERROR] 500 GET /api/health - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 298,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 298,
+      "timestamp": "2026-01-14T19:44:53.000Z",
+      "message": "2026-01-14T19:44:53.000Z [ERROR] 500 GET /api/inventory - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 299,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 299,
+      "timestamp": "2026-01-14T19:48:54.000Z",
+      "message": "2026-01-14T19:48:54.000Z [ERROR] 500 GET /api/sessions - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 300,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 300,
+      "timestamp": "2026-01-14T19:52:05.000Z",
+      "message": "2026-01-14T19:52:05.000Z [ERROR] 500 POST /api/auth/token - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 301,
+      "pod_id": 1,
+      "container_name": "log-emitter",
+      "line_number": 301,
+      "timestamp": "2026-01-14T19:56:06.000Z",
+      "message": "2026-01-14T19:56:06.000Z [ERROR] 500 GET /api/users - Connection refused to staging-db.internal:5432",
+      "is_previous": false
+    },
+    {
+      "id": 302,
+      "pod_id": 100,
+      "container_name": "prometheus",
+      "line_number": 1,
+      "timestamp": "2026-01-14T08:00:01Z",
+      "message": "level=info ts=2026-01-14T08:00:01Z caller=main.go:564 msg=\"Server is ready to receive web requests.\"",
+      "is_previous": false
+    },
+    {
+      "id": 303,
+      "pod_id": 100,
+      "container_name": "prometheus",
+      "line_number": 2,
+      "timestamp": "2026-01-14T08:00:02Z",
+      "message": "level=info ts=2026-01-14T08:00:02Z caller=main.go:575 msg=\"Completed loading of configuration file\" filename=/etc/prometheus/prometheus.yml",
+      "is_previous": false
+    },
+    {
+      "id": 304,
+      "pod_id": 100,
+      "container_name": "prometheus",
+      "line_number": 3,
+      "timestamp": "2026-01-14T08:05:00Z",
+      "message": "level=info ts=2026-01-14T08:05:00Z caller=scrape.go:1145 msg=\"Scrape loop\" target=kube-state-metrics interval=30s",
+      "is_previous": false
+    },
+    {
+      "id": 305,
+      "pod_id": 100,
+      "container_name": "prometheus",
+      "line_number": 4,
+      "timestamp": "2026-01-14T08:10:00Z",
+      "message": "level=info ts=2026-01-14T08:10:00Z caller=compact.go:519 msg=\"compact blocks\" count=3 mint=1705171200000 maxt=1705190400000",
+      "is_previous": false
+    },
+    {
+      "id": 306,
+      "pod_id": 100,
+      "container_name": "prometheus",
+      "line_number": 5,
+      "timestamp": "2026-01-14T08:15:00Z",
+      "message": "level=info ts=2026-01-14T08:15:00Z caller=head.go:840 msg=\"WAL replay completed\" duration=1.234s",
+      "is_previous": false
+    },
+    {
+      "id": 307,
+      "pod_id": 101,
+      "container_name": "alertmanager",
+      "line_number": 6,
+      "timestamp": "2026-01-14T08:00:03Z",
+      "message": "level=info ts=2026-01-14T08:00:03Z caller=main.go:231 msg=\"Starting Alertmanager\" version=0.26.0",
+      "is_previous": false
+    },
+    {
+      "id": 308,
+      "pod_id": 101,
+      "container_name": "alertmanager",
+      "line_number": 7,
+      "timestamp": "2026-01-14T08:00:04Z",
+      "message": "level=info ts=2026-01-14T08:00:04Z caller=cluster.go:189 msg=\"Waiting for gossip to settle...\"",
+      "is_previous": false
+    },
+    {
+      "id": 309,
+      "pod_id": 101,
+      "container_name": "alertmanager",
+      "line_number": 8,
+      "timestamp": "2026-01-14T08:00:06Z",
+      "message": "level=info ts=2026-01-14T08:00:06Z caller=cluster.go:211 msg=\"Gossip settled\" duration=2s",
+      "is_previous": false
+    },
+    {
+      "id": 310,
+      "pod_id": 101,
+      "container_name": "alertmanager",
+      "line_number": 9,
+      "timestamp": "2026-01-14T08:05:01Z",
+      "message": "level=info ts=2026-01-14T08:05:01Z caller=dispatch.go:167 msg=\"Received alert\" alert=Watchdog status=firing",
+      "is_previous": false
+    },
+    {
+      "id": 311,
+      "pod_id": 101,
+      "container_name": "alertmanager",
+      "line_number": 10,
+      "timestamp": "2026-01-14T08:10:01Z",
+      "message": "level=info ts=2026-01-14T08:10:01Z caller=dispatch.go:167 msg=\"Received alert\" alert=Watchdog status=firing",
+      "is_previous": false
+    },
+    {
+      "id": 312,
+      "pod_id": 104,
+      "container_name": "router",
+      "line_number": 11,
+      "timestamp": "2026-01-14T08:00:10Z",
+      "message": "I0114 08:00:10.000000       1 router.go:101] router \"msg\"=\"starting router\" \"version\"=\"4.14.12\"",
+      "is_previous": false
+    },
+    {
+      "id": 313,
+      "pod_id": 104,
+      "container_name": "router",
+      "line_number": 12,
+      "timestamp": "2026-01-14T08:00:11Z",
+      "message": "I0114 08:00:11.000000       1 router.go:250] router \"msg\"=\"router reloaded\" \"endpoints\"=347 \"routes\"=89",
+      "is_previous": false
+    },
+    {
+      "id": 314,
+      "pod_id": 104,
+      "container_name": "router",
+      "line_number": 13,
+      "timestamp": "2026-01-14T08:05:10Z",
+      "message": "I0114 08:05:10.000000       1 router.go:250] router \"msg\"=\"router reloaded\" \"endpoints\"=347 \"routes\"=89",
+      "is_previous": false
+    },
+    {
+      "id": 315,
+      "pod_id": 104,
+      "container_name": "router",
+      "line_number": 14,
+      "timestamp": "2026-01-14T08:10:10Z",
+      "message": "I0114 08:10:10.000000       1 router.go:250] router \"msg\"=\"router reloaded\" \"endpoints\"=348 \"routes\"=89",
+      "is_previous": false
+    },
+    {
+      "id": 316,
+      "pod_id": 104,
+      "container_name": "router",
+      "line_number": 15,
+      "timestamp": "2026-01-14T08:15:10Z",
+      "message": "I0114 08:15:10.000000       1 router.go:250] router \"msg\"=\"router reloaded\" \"endpoints\"=348 \"routes\"=89",
+      "is_previous": false
+    },
+    {
+      "id": 317,
+      "pod_id": 107,
+      "container_name": "coredns",
+      "line_number": 16,
+      "timestamp": "2026-01-14T08:00:20Z",
+      "message": ".:53 - [INFO] plugin/reload: Running configuration SHA512 = a1b2c3d4",
+      "is_previous": false
+    },
+    {
+      "id": 318,
+      "pod_id": 107,
+      "container_name": "coredns",
+      "line_number": 17,
+      "timestamp": "2026-01-14T08:00:21Z",
+      "message": "linux/amd64, go1.20.7, 48f800c6",
+      "is_previous": false
+    },
+    {
+      "id": 319,
+      "pod_id": 107,
+      "container_name": "coredns",
+      "line_number": 18,
+      "timestamp": "2026-01-14T08:00:22Z",
+      "message": ".:53 - [INFO] CoreDNS-1.10.1 is ready",
+      "is_previous": false
+    },
+    {
+      "id": 320,
+      "pod_id": 107,
+      "container_name": "coredns",
+      "line_number": 19,
+      "timestamp": "2026-01-14T08:05:20Z",
+      "message": ".:53 - [INFO] 10.128.0.1:42356 - 12345 \"A IN kubernetes.default.svc.cluster.local. udp 53 false 512\" NOERROR qr,aa,rd 106 0.000234s",
+      "is_previous": false
+    },
+    {
+      "id": 321,
+      "pod_id": 107,
+      "container_name": "coredns",
+      "line_number": 20,
+      "timestamp": "2026-01-14T08:10:20Z",
+      "message": ".:53 - [INFO] 10.128.0.1:51234 - 12346 \"AAAA IN openshift.default.svc.cluster.local. udp 57 false 512\" NOERROR qr,aa,rd 150 0.000187s",
+      "is_previous": false
+    },
+    {
+      "id": 322,
+      "pod_id": 110,
+      "container_name": "olm-operator",
+      "line_number": 21,
+      "timestamp": "2026-01-14T08:00:30Z",
+      "message": "time=\"2026-01-14T08:00:30Z\" level=info msg=\"Starting OLM operator\" version=v0.26.0",
+      "is_previous": false
+    },
+    {
+      "id": 323,
+      "pod_id": 110,
+      "container_name": "olm-operator",
+      "line_number": 22,
+      "timestamp": "2026-01-14T08:00:31Z",
+      "message": "time=\"2026-01-14T08:00:31Z\" level=info msg=\"Starting EventSource\" controller=install source=\"kind source: *v1alpha1.InstallPlan\"",
+      "is_previous": false
+    },
+    {
+      "id": 324,
+      "pod_id": 110,
+      "container_name": "olm-operator",
+      "line_number": 23,
+      "timestamp": "2026-01-14T08:05:30Z",
+      "message": "time=\"2026-01-14T08:05:30Z\" level=info msg=\"Reconciling\" installplan=openshift-operators/install-abc123",
+      "is_previous": false
+    },
+    {
+      "id": 325,
+      "pod_id": 110,
+      "container_name": "olm-operator",
+      "line_number": 24,
+      "timestamp": "2026-01-14T08:10:30Z",
+      "message": "time=\"2026-01-14T08:10:30Z\" level=info msg=\"All install plans satisfied\"",
+      "is_previous": false
+    },
+    {
+      "id": 326,
+      "pod_id": 110,
+      "container_name": "olm-operator",
+      "line_number": 25,
+      "timestamp": "2026-01-14T08:15:30Z",
+      "message": "time=\"2026-01-14T08:15:30Z\" level=info msg=\"Cluster service version phase\" csv=openshift-operators/amq-streams.v2.6.0 phase=Succeeded",
+      "is_previous": false
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "id": 100,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0100-0000-0000-0000-000000000000",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-monitoring/prometheus-k8s-0 to worker-0",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T06:00:00Z",
+      "first_timestamp": "2026-01-14T06:00:00Z",
+      "last_timestamp": "2026-01-14T06:00:00Z",
+      "resolved_timestamp": "2026-01-14T06:00:00Z",
+      "created_at": "2026-01-14T06:00:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_uid": "pod-0100-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T06:00:00Z"
+    },
+    {
+      "id": 101,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0101-0000-0000-0000-000000000000",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T07:07:00Z",
+      "first_timestamp": "2026-01-14T07:07:00Z",
+      "last_timestamp": "2026-01-14T07:07:00Z",
+      "resolved_timestamp": "2026-01-14T07:07:00Z",
+      "created_at": "2026-01-14T07:07:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_uid": "pod-0100-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T07:07:00Z"
+    },
+    {
+      "id": 102,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0102-0000-0000-0000-000000000000",
+      "reason": "Started",
+      "message": "Started container prometheus",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T08:14:00Z",
+      "first_timestamp": "2026-01-14T08:14:00Z",
+      "last_timestamp": "2026-01-14T08:14:00Z",
+      "resolved_timestamp": "2026-01-14T08:14:00Z",
+      "created_at": "2026-01-14T08:14:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "prometheus-k8s-0",
+      "involved_object_uid": "pod-0100-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T08:14:00Z"
+    },
+    {
+      "id": 103,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0103-0000-0000-0000-000000000000",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-monitoring/alertmanager-main-0 to worker-0",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T09:21:00Z",
+      "first_timestamp": "2026-01-14T09:21:00Z",
+      "last_timestamp": "2026-01-14T09:21:00Z",
+      "resolved_timestamp": "2026-01-14T09:21:00Z",
+      "created_at": "2026-01-14T09:21:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "alertmanager-main-0",
+      "involved_object_uid": "pod-0101-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T09:21:00Z"
+    },
+    {
+      "id": 104,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0104-0000-0000-0000-000000000000",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T06:28:00Z",
+      "first_timestamp": "2026-01-14T06:28:00Z",
+      "last_timestamp": "2026-01-14T06:28:00Z",
+      "resolved_timestamp": "2026-01-14T06:28:00Z",
+      "created_at": "2026-01-14T06:28:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "alertmanager-main-0",
+      "involved_object_uid": "pod-0101-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T06:28:00Z"
+    },
+    {
+      "id": 105,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0105-0000-0000-0000-000000000000",
+      "reason": "Started",
+      "message": "Started container alertmanager",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T07:35:00Z",
+      "first_timestamp": "2026-01-14T07:35:00Z",
+      "last_timestamp": "2026-01-14T07:35:00Z",
+      "resolved_timestamp": "2026-01-14T07:35:00Z",
+      "created_at": "2026-01-14T07:35:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "alertmanager-main-0",
+      "involved_object_uid": "pod-0101-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T07:35:00Z"
+    },
+    {
+      "id": 106,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "ev-0106-0000-0000-0000-000000000000",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-ingress/router-default-7b8c9d0e1f-a2b3c to worker-0",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T08:42:00Z",
+      "first_timestamp": "2026-01-14T08:42:00Z",
+      "last_timestamp": "2026-01-14T08:42:00Z",
+      "resolved_timestamp": "2026-01-14T08:42:00Z",
+      "created_at": "2026-01-14T08:42:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
+      "involved_object_uid": "pod-0104-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T08:42:00Z"
+    },
+    {
+      "id": 107,
+      "cluster_id": 1,
+      "namespace_id": 101,
+      "uid": "ev-0107-0000-0000-0000-000000000000",
+      "reason": "Started",
+      "message": "Started container router",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T09:49:00Z",
+      "first_timestamp": "2026-01-14T09:49:00Z",
+      "last_timestamp": "2026-01-14T09:49:00Z",
+      "resolved_timestamp": "2026-01-14T09:49:00Z",
+      "created_at": "2026-01-14T09:49:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "router-default-7b8c9d0e1f-a2b3c",
+      "involved_object_uid": "pod-0104-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T09:49:00Z"
+    },
+    {
+      "id": 108,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "ev-0108-0000-0000-0000-000000000000",
+      "reason": "Scheduled",
+      "message": "Successfully assigned kube-system/coredns-5d8b7c6a4f-k9l0m to worker-0",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T06:56:00Z",
+      "first_timestamp": "2026-01-14T06:56:00Z",
+      "last_timestamp": "2026-01-14T06:56:00Z",
+      "resolved_timestamp": "2026-01-14T06:56:00Z",
+      "created_at": "2026-01-14T06:56:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
+      "involved_object_uid": "pod-0107-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T06:56:00Z"
+    },
+    {
+      "id": 109,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "ev-0109-0000-0000-0000-000000000000",
+      "reason": "Started",
+      "message": "Started container coredns",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T07:03:00Z",
+      "first_timestamp": "2026-01-14T07:03:00Z",
+      "last_timestamp": "2026-01-14T07:03:00Z",
+      "resolved_timestamp": "2026-01-14T07:03:00Z",
+      "created_at": "2026-01-14T07:03:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-k9l0m",
+      "involved_object_uid": "pod-0107-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T07:03:00Z"
+    },
+    {
+      "id": 110,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "ev-0110-0000-0000-0000-000000000000",
+      "reason": "Scheduled",
+      "message": "Successfully assigned openshift-operators/olm-operator-7a8b9c0d1e-f2g3h to worker-0",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T08:10:00Z",
+      "first_timestamp": "2026-01-14T08:10:00Z",
+      "last_timestamp": "2026-01-14T08:10:00Z",
+      "resolved_timestamp": "2026-01-14T08:10:00Z",
+      "created_at": "2026-01-14T08:10:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
+      "involved_object_uid": "pod-0110-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T08:10:00Z"
+    },
+    {
+      "id": 111,
+      "cluster_id": 1,
+      "namespace_id": 104,
+      "uid": "ev-0111-0000-0000-0000-000000000000",
+      "reason": "Started",
+      "message": "Started container olm-operator",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T09:17:00Z",
+      "first_timestamp": "2026-01-14T09:17:00Z",
+      "last_timestamp": "2026-01-14T09:17:00Z",
+      "resolved_timestamp": "2026-01-14T09:17:00Z",
+      "created_at": "2026-01-14T09:17:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "olm-operator-7a8b9c0d1e-f2g3h",
+      "involved_object_uid": "pod-0110-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T09:17:00Z"
+    },
+    {
+      "id": 112,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0112-0000-0000-0000-000000000000",
+      "reason": "Unhealthy",
+      "message": "Liveness probe failed: HTTP probe failed with statuscode: 503",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 3,
+      "event_time": "2026-01-14T06:24:00Z",
+      "first_timestamp": "2026-01-14T06:24:00Z",
+      "last_timestamp": "2026-01-14T06:24:00Z",
+      "resolved_timestamp": "2026-01-14T06:24:00Z",
+      "created_at": "2026-01-14T06:24:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "grafana-7f9bc4d8b5-x2k9m",
+      "involved_object_uid": "pod-0102-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T06:24:00Z"
+    },
+    {
+      "id": 113,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0113-0000-0000-0000-000000000000",
+      "reason": "Unhealthy",
+      "message": "Readiness probe failed: HTTP probe failed with statuscode: 503",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 3,
+      "event_time": "2026-01-14T07:31:00Z",
+      "first_timestamp": "2026-01-14T07:31:00Z",
+      "last_timestamp": "2026-01-14T07:31:00Z",
+      "resolved_timestamp": "2026-01-14T07:31:00Z",
+      "created_at": "2026-01-14T07:31:00Z",
+      "event_type": "Warning",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "grafana-7f9bc4d8b5-x2k9m",
+      "involved_object_uid": "pod-0102-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T07:31:00Z"
+    },
+    {
+      "id": 114,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "ev-0114-0000-0000-0000-000000000000",
+      "reason": "LeaderElection",
+      "message": "kube-apiserver-master-0 became leader",
+      "source_component": "kube-apiserver",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T08:38:00Z",
+      "first_timestamp": "2026-01-14T08:38:00Z",
+      "last_timestamp": "2026-01-14T08:38:00Z",
+      "resolved_timestamp": "2026-01-14T08:38:00Z",
+      "created_at": "2026-01-14T08:38:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "kube-apiserver-master-0",
+      "involved_object_uid": "pod-0109-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kube-apiserver",
+      "series_last_observed": "2026-01-14T08:38:00Z"
+    },
+    {
+      "id": 115,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0115-0000-0000-0000-000000000000",
+      "reason": "Pulled",
+      "message": "Container image already present on machine",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T09:45:00Z",
+      "first_timestamp": "2026-01-14T09:45:00Z",
+      "last_timestamp": "2026-01-14T09:45:00Z",
+      "resolved_timestamp": "2026-01-14T09:45:00Z",
+      "created_at": "2026-01-14T09:45:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "thanos-querier-6c8d7e9f0a-b3c4d",
+      "involved_object_uid": "pod-0103-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T09:45:00Z"
+    },
+    {
+      "id": 116,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "uid": "ev-0116-0000-0000-0000-000000000000",
+      "reason": "Started",
+      "message": "Started container thanos-query",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T06:52:00Z",
+      "first_timestamp": "2026-01-14T06:52:00Z",
+      "last_timestamp": "2026-01-14T06:52:00Z",
+      "resolved_timestamp": "2026-01-14T06:52:00Z",
+      "created_at": "2026-01-14T06:52:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "thanos-querier-6c8d7e9f0a-b3c4d",
+      "involved_object_uid": "pod-0103-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T06:52:00Z"
+    },
+    {
+      "id": 117,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "uid": "ev-0117-0000-0000-0000-000000000000",
+      "reason": "Started",
+      "message": "Started container coredns",
+      "source_component": "kubelet",
+      "source_host": "worker-0.eval-cluster.example.com",
+      "count": 1,
+      "event_time": "2026-01-14T07:59:00Z",
+      "first_timestamp": "2026-01-14T07:59:00Z",
+      "last_timestamp": "2026-01-14T07:59:00Z",
+      "resolved_timestamp": "2026-01-14T07:59:00Z",
+      "created_at": "2026-01-14T07:59:00Z",
+      "event_type": "Normal",
+      "involved_object_kind": "Pod",
+      "involved_object_name": "coredns-5d8b7c6a4f-n1o2p",
+      "involved_object_uid": "pod-0108-0000-0000-0000-000000000000",
+      "involved_object_api_version": "v1",
+      "reporting_component": "kubelet",
+      "series_last_observed": "2026-01-14T07:59:00Z"
+    }
+  ],
   "resources": [
     {
       "id": 1,
@@ -1026,6 +5552,165 @@
       },
       "created_at": "2026-01-14T08:00:00Z",
       "replicas": 1
+    },
+    {
+      "id": 100,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "api_resource_id": 100,
+      "name": "kube-root-ca.crt",
+      "uid": "res-0100-0000-0000-0000-000000000000",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "ConfigMap",
+        "metadata": {
+          "name": "kube-root-ca.crt",
+          "labels": {}
+        },
+        "data": {
+          "ca.crt": "-----BEGIN CERTIFICATE-----\nMIID...(truncated)\n-----END CERTIFICATE-----\n"
+        }
+      },
+      "created_at": "2025-12-01T00:00:00Z",
+      "replicas": null
+    },
+    {
+      "id": 101,
+      "cluster_id": 1,
+      "namespace_id": 1,
+      "api_resource_id": 100,
+      "name": "openshift-service-ca.crt",
+      "uid": "res-0101-0000-0000-0000-000000000000",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "ConfigMap",
+        "metadata": {
+          "name": "openshift-service-ca.crt",
+          "labels": {}
+        },
+        "data": {
+          "service-ca.crt": "-----BEGIN CERTIFICATE-----\nMIIE...(truncated)\n-----END CERTIFICATE-----\n"
+        }
+      },
+      "created_at": "2025-12-01T00:00:00Z",
+      "replicas": null
+    },
+    {
+      "id": 102,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "api_resource_id": 101,
+      "name": "prometheus-k8s",
+      "uid": "res-0102-0000-0000-0000-000000000000",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+          "name": "prometheus-k8s",
+          "namespace": "openshift-monitoring",
+          "labels": {
+            "app.kubernetes.io/component": "prometheus",
+            "app.kubernetes.io/name": "prometheus"
+          }
+        },
+        "spec": {
+          "type": "ClusterIP",
+          "selector": {
+            "app.kubernetes.io/name": "prometheus"
+          },
+          "ports": [
+            {
+              "name": "web",
+              "port": 9090,
+              "targetPort": 9090,
+              "protocol": "TCP"
+            }
+          ]
+        },
+        "status": {}
+      },
+      "created_at": "2025-12-01T00:00:00Z",
+      "replicas": null
+    },
+    {
+      "id": 103,
+      "cluster_id": 1,
+      "namespace_id": 100,
+      "api_resource_id": 101,
+      "name": "alertmanager-main",
+      "uid": "res-0103-0000-0000-0000-000000000000",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+          "name": "alertmanager-main",
+          "namespace": "openshift-monitoring",
+          "labels": {
+            "app.kubernetes.io/component": "alert-router",
+            "app.kubernetes.io/name": "alertmanager"
+          }
+        },
+        "spec": {
+          "type": "ClusterIP",
+          "selector": {
+            "app.kubernetes.io/name": "alertmanager"
+          },
+          "ports": [
+            {
+              "name": "web",
+              "port": 9093,
+              "targetPort": 9093,
+              "protocol": "TCP"
+            }
+          ]
+        },
+        "status": {}
+      },
+      "created_at": "2025-12-01T00:00:00Z",
+      "replicas": null
+    },
+    {
+      "id": 104,
+      "cluster_id": 1,
+      "namespace_id": 103,
+      "api_resource_id": 101,
+      "name": "kube-dns",
+      "uid": "res-0104-0000-0000-0000-000000000000",
+      "manifest": {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+          "name": "kube-dns",
+          "namespace": "kube-system",
+          "labels": {
+            "k8s-app": "kube-dns"
+          }
+        },
+        "spec": {
+          "type": "ClusterIP",
+          "clusterIP": "172.30.0.10",
+          "selector": {
+            "k8s-app": "kube-dns"
+          },
+          "ports": [
+            {
+              "name": "dns",
+              "port": 53,
+              "targetPort": 53,
+              "protocol": "UDP"
+            },
+            {
+              "name": "dns-tcp",
+              "port": 53,
+              "targetPort": 53,
+              "protocol": "TCP"
+            }
+          ]
+        },
+        "status": {}
+      },
+      "created_at": "2025-12-01T00:00:00Z",
+      "replicas": null
     }
   ],
   "resource_labels": [
@@ -1040,6 +5725,36 @@
       "resource_id": 1,
       "label_key": "component",
       "label_value": "ingress"
+    },
+    {
+      "id": 100,
+      "resource_id": 100,
+      "label_key": "app.kubernetes.io/managed-by",
+      "label_value": "openshift"
+    },
+    {
+      "id": 101,
+      "resource_id": 101,
+      "label_key": "app.kubernetes.io/managed-by",
+      "label_value": "openshift"
+    },
+    {
+      "id": 102,
+      "resource_id": 102,
+      "label_key": "app.kubernetes.io/name",
+      "label_value": "prometheus"
+    },
+    {
+      "id": 103,
+      "resource_id": 103,
+      "label_key": "app.kubernetes.io/name",
+      "label_value": "alertmanager"
+    },
+    {
+      "id": 104,
+      "resource_id": 104,
+      "label_key": "k8s-app",
+      "label_value": "kube-dns"
     }
   ],
   "alerts": [],
