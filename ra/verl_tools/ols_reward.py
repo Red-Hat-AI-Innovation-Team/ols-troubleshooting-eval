@@ -55,7 +55,6 @@ Reason: [your detailed explanation]"""
             {"role": "user", "content": prompt},
         ],
         max_completion_tokens=500,
-        temperature=0,
     )
 
     text = response.choices[0].message.content or ""
