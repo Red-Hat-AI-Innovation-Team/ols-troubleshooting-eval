@@ -48,22 +48,25 @@ Format your response as:
 Score: [your score on a scale of 0.0 to 1.0]
 Reason: [your detailed explanation]"""
 
-    response = client.chat.completions.create(
-        model=os.environ.get("JUDGE_MODEL", "gpt-5-mini"),
-        messages=[
-            {"role": "system", "content": "You are an evaluation judge."},
-            {"role": "user", "content": prompt},
-        ],
-        max_completion_tokens=500,
-    )
+    try:
+        response = client.chat.completions.create(
+            model=os.environ.get("JUDGE_MODEL", "gpt-5-mini"),
+            messages=[
+                {"role": "system", "content": "You are an evaluation judge."},
+                {"role": "user", "content": prompt},
+            ],
+            max_completion_tokens=2000,
+        )
 
-    text = response.choices[0].message.content or ""
+        text = response.choices[0].message.content or ""
 
-    score_match = re.search(r"Score:\s*([\d.]+)", text)
-    if score_match:
-        score = float(score_match.group(1))
-        if score > 1.0:
-            score = score / 10.0 if score <= 10.0 else score / 100.0
-        return min(1.0, max(0.0, score))
+        score_match = re.search(r"Score:\s*([\d.]+)", text)
+        if score_match:
+            score = float(score_match.group(1))
+            if score > 1.0:
+                score = score / 10.0 if score <= 10.0 else score / 100.0
+            return min(1.0, max(0.0, score))
+    except Exception:
+        pass
 
     return 0.0
