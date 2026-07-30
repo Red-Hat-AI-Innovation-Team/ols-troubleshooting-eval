@@ -39,6 +39,7 @@ def generate_dataset(repeats: int = 50, output: str = "ols_train.parquet"):
 
             row = {
                 "data_source": "ols/troubleshooting",
+                "agent_name": "tool_agent",
                 "prompt": [
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": turn.query},

@@ -50,6 +50,10 @@ fi
 
 CONFIG_PATH="$(pwd)/verl_tools"
 
+# Observability: check tool execution during training
+# grep '<tool_call>' /tmp/ray/session_latest/logs/worker-*.out
+# grep 'execute() tool=' /tmp/ray/session_latest/logs/worker-*.out
+
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     data.train_files=ols_train.parquet \
@@ -95,4 +99,5 @@ python3 -m verl.trainer.main_ppo \
     trainer.nnodes=1 \
     trainer.save_freq=5 \
     trainer.total_epochs=5 \
+    trainer.rollout_data_dir=./rollout_dumps \
     "$@"
