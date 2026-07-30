@@ -17,6 +17,9 @@ cd "$(dirname "$0")"
 
 ulimit -n 65535
 
+# Ray 2.56 uv hook breaks verl (creates isolated venv missing ray itself)
+export RAY_ENABLE_UV_RUN_RUNTIME_ENV=0
+
 # --- Configurable base model ---
 # Default to SFT warmup checkpoint. Override with:
 #   BASE_MODEL=Qwen/Qwen3-4B ./verl_train.sh
@@ -60,7 +63,7 @@ python3 -m verl.trainer.main_ppo \
     data.train_batch_size=44 \
     data.max_prompt_length=2048 \
     data.max_response_length=4096 \
-    data.filter_overlong_prompts=True \
+    data.filter_overlong_prompts=False \
     data.truncation=error \
     data.return_raw_chat=True \
     actor_rollout_ref.model.path="${BASE_MODEL}" \
@@ -76,7 +79,7 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.actor.entropy_coeff=0 \
     actor_rollout_ref.actor.fsdp_config.param_offload=False \
     actor_rollout_ref.actor.fsdp_config.optimizer_offload=False \
-    actor_rollout_ref.rollout.name=sglang \
+    actor_rollout_ref.rollout.name=vllm \
     actor_rollout_ref.rollout.gpu_memory_utilization=0.5 \
     actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
     actor_rollout_ref.rollout.n=4 \
