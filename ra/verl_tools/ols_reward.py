@@ -181,9 +181,10 @@ RUBRIC_PROMPT = """Evaluate the troubleshooting response against these criteria.
 ## Evaluation Criteria
 
 ### ESSENTIAL (all must be true for score > 0.3):
-- E1: Diagnosis is supported by tool output evidence (not hallucinated)
-- E2: Response addresses the user's specific query
+- E1: Diagnosis cites SPECIFIC evidence from tool outputs (pod names, error messages, log lines, event reasons). Generic statements like "the pod might be failing" with no specific data = FAIL
+- E2: Response directly answers the user's question with a concrete root cause, not a list of possibilities
 - E3: No contradictions with tool outputs shown in the response
+- E4: If the model called tools but ignored their output in the diagnosis = FAIL
 
 ### QUALITY (0.0-1.0 each):
 - Q1 Efficiency: Used minimum necessary tools (fewer redundant calls = higher)
@@ -271,14 +272,16 @@ _stats = _ProcessRewardStats()
 # Main reward function
 # ---------------------------------------------------------------------------
 
-# Component weights (must sum to ~1.0 with process + outcome)
-W_INFO_GAIN = 0.25
-W_RETRIEVAL = 0.15
-W_UTILIZATION = 0.10
-W_FORMAT = 0.05
-W_REDUNDANCY = 0.05  # applied as penalty (negative)
-W_TOOL_COUNT = 0.02  # applied per call (negative)
-W_OUTCOME = 0.40
+# Outcome-only reward with redundancy penalty.
+# Process rewards taught the model to spam tool calls without diagnosing.
+# The LLM judge is the only evaluator — make it strict and give it full weight.
+W_INFO_GAIN = 0.0
+W_RETRIEVAL = 0.0
+W_UTILIZATION = 0.0
+W_FORMAT = 0.0
+W_REDUNDANCY = 0.05  # keep: penalize duplicate (tool, args) calls
+W_TOOL_COUNT = 0.0
+W_OUTCOME = 1.0
 
 
 def compute_score(data_source, solution_str, ground_truth, extra_info=None):
