@@ -48,6 +48,8 @@ ITS_TEMPERATURE="${ITS_TEMPERATURE:-}"
 ITS_PORT=8100
 CONTEXT_WINDOW="${CONTEXT_WINDOW:-128000}"
 MCP_EVALS="${MCP_EVALS:-}"
+SIMULATE_ENABLED="${SIMULATE_ENABLED:-}"
+OLS_QUERY_TIMEOUT="${OLS_QUERY_TIMEOUT:-300}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
@@ -106,6 +108,12 @@ fi)
     headers:
       Authorization: kubernetes
     timeout: 30
+$(if [ -n "$SIMULATE_ENABLED" ]; then cat << 'SIM_BLOCK'
+  - name: factory-simulate-mcp
+    url: 'http://127.0.0.1:8086/mcp'
+    timeout: 300
+SIM_BLOCK
+fi)
 
 ols_config:
   conversation_cache:
@@ -187,6 +195,16 @@ if [ -n "$MCP_EVALS" ]; then
     echo "obs-mcp started on port 9100"
 fi
 
+# Start simulate MCP server if enabled
+if [ -n "$SIMULATE_ENABLED" ]; then
+    pkill -f 'simulate_mcp' 2>/dev/null || true; sleep 1
+    cd "$SCRIPT_DIR"
+    uv run python -m simulate_mcp > "$WORK_DIR/simulate-mcp.log" 2>&1 &
+    sleep 3
+    echo "simulate-mcp started on port 8086"
+    cd "$OLS_DIR"
+fi
+
 cd "$OLS_DIR"
 pkill -f "runner.py" 2>/dev/null || true; sleep 2
 EVAL_MODEL_LABEL="$MODEL_LABEL" \
@@ -211,6 +229,7 @@ echo "  Judge:      $JUDGE_MODEL"
 echo "  Mode:       ${MCP_EVALS:+mcp}${MCP_EVALS:-scenario}"
 echo "  Iterations: $ITERATIONS (offset $ITER_OFFSET)"
 echo "  Tracing:    $TRACING"
+echo "  Simulate:   ${SIMULATE_ENABLED:+enabled}${SIMULATE_ENABLED:-disabled}"
 echo "  Results:    $OUTPUT_BASE"
 echo "  $(date)"
 echo "========================================="
@@ -343,6 +362,7 @@ if judged_all > 0:
 
 pkill -f "runner.py" 2>/dev/null || true
 pkill -f "openshift-mcp-server" 2>/dev/null || true
+pkill -f 'simulate_mcp' 2>/dev/null || true
 pkill -f "iaas.py" 2>/dev/null || true
 pkill -f "obs-mcp" 2>/dev/null || true
 pkill -f "port-forward.*prometheus-operated" 2>/dev/null || true

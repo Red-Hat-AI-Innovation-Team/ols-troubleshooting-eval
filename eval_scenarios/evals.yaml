@@ -1,3 +1,4 @@
+# reproducibility: full
 # --- envvar_missing: Crashloop detection ---
 - conversation_group_id: envvar_missing
   tag: envvar_missing
@@ -13,6 +14,7 @@
   setup_script: scenarios/envvar_missing/setup.sh
   cleanup_script: scenarios/envvar_missing/cleanup.sh
 
+# reproducibility: full
 # --- batch_failure: Job crash detection ---
 - conversation_group_id: batch_failure
   tag: batch_failure
@@ -28,6 +30,7 @@
   setup_script: scenarios/batch_failure/setup.sh
   cleanup_script: scenarios/batch_failure/cleanup.sh
 
+# reproducibility: structural
 # --- storage_binding: PVC misconfiguration detection ---
 - conversation_group_id: storage_binding
   tag: storage_binding
@@ -43,6 +46,7 @@
   setup_script: scenarios/storage_binding/setup.sh
   cleanup_script: scenarios/storage_binding/cleanup.sh
 
+# reproducibility: full
 # --- namespace_pod_count: Exact namespace matching ---
 - conversation_group_id: namespace_pod_count
   tag: namespace_pod_count
@@ -58,6 +62,7 @@
   setup_script: scenarios/namespace_pod_count/setup.sh
   cleanup_script: scenarios/namespace_pod_count/cleanup.sh
 
+# reproducibility: full
 # --- scheduled_outage_detection: Time window anomaly ---
 - conversation_group_id: scheduled_outage_detection
   tag: scheduled_outage_detection
@@ -73,6 +78,7 @@
   setup_script: scenarios/scheduled_outage_detection/setup.sh
   cleanup_script: scenarios/scheduled_outage_detection/cleanup.sh
 
+# reproducibility: full
 # --- periodic_failure_window: Time window anomaly with time requirement ---
 - conversation_group_id: periodic_failure_window
   tag: periodic_failure_window
@@ -90,6 +96,7 @@
   setup_script: scenarios/periodic_failure_window/setup.sh
   cleanup_script: scenarios/periodic_failure_window/cleanup.sh
 
+# reproducibility: none (requires log context)
 # --- config_drift_analysis: Log context analysis ---
 - conversation_group_id: config_drift_analysis
   tag: config_drift_analysis
@@ -105,6 +112,7 @@
   setup_script: scenarios/config_drift_analysis/setup.sh
   cleanup_script: scenarios/config_drift_analysis/cleanup.sh
 
+# reproducibility: full
 # --- readiness_probe_diagnosis: Pod naming ambiguity ---
 - conversation_group_id: readiness_probe_diagnosis
   tag: readiness_probe_diagnosis
@@ -120,6 +128,7 @@
   setup_script: scenarios/readiness_probe_diagnosis/setup.sh
   cleanup_script: scenarios/readiness_probe_diagnosis/cleanup.sh
 
+# reproducibility: structural
 # --- ingress_rule_mismatch: Network policy diagnosis ---
 - conversation_group_id: ingress_rule_mismatch
   tag: ingress_rule_mismatch
@@ -135,6 +144,7 @@
   setup_script: scenarios/ingress_rule_mismatch/setup.sh
   cleanup_script: scenarios/ingress_rule_mismatch/cleanup.sh
 
+# reproducibility: none (requires memory leak execution)
 # --- oom: OOMKilled diagnosis ---
 - conversation_group_id: OOM
   tag: oom
@@ -157,6 +167,7 @@
   setup_script: scenarios/oom/setup.sh
   cleanup_script: scenarios/oom/cleanup.sh
 
+  # reproducibility: structural
   # --- networkpolicy: Network policy blocking frontend-backend traffic ---
 - conversation_group_id: Network Policy Issue
   tag: wrong_networkpolicy
