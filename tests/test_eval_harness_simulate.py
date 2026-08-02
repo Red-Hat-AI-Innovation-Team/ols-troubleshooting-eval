@@ -65,7 +65,7 @@ class TestSystemSimulateYamlGeneration:
             llm:
               model: "test-model"
             api:
-              system_prompt: null
+              system_prompt: null # System prompt (default None)
               timeout: 600
         """))
 
@@ -93,7 +93,7 @@ class TestSystemSimulateYamlGeneration:
 
         result = subprocess.run(
             ["python3", "-c", textwrap.dedent("""\
-                import os
+                import os, re
                 skill_path = os.environ['_SKILL_FILE']
                 sys_in = os.environ['_SYS_IN']
                 sys_out = os.environ['_SYS_OUT']
@@ -105,7 +105,7 @@ class TestSystemSimulateYamlGeneration:
                 block = indent + 'system_prompt: |'
                 for line in skill.splitlines():
                     block += '\\n' + indent + '  ' + line
-                content = content.replace(indent + 'system_prompt: null', block)
+                content = re.sub(r'^  system_prompt: null.*$', block, content, count=1, flags=re.MULTILINE)
                 with open(sys_out, 'w') as f:
                     f.write(content)
             """)],
@@ -134,7 +134,7 @@ class TestSystemSimulateYamlGeneration:
 
         subprocess.run(
             ["python3", "-c", textwrap.dedent("""\
-                import os
+                import os, re
                 skill_path = os.environ['_SKILL_FILE']
                 sys_in = os.environ['_SYS_IN']
                 sys_out = os.environ['_SYS_OUT']
@@ -146,7 +146,7 @@ class TestSystemSimulateYamlGeneration:
                 block = indent + 'system_prompt: |'
                 for line in skill.splitlines():
                     block += '\\n' + indent + '  ' + line
-                content = content.replace(indent + 'system_prompt: null', block)
+                content = re.sub(r'^  system_prompt: null.*$', block, content, count=1, flags=re.MULTILINE)
                 with open(sys_out, 'w') as f:
                     f.write(content)
             """)],

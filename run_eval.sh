@@ -158,7 +158,7 @@ if [ -n "$SIMULATE_WORKFLOW" ]; then
     if [ -f "$SKILL_FILE" ]; then
         _SKILL_FILE="$SKILL_FILE" _SYS_IN="$WORK_DIR/system.yaml" _SYS_OUT="$WORK_DIR/system-simulate.yaml" \
         python3 -c "
-import os
+import os, re
 skill_path = os.environ['_SKILL_FILE']
 sys_in = os.environ['_SYS_IN']
 sys_out = os.environ['_SYS_OUT']
@@ -170,7 +170,7 @@ indent = '  '
 block = indent + 'system_prompt: |'
 for line in skill.splitlines():
     block += '\n' + indent + '  ' + line
-content = content.replace(indent + 'system_prompt: null', block)
+content = re.sub(r'^  system_prompt: null.*$', block, content, count=1, flags=re.MULTILINE)
 with open(sys_out, 'w') as f:
     f.write(content)
 "
