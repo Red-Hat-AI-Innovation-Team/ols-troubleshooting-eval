@@ -14,7 +14,7 @@ The user wants: **$ARGUMENTS**
 ```bash
 factory agent strategist --task "Analyze the user's troubleshooting query to identify which Kubernetes resources to snapshot from the target cluster.
 
-Read the simulate task config from .factory/simulate/task.json for the user's query text, target kubeconfig path, microshift_port (default 16443), and any explicit namespace or resource-type overrides.
+Read the simulate task config from .factory/simulate/task.json for the user's query text, target kubeconfig path, microshift_port (default 16443), fix_commands (array of kubectl commands to execute during the apply-fix phase), and any explicit namespace or resource-type overrides.
 
 If the user provided explicit --target-namespaces or --resource-types, use those directly. Otherwise, analyze the query to extract:
 - Relevant namespaces (max 10)
@@ -32,6 +32,7 @@ Write the extraction result to .factory/simulate/analysis.json with this schema:
   "cluster_type": "microshift|minikube",
   "microshift_port": 16443,
   "max_replicas": 1,
+  "fix_commands": ["kubectl set env deploy/X KEY=VALUE -n NS"],
   "rationale": "<why these namespaces/resources are relevant>"
 }
 ```
@@ -123,11 +124,11 @@ If cluster_type is 'minikube':
      Save to .factory/simulate/ephemeral-kubeconfig
 
 If cluster_type is 'microshift':
-  1. Read the microshift_port value from analysis.json (default: 6443 if missing)
+  1. Read the microshift_port value from analysis.json (default: 16443 if missing)
   2. Start microshift container — the host port is microshift_port, the container port is always 6443:
      `podman run -d --name factory-simulate-microshift --privileged -v microshift-data:/var/lib -p <microshift_port>:6443 quay.io/microshift/microshift-aio`
      Example: if microshift_port is 8443, use `-p 8443:6443`
-     Example: if microshift_port is the default (6443), the mapping is the default port to 6443
+     Example: if microshift_port is the default (16443), use `-p 16443:6443`
   3. Wait for API server ready (poll with retries)
   4. Copy kubeconfig from container to .factory/simulate/ephemeral-kubeconfig
   5. Patch the kubeconfig server URL to use the configured host port:
