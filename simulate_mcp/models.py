@@ -22,6 +22,7 @@ class ProposedFix(BaseModel):
     manifests: list[dict]
     fault_description: str
     expected_outcomes: dict | None = None
+    verification_checks: list[str] | None = None
 
 
 class SimulationVerdict(BaseModel):

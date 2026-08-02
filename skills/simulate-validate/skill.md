@@ -17,7 +17,7 @@ Use openshift-mcp-server tools to investigate the failing workload:
 
 ### Step 2: PROPOSE
 
-Write your fix as structured JSON to `/tmp/ols-simulate/proposed-fix.json`:
+Write your fix as structured JSON to `$PROJECT_PATH/.factory/simulate/proposed-fix.json`:
 
 ```json
 {
@@ -51,21 +51,21 @@ The bridge will:
 3. Apply baseline manifests to reproduce the broken state
 4. Execute your fix commands on the ephemeral cluster
 5. Verify the cluster state after the fix
-6. Write the verdict to `/tmp/ols-simulate/verdict.json`
+6. Write the verdict to `$PROJECT_PATH/.factory/simulate/verdict.json`
 
 ### Step 4: READ VERDICT
 
-Read `/tmp/ols-simulate/verdict.json` and act on the verdict:
+Read `$PROJECT_PATH/.factory/simulate/verdict.json` and act on the verdict:
 
 - **FIXED_HIGH_CONFIDENCE**: Your fix was validated successfully. Return it to the user with HIGH confidence. Include the simulation evidence in your response.
 
-- **PARTIAL**: The fix partially resolved the issue. Read the `failure_context` field to understand what still fails. Refine your fix and go back to Step 2. (Max 3 total attempts.)
+- **PARTIAL**: The fix partially resolved the issue. Read `$PROJECT_PATH/.factory/simulate/failure-context.md` to understand what still fails. Refine your fix and go back to Step 2. (Max 3 total attempts.)
 
-- **FAILED**: The fix did not resolve the issue. Read the `failure_context` field for specific error details (failed verification checks, pod logs, events). Reconsider your diagnosis entirely — the root cause may be different from what you initially identified. Go back to Step 1. (Max 3 total attempts.)
+- **FAILED**: The fix did not resolve the issue. Read `$PROJECT_PATH/.factory/simulate/failure-context.md` for specific error details (failed verification checks, pod logs, events). Reconsider your diagnosis entirely — the root cause may be different from what you initially identified. Go back to Step 1. (Max 3 total attempts.)
 
 - **REGRESSION**: The fix made things worse. Abandon this approach and reconsider your diagnosis from scratch. Go back to Step 1. (Max 3 total attempts.)
 
-Also check `.factory/simulate/failure-context.md` for a formatted summary of what went wrong, including failed verification checks, relevant pod logs, and fix execution details.
+The failure context file includes a formatted summary of what went wrong: failed verification checks, relevant pod logs, and fix execution details.
 
 ### Step 5: AFTER MAX RETRIES
 

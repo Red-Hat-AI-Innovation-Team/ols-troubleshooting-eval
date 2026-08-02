@@ -51,6 +51,7 @@ def prepare_simulation(
         "max_replicas": 1,
         "fix_commands": fix.commands,
         "target_kubeconfig": target_kubeconfig,
+        "verification_checks": fix.verification_checks or [],
     }
 
     simulate_dir = Path(project_path) / ".factory" / "simulate"
@@ -189,6 +190,12 @@ def run_simulation(project_path: str, timeout: int = 600) -> dict[str, Any]:
         fix_report_text = fix_report.read_text()
         log_entries = _extract_log_entries(fix_report_text)
 
+    verification_checks: list[str] = []
+    task_file = simulate_dir / "task.json"
+    if task_file.exists():
+        task_data = json.loads(task_file.read_text())
+        verification_checks = task_data.get("verification_checks", [])
+
     reproducibility = Reproducibility.NONE
     if verdict_val == Verdict.FIXED_HIGH_CONFIDENCE:
         reproducibility = Reproducibility.FULL
@@ -203,6 +210,7 @@ def run_simulation(project_path: str, timeout: int = 600) -> dict[str, Any]:
             "topology_match": topology_score,
             "logs": log_entries,
             "failed_checks": failed_checks,
+            "verification_checks": verification_checks,
             "fix_report": fix_report_text[:4000] if fix_report_text else "",
             "phase_results": phase_results,
         },
