@@ -49,7 +49,19 @@ ITS_PORT=8100
 CONTEXT_WINDOW="${CONTEXT_WINDOW:-128000}"
 MCP_EVALS="${MCP_EVALS:-}"
 SIMULATE_ENABLED="${SIMULATE_ENABLED:-}"
+SIMULATE_WORKFLOW="${SIMULATE_WORKFLOW:-}"
 OLS_QUERY_TIMEOUT="${OLS_QUERY_TIMEOUT:-300}"
+
+# SIMULATE_WORKFLOW implies SIMULATE_ENABLED (starts the MCP server) and bumps the query timeout
+if [ -n "$SIMULATE_WORKFLOW" ]; then
+    SIMULATE_ENABLED="${SIMULATE_ENABLED:-1}"
+    if [ "$OLS_QUERY_TIMEOUT" -lt 600 ] 2>/dev/null; then
+        OLS_QUERY_TIMEOUT=600
+    fi
+    if ! command -v factory &>/dev/null; then
+        echo "WARNING: factory CLI not found in PATH. Simulate workflow phases that invoke 'factory agent' may fail."
+    fi
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
@@ -140,6 +152,33 @@ EOF
 sed "s|model: \"openshift-expert\"|model: \"${MODEL_NAME}\"|; s|model: \"gpt-5-mini\"|model: \"${JUDGE_MODEL}\"|" \
     "$EVAL_DIR/system_template.yaml" > "$WORK_DIR/system.yaml"
 
+# Generate a simulate-specific system config with the skill injected as system_prompt
+if [ -n "$SIMULATE_WORKFLOW" ]; then
+    SKILL_FILE="$SCRIPT_DIR/skills/simulate-validate/skill.md"
+    if [ -f "$SKILL_FILE" ]; then
+        _SKILL_FILE="$SKILL_FILE" _SYS_IN="$WORK_DIR/system.yaml" _SYS_OUT="$WORK_DIR/system-simulate.yaml" \
+        python3 -c "
+import os
+skill_path = os.environ['_SKILL_FILE']
+sys_in = os.environ['_SYS_IN']
+sys_out = os.environ['_SYS_OUT']
+with open(skill_path) as f:
+    skill = f.read()
+with open(sys_in) as f:
+    content = f.read()
+indent = '  '
+block = indent + 'system_prompt: |'
+for line in skill.splitlines():
+    block += '\n' + indent + '  ' + line
+content = content.replace(indent + 'system_prompt: null', block)
+with open(sys_out, 'w') as f:
+    f.write(content)
+"
+    else
+        echo "WARNING: simulate-validate skill not found at $SKILL_FILE"
+    fi
+fi
+
 if [ ! -f "$SCRIPT_DIR/.openai_key" ] && [ -n "${OPENAI_API_KEY:-}" ]; then
     echo "$OPENAI_API_KEY" > "$SCRIPT_DIR/.openai_key"
 fi
@@ -229,7 +268,7 @@ echo "  Judge:      $JUDGE_MODEL"
 echo "  Mode:       ${MCP_EVALS:+mcp}${MCP_EVALS:-scenario}"
 echo "  Iterations: $ITERATIONS (offset $ITER_OFFSET)"
 echo "  Tracing:    $TRACING"
-echo "  Simulate:   ${SIMULATE_ENABLED:+enabled}${SIMULATE_ENABLED:-disabled}"
+echo "  Simulate:   ${SIMULATE_ENABLED:+enabled}${SIMULATE_ENABLED:-disabled}${SIMULATE_WORKFLOW:+ (workflow mode)}"
 echo "  Results:    $OUTPUT_BASE"
 echo "  $(date)"
 echo "========================================="
@@ -278,6 +317,9 @@ else
           scheduled_outage_detection periodic_failure_window \
           readiness_probe_diagnosis ingress_rule_mismatch oom wrong_networkpolicy \
           config_drift_analysis)
+    if [ -n "$SIMULATE_WORKFLOW" ]; then
+        TAGS+=(simulate_validate)
+    fi
 
     for iter in $(seq 1 $ITERATIONS); do
         actual_iter=$((iter + ITER_OFFSET))
@@ -312,8 +354,12 @@ else
             mkdir -p "$ITER_DIR"
 
             cd "$OLS_DIR"
+            SYS_CONFIG="$WORK_DIR/system.yaml"
+            if [ "$tag" = "simulate_validate" ] && [ -f "$WORK_DIR/system-simulate.yaml" ]; then
+                SYS_CONFIG="$WORK_DIR/system-simulate.yaml"
+            fi
             API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
-                --system-config "$WORK_DIR/system.yaml" \
+                --system-config "$SYS_CONFIG" \
                 --eval-data "$EVAL_DIR/evals.yaml" \
                 --output-dir "$ITER_DIR" \
                 --tags "$tag" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
