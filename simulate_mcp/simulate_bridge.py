@@ -277,11 +277,16 @@ def _cli_validate(args: argparse.Namespace) -> int:
         project_path=args.project,
     )
     print(f"Prepared task.json at: {task_path}")
+    print(f"Using skill: {args.skill}")
 
     verdict = run_simulation(
         project_path=args.project,
         timeout=args.timeout,
     )
+
+    verdict["skill"] = args.skill
+    verdict_path = Path(args.project) / ".factory" / "simulate" / "verdict.json"
+    verdict_path.write_text(json.dumps(verdict, indent=2))
 
     verdict_status = verdict.get("verdict", "FAILED")
     print(f"Verdict: {verdict_status}")
@@ -322,6 +327,10 @@ def main(argv: list[str] | None = None) -> int:
     validate_parser.add_argument(
         "--timeout", type=int, default=600,
         help="Simulation timeout in seconds (default: 600)",
+    )
+    validate_parser.add_argument(
+        "--skill", default="simulate-validate",
+        help="Skill name for the validation protocol (default: simulate-validate)",
     )
 
     parsed = parser.parse_args(argv)
