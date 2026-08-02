@@ -115,7 +115,7 @@ provision_cluster:
       \ to .factory/simulate/ephemeral-kubeconfig\n  5. Patch the kubeconfig server\
       \ URL to use the configured host port:\n     `sed -i '' \"s|server: https://127.0.0.1:6443|server:\
       \ https://127.0.0.1:<microshift_port>|\" .factory/simulate/ephemeral-kubeconfig`\n\
-      \     Skip this sed step if microshift_port is 6443 (container default matches host port, no rewrite needed).\n\n\
+      \     Skip this sed step if microshift_port is 6443 (no change needed).\n\n\
       Write a provision report to .factory/simulate/provision-report.md with:\n- Cluster\
       \ type used\n- Host port used for MicroShift API server\n- Kubeconfig path\n\
       - Cluster status (nodes, API server health)\n- Any warnings or issues\nRead:\
@@ -144,7 +144,7 @@ apply_manifests:
   writes:
   - .factory/simulate/apply-report.md
   edges_out:
-  - target: verify_cluster
+  - target: apply_fix
     condition: null
   slots:
     task_prompt_apply_manifests: 'Apply sanitized manifests to the ephemeral cluster.
@@ -191,6 +191,35 @@ apply_manifests:
 
       Write output to: .factory/simulate/apply-report.md'
     timeout_apply_manifests: '600'
+apply_fix:
+  type: AgentNode
+  id: apply_fix
+  role: builder
+  blocking: 'true'
+  reads:
+  - .factory/simulate/task.json
+  - .factory/simulate/apply-report.md
+  writes:
+  - .factory/simulate/fix-report.md
+  edges_out:
+  - target: verify_cluster
+    condition: null
+  slots:
+    task_prompt_apply_fix: "Apply the proposed fix commands to the ephemeral cluster.\n\
+      \nRead .factory/simulate/task.json for the fix_commands array.\nRead the ephemeral\
+      \ kubeconfig from .factory/simulate/ephemeral-kubeconfig.\nRead .factory/simulate/apply-report.md\
+      \ for context on what baseline manifests were applied.\n\nIf fix_commands is\
+      \ empty or missing, write a fix-report.md noting 'No fix commands provided —\
+      \ skipping fix application' and exit successfully.\n\nFor each command in fix_commands:\n\
+      1. Execute: kubectl --kubeconfig .factory/simulate/ephemeral-kubeconfig <command>\n\
+      2. Capture stdout, stderr, and exit code\n3. If the command fails (non-zero\
+      \ exit code), log the failure but continue executing remaining commands\n\nWrite\
+      \ .factory/simulate/fix-report.md with:\n- Each command executed\n- Exit code\
+      \ for each command\n- stdout/stderr output for each command\n- Overall result:\
+      \ SUCCESS (all commands exited 0), PARTIAL (some failed), or FAILED (all failed)\n\
+      Read: .factory/simulate/task.json, .factory/simulate/apply-report.md\nWrite output\
+      \ to: .factory/simulate/fix-report.md"
+    timeout_apply_fix: '600'
 verify_cluster:
   type: AgentNode
   id: verify_cluster
@@ -198,6 +227,7 @@ verify_cluster:
   blocking: 'true'
   reads:
   - .factory/simulate/apply-report.md
+  - .factory/simulate/fix-report.md
   writes:
   - .factory/simulate/verify-report.md
   edges_out:

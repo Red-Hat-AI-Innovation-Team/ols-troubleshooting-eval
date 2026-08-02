@@ -123,16 +123,16 @@ If cluster_type is 'minikube':
      Save to .factory/simulate/ephemeral-kubeconfig
 
 If cluster_type is 'microshift':
-  1. Read the microshift_port value from analysis.json (default: 16443 if missing)
+  1. Read the microshift_port value from analysis.json (default: 6443 if missing)
   2. Start microshift container — the host port is microshift_port, the container port is always 6443:
      `podman run -d --name factory-simulate-microshift --privileged -v microshift-data:/var/lib -p <microshift_port>:6443 quay.io/microshift/microshift-aio`
      Example: if microshift_port is 8443, use `-p 8443:6443`
-     Example: if microshift_port is the default (16443), use `-p 16443:6443`
+     Example: if microshift_port is the default (6443), the mapping is the default port to 6443
   3. Wait for API server ready (poll with retries)
   4. Copy kubeconfig from container to .factory/simulate/ephemeral-kubeconfig
   5. Patch the kubeconfig server URL to use the configured host port:
      `sed -i '' "s|server: https://127.0.0.1:6443|server: https://127.0.0.1:<microshift_port>|" .factory/simulate/ephemeral-kubeconfig`
-     Skip this sed step if microshift_port is 6443 (container default matches host port, no rewrite needed).
+     Skip this sed step if microshift_port is 6443 (no change needed).
 
 Write a provision report to .factory/simulate/provision-report.md with:
 - Cluster type used
@@ -208,6 +208,43 @@ echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) VERIFY_OK node=apply_manifests" >> "$PROJEC
 ```
 *(harness verification — DO NOT SKIP)*
 
+## Phase 4.5: Builder — Apply Fix
+
+```bash
+factory agent builder --task "Apply the proposed fix commands to the ephemeral cluster.
+
+Read .factory/simulate/task.json for the fix_commands array.
+Read the ephemeral kubeconfig from .factory/simulate/ephemeral-kubeconfig.
+Read .factory/simulate/apply-report.md for context on what baseline manifests were applied.
+
+If fix_commands is empty or missing, write a fix-report.md noting 'No fix commands provided — skipping fix application' and exit successfully.
+
+For each command in fix_commands:
+1. Execute: kubectl --kubeconfig .factory/simulate/ephemeral-kubeconfig <command>
+2. Capture stdout, stderr, and exit code
+3. If the command fails (non-zero exit code), log the failure but continue executing remaining commands
+
+Write .factory/simulate/fix-report.md with:
+- Each command executed
+- Exit code for each command
+- stdout/stderr output for each command
+- Overall result: SUCCESS (all commands exited 0), PARTIAL (some failed), or FAILED (all failed)
+Read: .factory/simulate/task.json, .factory/simulate/apply-report.md
+Write output to: .factory/simulate/fix-report.md" --project "$PROJECT_PATH" --timeout 600
+```
+
+```bash
+# Artifact verification: apply_fix
+_vfail=0
+_f="$PROJECT_PATH/.factory/simulate/fix-report.md"
+[ ! -f "$_f" ] && echo "VERIFY FAIL: apply_fix: .factory/simulate/fix-report.md missing" && _vfail=1
+[ -f "$_f" ] && [ ! -s "$_f" ] && echo "VERIFY FAIL: apply_fix: .factory/simulate/fix-report.md is empty" && _vfail=1
+[ "$_vfail" -ne 0 ] && echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) VERIFY_FAIL node=apply_fix" >> "$PROJECT_PATH/.factory/hooks/hook-log.txt" && exit 1
+echo "VERIFY OK: apply_fix artifacts validated"
+echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) VERIFY_OK node=apply_fix" >> "$PROJECT_PATH/.factory/hooks/hook-log.txt"
+```
+*(harness verification — DO NOT SKIP)*
+
 ## Phase 5: Health Checker — Verify Cluster
 
 ```bash
@@ -215,6 +252,7 @@ factory agent health_checker --task "Verify the structural topology of the ephem
 
 Read the ephemeral kubeconfig from .factory/simulate/ephemeral-kubeconfig.
 Read .factory/simulate/apply-report.md for what was applied.
+Read .factory/simulate/fix-report.md for fix commands that were executed (if present).
 
 Run these verification checks:
 1. Namespace existence: `kubectl get namespaces` — verify expected namespaces exist
@@ -233,7 +271,7 @@ Write a verification report to .factory/simulate/verify-report.md with:
 - Per-namespace resource comparison table
 - Topology issues found
 - Connectivity info: `export KUBECONFIG=.factory/simulate/ephemeral-kubeconfig`
-Read: .factory/simulate/apply-report.md
+Read: .factory/simulate/apply-report.md, .factory/simulate/fix-report.md
 Write output to: .factory/simulate/verify-report.md" --project "$PROJECT_PATH" --timeout 600
 ```
 
@@ -270,6 +308,7 @@ Read the following artifacts:
 - .factory/simulate/snapshot-report.md (what was exported)
 - .factory/simulate/provision-report.md (cluster provisioning)
 - .factory/simulate/apply-report.md (manifest application)
+- .factory/simulate/fix-report.md (fix command execution)
 - .factory/simulate/verify-report.md (structural verification)
 
 Write a concise session summary to .factory/archive/simulate-session.md covering:

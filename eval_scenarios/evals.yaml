@@ -223,3 +223,19 @@
 
   setup_script: scenarios/wrong_networkpolicy/setup.sh
   cleanup_script: scenarios/wrong_networkpolicy/cleanup.sh
+
+# reproducibility: full
+# --- simulate_validate: Fix validation via ephemeral cluster simulation ---
+- conversation_group_id: simulate_validate
+  tag: simulate_validate
+  description: "Simulate-validate loop - APP_CONFIG_PATH environment variable missing, fix validated on ephemeral cluster"
+
+  turns:
+    - turn_id: simulate_validate
+      query: "The application nginx-app in namespace simulate-test is failing. Diagnose the issue and provide a fix."
+      expected_response: "The APP_CONFIG_PATH environment variable is missing or undefined, causing the container to exit. Set the environment variable with kubectl set env deployment/nginx-app APP_CONFIG_PATH=/etc/app/config -n simulate-test"
+      turn_metrics:
+        - custom:answer_correctness
+
+  setup_script: scenarios/simulate_validate/setup.sh
+  cleanup_script: scenarios/simulate_validate/cleanup.sh
