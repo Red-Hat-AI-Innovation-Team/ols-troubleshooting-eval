@@ -4,8 +4,8 @@ import time
 import uuid
 from enum import Enum
 
-from simulate_mcp.models import ProposedFix, Reproducibility, SimulationVerdict, Verdict
-from simulate_mcp.telemetry import emit_phase_event
+from ols_eval.models import ProposedFix, Reproducibility, SimulationVerdict, Verdict
+from ols_eval.telemetry import emit_phase_event
 
 
 class PipelinePhase(str, Enum):
@@ -23,7 +23,7 @@ def run_pipeline(
     target_kubeconfig: str | None = None,
     reproducibility: str = "none",
 ) -> SimulationVerdict:
-    from simulate_mcp import cluster, executor, healthcheck, sanitize, snapshot, verdict
+    from ols_eval import cluster, executor, healthcheck, sanitize, snapshot, verdict
 
     task_id = uuid.uuid4().hex[:12]
     namespaces = target_namespaces or ["default"]

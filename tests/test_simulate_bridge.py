@@ -1,4 +1,4 @@
-"""Unit tests for simulate_mcp.simulate_bridge."""
+"""Unit tests for ols_eval.simulate_bridge."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from simulate_mcp.simulate_bridge import (
+from ols_eval.simulate_bridge import (
     DEFAULT_MICROSHIFT_PORT,
     WORKFLOW_PHASES,
     _extract_failed_checks,
@@ -161,7 +161,7 @@ class TestExtractLogEntries:
 
 
 class TestInvokeFactoryAgent:
-    @patch("simulate_mcp.simulate_bridge.subprocess.run")
+    @patch("ols_eval.simulate_bridge.subprocess.run")
     def test_builds_correct_command(self, mock_run: MagicMock) -> None:
         mock_run.return_value = subprocess.CompletedProcess(
             args=[], returncode=0, stdout="ok", stderr=""
@@ -178,7 +178,7 @@ class TestInvokeFactoryAgent:
 
 
 class TestRunSimulation:
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_invokes_all_phases_in_order(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -191,7 +191,7 @@ class TestRunSimulation:
         expected_roles = [role for _, role, _ in WORKFLOW_PHASES]
         assert roles_called == expected_roles
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_returns_failed_when_no_reports(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -202,7 +202,7 @@ class TestRunSimulation:
         assert verdict["verdict"] == "FAILED"
         assert "failed_checks" in verdict["evidence"]
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_returns_fixed_when_verify_report_has_perfect_score(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -215,7 +215,7 @@ class TestRunSimulation:
         assert verdict["verdict"] == "FIXED_HIGH_CONFIDENCE"
         assert verdict["scenario_reproducibility"] == "full"
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_returns_partial_when_verify_report_has_partial_score(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -228,7 +228,7 @@ class TestRunSimulation:
         assert verdict["verdict"] == "PARTIAL"
         assert verdict["scenario_reproducibility"] == "structural"
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_writes_verdict_json(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -243,7 +243,7 @@ class TestRunSimulation:
         assert "evidence" in data
         assert "execution_time_ms" in data
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_includes_fix_report_in_evidence(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -255,7 +255,7 @@ class TestRunSimulation:
         verdict = run_simulation(project_path=str(tmp_project))
         assert verdict["evidence"]["fix_report"]
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_captures_execution_timing(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -265,7 +265,7 @@ class TestRunSimulation:
         verdict = run_simulation(project_path=str(tmp_project))
         assert verdict["execution_time_ms"] >= 0
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_stops_on_timeout(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -274,7 +274,7 @@ class TestRunSimulation:
         assert verdict["verdict"] == "FAILED"
         assert mock_invoke.call_count == 1
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_records_phase_results_in_evidence(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -287,7 +287,7 @@ class TestRunSimulation:
         assert "verify" in phase_results
         assert phase_results["snapshot"]["returncode"] == 0
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_extracts_log_entries_from_fix_report(
         self, mock_invoke: MagicMock, tmp_project: Path
     ) -> None:
@@ -392,7 +392,7 @@ class TestCLI:
         with pytest.raises(SystemExit):
             main(["validate"])
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_validate_runs_end_to_end(
         self,
         mock_invoke: MagicMock,

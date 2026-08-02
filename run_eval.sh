@@ -120,12 +120,6 @@ fi)
     headers:
       Authorization: kubernetes
     timeout: 30
-$(if [ -n "$SIMULATE_ENABLED" ]; then cat << 'SIM_BLOCK'
-  - name: factory-simulate-mcp
-    url: 'http://127.0.0.1:8086/mcp'
-    timeout: 300
-SIM_BLOCK
-fi)
 
 ols_config:
   conversation_cache:
@@ -232,16 +226,6 @@ if [ -n "$MCP_EVALS" ]; then
         > "$WORK_DIR/obs-mcp.log" 2>&1 &
     sleep 3
     echo "obs-mcp started on port 9100"
-fi
-
-# Start simulate MCP server if enabled
-if [ -n "$SIMULATE_ENABLED" ]; then
-    pkill -f 'simulate_mcp' 2>/dev/null || true; sleep 1
-    cd "$SCRIPT_DIR"
-    uv run python -m simulate_mcp > "$WORK_DIR/simulate-mcp.log" 2>&1 &
-    sleep 3
-    echo "simulate-mcp started on port 8086"
-    cd "$OLS_DIR"
 fi
 
 cd "$OLS_DIR"
@@ -408,7 +392,6 @@ if judged_all > 0:
 
 pkill -f "runner.py" 2>/dev/null || true
 pkill -f "openshift-mcp-server" 2>/dev/null || true
-pkill -f 'simulate_mcp' 2>/dev/null || true
 pkill -f "iaas.py" 2>/dev/null || true
 pkill -f "obs-mcp" 2>/dev/null || true
 pkill -f "port-forward.*prometheus-operated" 2>/dev/null || true

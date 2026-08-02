@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from simulate_mcp.simulate_bridge import (
+from ols_eval.simulate_bridge import (
     format_failure_context,
     main,
     prepare_simulation,
@@ -83,7 +83,7 @@ def _make_invoke_side_effect(project_path: Path, verdicts_by_call: list[tuple[st
 class TestRetryLoopFailedThenFixed:
     """First simulation returns FAILED, second returns FIXED."""
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_failed_then_fixed(
         self, mock_invoke: MagicMock, fix_proposal_file: Path, tmp_project: Path
     ) -> None:
@@ -110,7 +110,7 @@ class TestRetryLoopFailedThenFixed:
 class TestAllAttemptsFail:
     """All 3 retry attempts fail — agent should return LOW confidence."""
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_three_failures_returns_low_confidence(
         self, mock_invoke: MagicMock, fix_proposal_file: Path, tmp_project: Path
     ) -> None:
@@ -147,7 +147,7 @@ class TestAllAttemptsFail:
 class TestFirstAttemptSucceeds:
     """First attempt returns FIXED — no retries needed."""
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_immediate_success(
         self, mock_invoke: MagicMock, fix_proposal_file: Path, tmp_project: Path
     ) -> None:
@@ -169,7 +169,7 @@ class TestFirstAttemptSucceeds:
 class TestPartialThenFixed:
     """First attempt returns PARTIAL, second returns FIXED."""
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_partial_then_fixed(
         self, mock_invoke: MagicMock, fix_proposal_file: Path, tmp_project: Path
     ) -> None:
@@ -194,7 +194,7 @@ class TestPartialThenFixed:
 class TestCLIWithSkillFlag:
     """CLI validate subcommand accepts --skill and includes it in verdict."""
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_default_skill(
         self,
         mock_invoke: MagicMock,
@@ -215,7 +215,7 @@ class TestCLIWithSkillFlag:
         assert verdict["skill"] == "simulate-validate"
         assert result == 1
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_custom_skill(
         self,
         mock_invoke: MagicMock,
@@ -237,7 +237,7 @@ class TestCLIWithSkillFlag:
         assert verdict["skill"] == "custom-validation-skill"
         assert result == 1
 
-    @patch("simulate_mcp.simulate_bridge._invoke_factory_agent")
+    @patch("ols_eval.simulate_bridge._invoke_factory_agent")
     def test_skill_persists_on_fixed_verdict(
         self,
         mock_invoke: MagicMock,

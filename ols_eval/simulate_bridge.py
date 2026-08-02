@@ -11,7 +11,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from simulate_mcp.models import ProposedFix, SimulationVerdict, Verdict, Reproducibility
+from ols_eval.models import ProposedFix, SimulationVerdict, Verdict, Reproducibility
 
 
 DEFAULT_MICROSHIFT_PORT = 16443

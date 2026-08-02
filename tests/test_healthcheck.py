@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from simulate_mcp.healthcheck import (
+from ols_eval.healthcheck import (
     _check_readiness,
     _check_restart_stability,
     _check_status_transition,
@@ -67,7 +67,7 @@ class TestParsePod:
 
 
 class TestCapturePodStates:
-    @patch("simulate_mcp.healthcheck.subprocess.run")
+    @patch("ols_eval.healthcheck.subprocess.run")
     def test_captures_pods_per_namespace(self, mock_run):
         pods = [{"name": "app-1", "status": "Running"}]
         mock_run.return_value = MagicMock(stdout=_kubectl_pods_json(pods))
@@ -78,7 +78,7 @@ class TestCapturePodStates:
         assert len(result["app-ns"]) == 1
         assert result["app-ns"][0]["name"] == "app-1"
 
-    @patch("simulate_mcp.healthcheck.subprocess.run")
+    @patch("ols_eval.healthcheck.subprocess.run")
     def test_multiple_namespaces(self, mock_run):
         pods = [{"name": "pod-1"}]
         mock_run.return_value = MagicMock(stdout=_kubectl_pods_json(pods))
@@ -88,7 +88,7 @@ class TestCapturePodStates:
         assert "ns-a" in result
         assert "ns-b" in result
 
-    @patch("simulate_mcp.healthcheck.subprocess.run")
+    @patch("ols_eval.healthcheck.subprocess.run")
     def test_returns_empty_on_error(self, mock_run):
         import subprocess as sp
         mock_run.side_effect = sp.CalledProcessError(1, "kubectl")
@@ -169,8 +169,8 @@ class TestCompareStates:
 
 
 class TestVerify:
-    @patch("simulate_mcp.healthcheck.emit_phase_event")
-    @patch("simulate_mcp.healthcheck.capture_pod_states")
+    @patch("ols_eval.healthcheck.emit_phase_event")
+    @patch("ols_eval.healthcheck.capture_pod_states")
     def test_passes_when_all_checks_pass(self, mock_capture, _emit):
         before = {"ns": [{"name": "app", "status": "CrashLoopBackOff", "ready": False, "restart_count": 5}]}
         after = {"ns": [{"name": "app", "status": "Running", "ready": True, "restart_count": 5}]}
@@ -182,8 +182,8 @@ class TestVerify:
         assert result["before_state"] == before
         assert result["after_state"] == after
 
-    @patch("simulate_mcp.healthcheck.emit_phase_event")
-    @patch("simulate_mcp.healthcheck.capture_pod_states")
+    @patch("ols_eval.healthcheck.emit_phase_event")
+    @patch("ols_eval.healthcheck.capture_pod_states")
     def test_fails_when_pod_still_crashing(self, mock_capture, _emit):
         before = {"ns": [{"name": "app", "status": "CrashLoopBackOff", "ready": False, "restart_count": 5}]}
         after = {"ns": [{"name": "app", "status": "CrashLoopBackOff", "ready": False, "restart_count": 8}]}
@@ -193,8 +193,8 @@ class TestVerify:
 
         assert result["passed"] is False
 
-    @patch("simulate_mcp.healthcheck.emit_phase_event")
-    @patch("simulate_mcp.healthcheck.capture_pod_states")
+    @patch("ols_eval.healthcheck.emit_phase_event")
+    @patch("ols_eval.healthcheck.capture_pod_states")
     def test_emits_telemetry(self, mock_capture, mock_emit):
         mock_capture.return_value = {}
 

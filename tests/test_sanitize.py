@@ -2,7 +2,7 @@ import copy
 
 import pytest
 
-from simulate_mcp.sanitize import sanitize_manifest, sanitize_manifests
+from ols_eval.sanitize import sanitize_manifest, sanitize_manifests
 
 
 def _make_secret():

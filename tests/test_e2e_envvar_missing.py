@@ -4,13 +4,13 @@ from unittest.mock import patch
 
 import pytest
 
-import simulate_mcp.cluster
-import simulate_mcp.executor
-import simulate_mcp.healthcheck
-import simulate_mcp.sanitize
-import simulate_mcp.snapshot
-from simulate_mcp.models import ProposedFix, Verdict
-from simulate_mcp.pipeline import run_pipeline
+import ols_eval.cluster
+import ols_eval.executor
+import ols_eval.healthcheck
+import ols_eval.sanitize
+import ols_eval.snapshot
+from ols_eval.models import ProposedFix, Verdict
+from ols_eval.pipeline import run_pipeline
 
 
 def _correct_fix() -> ProposedFix:
@@ -77,13 +77,13 @@ def _mock_health_failed() -> dict:
 
 @pytest.mark.integration
 class TestEnvvarMissingCorrectFix:
-    @patch("simulate_mcp.healthcheck.verify")
-    @patch("simulate_mcp.healthcheck.capture_pod_states")
-    @patch("simulate_mcp.executor.execute_fix")
-    @patch("simulate_mcp.cluster.apply_snapshot")
-    @patch("simulate_mcp.cluster.provision")
-    @patch("simulate_mcp.cluster.teardown")
-    @patch("simulate_mcp.pipeline.emit_phase_event")
+    @patch("ols_eval.healthcheck.verify")
+    @patch("ols_eval.healthcheck.capture_pod_states")
+    @patch("ols_eval.executor.execute_fix")
+    @patch("ols_eval.cluster.apply_snapshot")
+    @patch("ols_eval.cluster.provision")
+    @patch("ols_eval.cluster.teardown")
+    @patch("ols_eval.pipeline.emit_phase_event")
     def test_correct_fix_yields_fixed_verdict(
         self, _emit, mock_teardown, mock_provision, mock_apply, mock_exec, mock_capture, mock_verify,
     ):
@@ -116,13 +116,13 @@ class TestEnvvarMissingCorrectFix:
 
 @pytest.mark.integration
 class TestEnvvarMissingIncorrectFix:
-    @patch("simulate_mcp.healthcheck.verify")
-    @patch("simulate_mcp.healthcheck.capture_pod_states")
-    @patch("simulate_mcp.executor.execute_fix")
-    @patch("simulate_mcp.cluster.apply_snapshot")
-    @patch("simulate_mcp.cluster.provision")
-    @patch("simulate_mcp.cluster.teardown")
-    @patch("simulate_mcp.pipeline.emit_phase_event")
+    @patch("ols_eval.healthcheck.verify")
+    @patch("ols_eval.healthcheck.capture_pod_states")
+    @patch("ols_eval.executor.execute_fix")
+    @patch("ols_eval.cluster.apply_snapshot")
+    @patch("ols_eval.cluster.provision")
+    @patch("ols_eval.cluster.teardown")
+    @patch("ols_eval.pipeline.emit_phase_event")
     def test_incorrect_fix_yields_failed_verdict(
         self, _emit, mock_teardown, mock_provision, mock_apply, mock_exec, mock_capture, mock_verify,
     ):
@@ -152,9 +152,9 @@ class TestEnvvarMissingIncorrectFix:
 
 @pytest.mark.integration
 class TestEnvvarMissingProvisionFailure:
-    @patch("simulate_mcp.cluster.provision")
-    @patch("simulate_mcp.cluster.teardown")
-    @patch("simulate_mcp.pipeline.emit_phase_event")
+    @patch("ols_eval.cluster.provision")
+    @patch("ols_eval.cluster.teardown")
+    @patch("ols_eval.pipeline.emit_phase_event")
     def test_provision_failure_returns_failed_verdict(
         self, _emit, mock_teardown, mock_provision,
     ):
@@ -174,12 +174,12 @@ class TestEnvvarMissingProvisionFailure:
 
 @pytest.mark.integration
 class TestEnvvarMissingTeardownAlwaysRuns:
-    @patch("simulate_mcp.healthcheck.capture_pod_states")
-    @patch("simulate_mcp.executor.execute_fix")
-    @patch("simulate_mcp.cluster.apply_snapshot")
-    @patch("simulate_mcp.cluster.provision")
-    @patch("simulate_mcp.cluster.teardown")
-    @patch("simulate_mcp.pipeline.emit_phase_event")
+    @patch("ols_eval.healthcheck.capture_pod_states")
+    @patch("ols_eval.executor.execute_fix")
+    @patch("ols_eval.cluster.apply_snapshot")
+    @patch("ols_eval.cluster.provision")
+    @patch("ols_eval.cluster.teardown")
+    @patch("ols_eval.pipeline.emit_phase_event")
     def test_teardown_runs_even_on_executor_error(
         self, _emit, mock_teardown, mock_provision, mock_apply, mock_exec, mock_capture,
     ):

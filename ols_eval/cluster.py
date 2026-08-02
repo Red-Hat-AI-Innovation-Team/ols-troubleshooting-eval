@@ -7,7 +7,7 @@ import tempfile
 from functools import lru_cache
 from pathlib import Path
 
-from simulate_mcp.telemetry import emit_phase_event
+from ols_eval.telemetry import emit_phase_event
 
 _SYSTEM_NAMESPACES = {"kube-system", "kube-public", "kube-node-lease", "default"}
 

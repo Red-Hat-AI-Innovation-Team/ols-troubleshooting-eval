@@ -3,8 +3,8 @@ from __future__ import annotations
 import subprocess
 import time
 
-from simulate_mcp.models import ProposedFix
-from simulate_mcp.telemetry import emit_phase_event
+from ols_eval.models import ProposedFix
+from ols_eval.telemetry import emit_phase_event
 
 COMMAND_TIMEOUT = 60
 TOTAL_TIMEOUT = 120

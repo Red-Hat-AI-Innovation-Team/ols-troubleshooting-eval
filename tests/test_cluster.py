@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, call, patch
 
 import pytest
 
-from simulate_mcp.cluster import (
+from ols_eval.cluster import (
     _cluster_name,
     _kubeconfig_path,
     _which_provider,
@@ -34,22 +34,22 @@ def _make_manifest(kind: str, name: str, namespace: str = "app-ns") -> dict:
 
 class TestWhichProvider:
     def test_prefers_k3d(self):
-        with patch("simulate_mcp.cluster.shutil.which") as mock_which:
+        with patch("ols_eval.cluster.shutil.which") as mock_which:
             mock_which.side_effect = lambda cmd: "/usr/local/bin/k3d" if cmd == "k3d" else None
             assert _which_provider() == "k3d"
 
     def test_falls_back_to_minikube(self):
-        with patch("simulate_mcp.cluster.shutil.which") as mock_which:
+        with patch("ols_eval.cluster.shutil.which") as mock_which:
             mock_which.side_effect = lambda cmd: "/usr/local/bin/minikube" if cmd == "minikube" else None
             assert _which_provider() == "minikube"
 
     def test_raises_when_neither_available(self):
-        with patch("simulate_mcp.cluster.shutil.which", return_value=None):
+        with patch("ols_eval.cluster.shutil.which", return_value=None):
             with pytest.raises(RuntimeError, match="Neither k3d nor minikube"):
                 _which_provider()
 
     def test_result_is_cached(self):
-        with patch("simulate_mcp.cluster.shutil.which") as mock_which:
+        with patch("ols_eval.cluster.shutil.which") as mock_which:
             mock_which.side_effect = lambda cmd: "/usr/local/bin/k3d" if cmd == "k3d" else None
             assert _which_provider() == "k3d"
             assert _which_provider() == "k3d"
@@ -57,9 +57,9 @@ class TestWhichProvider:
 
 
 class TestProvisionK3d:
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_calls_k3d_create_with_correct_args(self, _emit, mock_run, _prov):
         mock_run.return_value = MagicMock(stdout=b"kubeconfig-data")
 
@@ -78,14 +78,14 @@ class TestProvisionK3d:
         assert create_call[1]["timeout"] == 60
         assert create_call[1]["check"] is True
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_extracts_kubeconfig(self, _emit, mock_run, _prov, tmp_path, monkeypatch):
         mock_run.return_value = MagicMock(stdout=b"kubeconfig-yaml-data")
 
         kc_path = str(tmp_path / "factory-sim-test-123.kubeconfig")
-        monkeypatch.setattr("simulate_mcp.cluster._kubeconfig_path", lambda tid: kc_path)
+        monkeypatch.setattr("ols_eval.cluster._kubeconfig_path", lambda tid: kc_path)
 
         result = provision("test-123")
 
@@ -93,17 +93,17 @@ class TestProvisionK3d:
         kc_call = mock_run.call_args_list[1]
         assert kc_call[0][0] == ["k3d", "kubeconfig", "get", "factory-sim-test-123"]
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_returns_kubeconfig_path(self, _emit, mock_run, _prov):
         mock_run.return_value = MagicMock(stdout=b"data")
         result = provision("abc")
         assert result == _kubeconfig_path("abc")
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_emits_telemetry(self, mock_emit, mock_run, _prov):
         mock_run.return_value = MagicMock(stdout=b"data")
         provision("t1")
@@ -113,13 +113,13 @@ class TestProvisionK3d:
 
 
 class TestProvisionMinikube:
-    @patch("simulate_mcp.cluster._which_provider", return_value="minikube")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="minikube")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_calls_minikube_start_with_correct_args(self, _emit, mock_run, _prov, tmp_path, monkeypatch):
         mock_run.return_value = MagicMock(stdout=b"kubeconfig-data")
         kc_path = str(tmp_path / "factory-sim-mk.kubeconfig")
-        monkeypatch.setattr("simulate_mcp.cluster._kubeconfig_path", lambda tid: kc_path)
+        monkeypatch.setattr("ols_eval.cluster._kubeconfig_path", lambda tid: kc_path)
 
         provision("mk")
 
@@ -139,17 +139,17 @@ class TestProvisionMinikube:
 
 
 class TestProvisionErrors:
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_timeout_raises_runtime_error(self, _emit, mock_run, _prov):
         mock_run.side_effect = subprocess.TimeoutExpired(cmd="k3d", timeout=60)
         with pytest.raises(RuntimeError, match="timed out"):
             provision("t1")
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_called_process_error_raises_runtime_error(self, _emit, mock_run, _prov):
         mock_run.side_effect = subprocess.CalledProcessError(
             1, "k3d", stderr=b"cluster already exists"
@@ -159,8 +159,8 @@ class TestProvisionErrors:
 
 
 class TestApplySnapshot:
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_groups_manifests_by_namespace(self, _emit, mock_run):
         mock_run.return_value = MagicMock(returncode=0)
         manifests = [
@@ -179,8 +179,8 @@ class TestApplySnapshot:
         assert "ns-a" in created_namespaces
         assert "ns-b" in created_namespaces
 
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_applies_manifests_with_kubectl(self, _emit, mock_run):
         mock_run.return_value = MagicMock(returncode=0)
         manifests = [_make_manifest("Deployment", "app1")]
@@ -197,8 +197,8 @@ class TestApplySnapshot:
         assert "--kubeconfig" in cmd
         assert "/tmp/kc" in cmd
 
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_returns_correct_counts(self, _emit, mock_run):
         mock_run.return_value = MagicMock(returncode=0)
         manifests = [
@@ -212,8 +212,8 @@ class TestApplySnapshot:
         assert result["failed"] == 0
         assert result["errors"] == []
 
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_counts_failures(self, _emit, mock_run):
         def side_effect(*args, **kwargs):
             cmd = args[0]
@@ -230,8 +230,8 @@ class TestApplySnapshot:
         assert result["failed"] == 1
         assert len(result["errors"]) == 1
 
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_skips_system_namespace_creation(self, _emit, mock_run):
         mock_run.return_value = MagicMock(returncode=0)
         manifests = [_make_manifest("ConfigMap", "cm1", "kube-system")]
@@ -244,14 +244,14 @@ class TestApplySnapshot:
         ]
         assert len(ns_create_calls) == 0
 
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_empty_manifests(self, _emit, mock_run):
         result = apply_snapshot("/tmp/kc", [])
         assert result == {"applied": 0, "failed": 0, "errors": []}
 
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_handles_timeout_on_apply(self, _emit, mock_run):
         def side_effect(*args, **kwargs):
             cmd = args[0]
@@ -269,51 +269,51 @@ class TestApplySnapshot:
 
 
 class TestTeardown:
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_calls_k3d_delete(self, _emit, mock_run, _prov):
         teardown("t1")
         cmd = mock_run.call_args_list[0][0][0]
         assert cmd == ["k3d", "cluster", "delete", "factory-sim-t1"]
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="minikube")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="minikube")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_calls_minikube_delete(self, _emit, mock_run, _prov):
         teardown("t1")
         cmd = mock_run.call_args_list[0][0][0]
         assert cmd == ["minikube", "delete", "--profile", "factory-sim-t1"]
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_safe_when_cluster_does_not_exist(self, _emit, mock_run, _prov):
         mock_run.side_effect = subprocess.CalledProcessError(1, "k3d", stderr=b"not found")
         teardown("nonexistent")
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_safe_on_timeout(self, _emit, mock_run, _prov):
         mock_run.side_effect = subprocess.TimeoutExpired(cmd="k3d", timeout=60)
         teardown("slow")
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_cleans_up_kubeconfig_file(self, _emit, mock_run, _prov, tmp_path, monkeypatch):
         kc_path = str(tmp_path / "factory-sim-t1.kubeconfig")
         Path(kc_path).write_text("kubeconfig-data")
-        monkeypatch.setattr("simulate_mcp.cluster._kubeconfig_path", lambda tid: kc_path)
+        monkeypatch.setattr("ols_eval.cluster._kubeconfig_path", lambda tid: kc_path)
 
         teardown("t1")
 
         assert not Path(kc_path).exists()
 
-    @patch("simulate_mcp.cluster._which_provider", return_value="k3d")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster._which_provider", return_value="k3d")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_emits_telemetry(self, mock_emit, mock_run, _prov):
         teardown("t1")
         phases = [c[0][1] for c in mock_emit.call_args_list]
@@ -322,9 +322,9 @@ class TestTeardown:
 
 
 class TestReset:
-    @patch("simulate_mcp.cluster.apply_snapshot")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.apply_snapshot")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_deletes_non_system_namespaces(self, _emit, mock_run, mock_apply):
         mock_run.return_value = MagicMock(
             stdout=b"default kube-system kube-public app-ns custom-ns"
@@ -344,9 +344,9 @@ class TestReset:
         assert "kube-system" not in deleted
         assert "default" not in deleted
 
-    @patch("simulate_mcp.cluster.apply_snapshot")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.apply_snapshot")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_re_applies_manifests(self, _emit, mock_run, mock_apply):
         mock_run.return_value = MagicMock(stdout=b"default")
         mock_apply.return_value = {"applied": 2, "failed": 0, "errors": []}
@@ -357,9 +357,9 @@ class TestReset:
         mock_apply.assert_called_once()
         assert result["applied"] == 2
 
-    @patch("simulate_mcp.cluster.apply_snapshot")
-    @patch("simulate_mcp.cluster.subprocess.run")
-    @patch("simulate_mcp.cluster.emit_phase_event")
+    @patch("ols_eval.cluster.apply_snapshot")
+    @patch("ols_eval.cluster.subprocess.run")
+    @patch("ols_eval.cluster.emit_phase_event")
     def test_handles_namespace_list_failure(self, _emit, mock_run, mock_apply):
         mock_run.side_effect = subprocess.CalledProcessError(1, "kubectl")
         mock_apply.return_value = {"applied": 1, "failed": 0, "errors": []}

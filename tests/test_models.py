@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from simulate_mcp.models import (
+from ols_eval.models import (
     ProposedFix,
     Reproducibility,
     SimulateRequest,

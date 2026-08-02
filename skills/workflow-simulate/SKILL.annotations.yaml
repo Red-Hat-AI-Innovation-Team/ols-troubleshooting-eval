@@ -13,7 +13,7 @@ analyze_query:
     task_prompt_analyze_query: "Analyze the user's troubleshooting query to identify\
       \ which Kubernetes resources to snapshot from the target cluster.\n\nRead the\
       \ simulate task config from .factory/simulate/task.json for the user's query\
-      \ text, target kubeconfig path, microshift_port (default 16443), and any explicit\
+      \ text, target kubeconfig path, microshift_port (default 6443), and any explicit\
       \ namespace or resource-type overrides.\n\nIf the user provided explicit --target-namespaces\
       \ or --resource-types, use those directly. Otherwise, analyze the query to extract:\n\
       - Relevant namespaces (max 10)\n- Resource types to snapshot (deployments, services,\
@@ -25,7 +25,7 @@ analyze_query:
       \ with this schema:\n```json\n{\n  \"query\": \"<original user query>\",\n \
       \ \"namespaces\": [\"ns1\", \"ns2\"],\n  \"resource_types\": [\"deployments\"\
       , \"services\", \"configmaps\"],\n  \"cluster_type\": \"microshift|minikube\"\
-      ,\n  \"microshift_port\": 16443,\n  \"max_replicas\": 1,\n  \"rationale\": \"\
+      ,\n  \"microshift_port\": 6443,\n  \"max_replicas\": 1,\n  \"rationale\": \"\
       <why these namespaces/resources are relevant>\"\n}\n```\nWrite output to: .factory/simulate/analysis.json"
     timeout_analyze_query: '300'
 gate_analysis:
@@ -99,18 +99,18 @@ provision_cluster:
   slots:
     task_prompt_provision_cluster: "Provision an ephemeral Kubernetes cluster for\
       \ troubleshooting.\n\nRead .factory/simulate/analysis.json for cluster_type\
-      \ (microshift or minikube) and microshift_port (integer, default 16443 if not\
+      \ (microshift or minikube) and microshift_port (integer, default 6443 if not\
       \ present).\n\nIf cluster_type is 'minikube':\n  1. Run `minikube start --profile\
       \ factory-simulate --memory 2048 --cpus 2`\n  2. Wait for cluster ready: `minikube\
       \ status --profile factory-simulate`\n  3. Export kubeconfig: `minikube kubeconfig\
       \ --profile factory-simulate`\n     Save to .factory/simulate/ephemeral-kubeconfig\n\
       \nIf cluster_type is 'microshift':\n  1. Read the microshift_port value from\
-      \ analysis.json (default: 16443 if missing)\n  2. Start microshift container\
+      \ analysis.json (default: 6443 if missing)\n  2. Start microshift container\
       \ — the host port is microshift_port, the container port is always 6443:\n \
       \    `podman run -d --name factory-simulate-microshift --privileged -v microshift-data:/var/lib\
       \ -p <microshift_port>:6443 quay.io/microshift/microshift-aio`\n     Example:\
       \ if microshift_port is 8443, use `-p 8443:6443`\n     Example: if microshift_port\
-      \ is the default (16443), use `-p 16443:6443`\n  3. Wait\
+      \ is the default (6443), the mapping is the default port to 6443\n  3. Wait\
       \ for API server ready (poll with retries)\n  4. Copy kubeconfig from container\
       \ to .factory/simulate/ephemeral-kubeconfig\n  5. Patch the kubeconfig server\
       \ URL to use the configured host port:\n     `sed -i '' \"s|server: https://127.0.0.1:6443|server:\
@@ -144,7 +144,7 @@ apply_manifests:
   writes:
   - .factory/simulate/apply-report.md
   edges_out:
-  - target: apply_fix
+  - target: verify_cluster
     condition: null
   slots:
     task_prompt_apply_manifests: 'Apply sanitized manifests to the ephemeral cluster.
@@ -191,35 +191,6 @@ apply_manifests:
 
       Write output to: .factory/simulate/apply-report.md'
     timeout_apply_manifests: '600'
-apply_fix:
-  type: AgentNode
-  id: apply_fix
-  role: builder
-  blocking: 'true'
-  reads:
-  - .factory/simulate/task.json
-  - .factory/simulate/apply-report.md
-  writes:
-  - .factory/simulate/fix-report.md
-  edges_out:
-  - target: verify_cluster
-    condition: null
-  slots:
-    task_prompt_apply_fix: "Apply the proposed fix commands to the ephemeral cluster.\n\
-      \nRead .factory/simulate/task.json for the fix_commands array.\nRead the ephemeral\
-      \ kubeconfig from .factory/simulate/ephemeral-kubeconfig.\nRead .factory/simulate/apply-report.md\
-      \ for context on what baseline manifests were applied.\n\nIf fix_commands is\
-      \ empty or missing, write a fix-report.md noting 'No fix commands provided —\
-      \ skipping fix application' and exit successfully.\n\nFor each command in fix_commands:\n\
-      1. Execute: kubectl --kubeconfig .factory/simulate/ephemeral-kubeconfig <command>\n\
-      2. Capture stdout, stderr, and exit code\n3. If the command fails (non-zero\
-      \ exit code), log the failure but continue executing remaining commands\n\nWrite\
-      \ .factory/simulate/fix-report.md with:\n- Each command executed\n- Exit code\
-      \ for each command\n- stdout/stderr output for each command\n- Overall result:\
-      \ SUCCESS (all commands exited 0), PARTIAL (some failed), or FAILED (all failed)\n\
-      Read: .factory/simulate/task.json, .factory/simulate/apply-report.md\nWrite output\
-      \ to: .factory/simulate/fix-report.md"
-    timeout_apply_fix: '600'
 verify_cluster:
   type: AgentNode
   id: verify_cluster
@@ -227,7 +198,6 @@ verify_cluster:
   blocking: 'true'
   reads:
   - .factory/simulate/apply-report.md
-  - .factory/simulate/fix-report.md
   writes:
   - .factory/simulate/verify-report.md
   edges_out:

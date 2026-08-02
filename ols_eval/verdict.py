@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from simulate_mcp.models import Reproducibility, SimulationVerdict, Verdict
+from ols_eval.models import Reproducibility, SimulationVerdict, Verdict
 
 
 def generate_verdict(

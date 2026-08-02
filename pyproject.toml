@@ -3,11 +3,10 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "factory-simulate-mcp"
+name = "ols-troubleshooting-eval"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    "mcp>=1.0",
     "pydantic>=2.0",
     "kubernetes>=29.0",
     "structlog",
@@ -19,7 +18,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["simulate_mcp*"]
+include = ["ols_eval*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

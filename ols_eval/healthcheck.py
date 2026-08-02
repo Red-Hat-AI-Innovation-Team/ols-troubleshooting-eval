@@ -4,7 +4,7 @@ import json
 import subprocess
 import time
 
-from simulate_mcp.telemetry import emit_phase_event
+from ols_eval.telemetry import emit_phase_event
 
 POLL_TIMEOUT = 30
 POLL_INTERVAL = 5

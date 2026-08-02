@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from simulate_mcp.models import Reproducibility, Verdict
-from simulate_mcp.verdict import generate_verdict
+from ols_eval.models import Reproducibility, Verdict
+from ols_eval.verdict import generate_verdict
 
 
 def _health_passed(before_status="CrashLoopBackOff", after_status="Running"):
