@@ -180,7 +180,7 @@ fi
 OUTPUT_BASE="$EVAL_DIR/results/traced_${MODEL_LABEL}"
 
 MCP_SERVER="${MCP_SERVER:-$SCRIPT_DIR/.work/openshift-mcp-server}"
-MCP_CONFIG="${MCP_CONFIG:-$SCRIPT_DIR/mcp_config.toml}"
+MCP_CONFIG="${MCP_CONFIG:-}"
 pkill -f "openshift-mcp-server" 2>/dev/null || true; sleep 2
 "$MCP_SERVER" --port 8085 ${MCP_CONFIG:+--config "$MCP_CONFIG"} > "$WORK_DIR/mcp.log" 2>&1 &
 sleep 3

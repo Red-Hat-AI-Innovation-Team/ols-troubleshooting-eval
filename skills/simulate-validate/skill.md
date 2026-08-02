@@ -39,7 +39,7 @@ Fields:
 Execute the simulation bridge to test your fix on an ephemeral cluster:
 
 ```bash
-python3 -m simulate_mcp.simulate_bridge validate \
+python3 -m ols_eval.simulate_bridge validate \
   --fix-proposal /tmp/ols-simulate/proposed-fix.json \
   --kubeconfig $KUBECONFIG \
   --project $PROJECT_PATH
