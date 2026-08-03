@@ -178,7 +178,7 @@ fi
 OUTPUT_BASE="$EVAL_DIR/results/traced_${MODEL_LABEL}"
 
 MCP_SERVER="${MCP_SERVER:-$SCRIPT_DIR/.work/openshift-mcp-server}"
-MCP_CONFIG="${MCP_CONFIG:-}"
+MCP_CONFIG="${MCP_CONFIG:-$SCRIPT_DIR/mcp_config.toml}"
 pkill -f "openshift-mcp-server" 2>/dev/null || true; sleep 2
 "$MCP_SERVER" --port 8085 ${MCP_CONFIG:+--config "$MCP_CONFIG"} > "$WORK_DIR/mcp.log" 2>&1 &
 sleep 3
@@ -299,6 +299,7 @@ else
           scheduled_outage_detection periodic_failure_window \
           readiness_probe_diagnosis ingress_rule_mismatch oom wrong_networkpolicy \
           config_drift_analysis)
+
     for iter in $(seq 1 $ITERATIONS); do
         actual_iter=$((iter + ITER_OFFSET))
         echo ""
