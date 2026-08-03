@@ -48,13 +48,11 @@ ITS_TEMPERATURE="${ITS_TEMPERATURE:-}"
 ITS_PORT=8100
 CONTEXT_WINDOW="${CONTEXT_WINDOW:-128000}"
 MCP_EVALS="${MCP_EVALS:-}"
-SIMULATE_ENABLED="${SIMULATE_ENABLED:-}"
 SIMULATE_WORKFLOW="${SIMULATE_WORKFLOW:-}"
 OLS_QUERY_TIMEOUT="${OLS_QUERY_TIMEOUT:-300}"
 
-# SIMULATE_WORKFLOW implies SIMULATE_ENABLED (starts the MCP server) and bumps the query timeout
+# SIMULATE_WORKFLOW bumps the query timeout and checks for factory CLI
 if [ -n "$SIMULATE_WORKFLOW" ]; then
-    SIMULATE_ENABLED="${SIMULATE_ENABLED:-1}"
     if [ "$OLS_QUERY_TIMEOUT" -lt 600 ] 2>/dev/null; then
         OLS_QUERY_TIMEOUT=600
     fi
@@ -252,7 +250,7 @@ echo "  Judge:      $JUDGE_MODEL"
 echo "  Mode:       ${MCP_EVALS:+mcp}${MCP_EVALS:-scenario}"
 echo "  Iterations: $ITERATIONS (offset $ITER_OFFSET)"
 echo "  Tracing:    $TRACING"
-echo "  Simulate:   ${SIMULATE_ENABLED:+enabled}${SIMULATE_ENABLED:-disabled}${SIMULATE_WORKFLOW:+ (workflow mode)}"
+echo "  Simulate:   ${SIMULATE_WORKFLOW:+enabled}${SIMULATE_WORKFLOW:-disabled}"
 echo "  Results:    $OUTPUT_BASE"
 echo "  $(date)"
 echo "========================================="
