@@ -144,26 +144,26 @@ EOF
 sed "s|model: \"openshift-expert\"|model: \"${MODEL_NAME}\"|; s|model: \"gpt-5-mini\"|model: \"${JUDGE_MODEL}\"|" \
     "$EVAL_DIR/system_template.yaml" > "$WORK_DIR/system.yaml"
 
-# Generate a simulate-specific system config with the skill injected as system_prompt
+# When SIMULATE_WORKFLOW is set, inject the simulate-validate skill into system.yaml
+# so it applies to ALL scenarios (not just a single tag)
 if [ -n "$SIMULATE_WORKFLOW" ]; then
     SKILL_FILE="$SCRIPT_DIR/skills/simulate-validate/skill.md"
     if [ -f "$SKILL_FILE" ]; then
-        _SKILL_FILE="$SKILL_FILE" _SYS_IN="$WORK_DIR/system.yaml" _SYS_OUT="$WORK_DIR/system-simulate.yaml" \
+        _SKILL_FILE="$SKILL_FILE" _SYS="$WORK_DIR/system.yaml" \
         python3 -c "
 import os, re
 skill_path = os.environ['_SKILL_FILE']
-sys_in = os.environ['_SYS_IN']
-sys_out = os.environ['_SYS_OUT']
+sys_path = os.environ['_SYS']
 with open(skill_path) as f:
     skill = f.read()
-with open(sys_in) as f:
+with open(sys_path) as f:
     content = f.read()
 indent = '  '
 block = indent + 'system_prompt: |'
 for line in skill.splitlines():
     block += '\n' + indent + '  ' + line
 content = re.sub(r'^  system_prompt: null.*$', block, content, count=1, flags=re.MULTILINE)
-with open(sys_out, 'w') as f:
+with open(sys_path, 'w') as f:
     f.write(content)
 "
     else
@@ -299,10 +299,6 @@ else
           scheduled_outage_detection periodic_failure_window \
           readiness_probe_diagnosis ingress_rule_mismatch oom wrong_networkpolicy \
           config_drift_analysis)
-    if [ -n "$SIMULATE_WORKFLOW" ]; then
-        TAGS+=(simulate_validate)
-    fi
-
     for iter in $(seq 1 $ITERATIONS); do
         actual_iter=$((iter + ITER_OFFSET))
         echo ""
@@ -336,12 +332,8 @@ else
             mkdir -p "$ITER_DIR"
 
             cd "$OLS_DIR"
-            SYS_CONFIG="$WORK_DIR/system.yaml"
-            if [ "$tag" = "simulate_validate" ] && [ -f "$WORK_DIR/system-simulate.yaml" ]; then
-                SYS_CONFIG="$WORK_DIR/system-simulate.yaml"
-            fi
             API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
-                --system-config "$SYS_CONFIG" \
+                --system-config "$WORK_DIR/system.yaml" \
                 --eval-data "$EVAL_DIR/evals.yaml" \
                 --output-dir "$ITER_DIR" \
                 --tags "$tag" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
