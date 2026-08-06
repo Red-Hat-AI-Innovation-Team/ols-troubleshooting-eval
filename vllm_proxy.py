@@ -19,7 +19,9 @@ Usage:
 
 import argparse
 import asyncio
+import copy
 import json
+import re
 import time
 import uuid
 from typing import AsyncGenerator
@@ -37,6 +39,59 @@ HOP_BY_HOP = frozenset({
 })
 
 
+MAX_RETRIES = 5
+HARMONY_ERROR_MARKER = "unexpected tokens remaining in message header"
+_HARMONY_FUNC_STRIP_RE = re.compile(r'<\|[^|]*\|>.*')
+_HARMONY_TOKEN_RE = re.compile(r'<\|[^|]*\|>')
+
+
+def _is_harmony_error(resp: httpx.Response) -> bool:
+    """Check if a vLLM response is a harmony parser crash (retryable)."""
+    if resp.status_code != 500:
+        return False
+    try:
+        return HARMONY_ERROR_MARKER in resp.text
+    except Exception:
+        return False
+
+
+def _clean_func_name(name: str) -> str:
+    return _HARMONY_FUNC_STRIP_RE.sub('', name)
+
+
+def _clean_response(completion: dict) -> dict:
+    for choice in completion.get("choices", []):
+        msg = choice.get("message", {})
+        for tc in msg.get("tool_calls", []):
+            func = tc.get("function", {})
+            if "name" in func:
+                func["name"] = _clean_func_name(func["name"])
+    return completion
+
+
+def _clean_request(data: dict) -> dict:
+    for msg in data.get("messages", []):
+        for tc in msg.get("tool_calls", []):
+            func = tc.get("function", {})
+            if "name" in func:
+                func["name"] = _clean_func_name(func["name"])
+        if msg.get("role") == "tool" and "name" in msg:
+            msg["name"] = _clean_func_name(msg["name"])
+        content = msg.get("content")
+        if isinstance(content, str) and "<|" in content:
+            msg["content"] = _HARMONY_TOKEN_RE.sub('', content)
+    return data
+
+
+def _truncate_history(data: dict, drop_pairs: int) -> dict:
+    msgs = data.get("messages", [])
+    system = [m for m in msgs if m.get("role") == "system"]
+    rest = [m for m in msgs if m.get("role") != "system"]
+    drop_count = min(drop_pairs * 2, max(0, len(rest) - 2))
+    data["messages"] = system + rest[drop_count:]
+    return data
+
+
 def create_app(backend_url: str, timeout: float = 300.0) -> FastAPI:
     app = FastAPI()
 
@@ -49,19 +104,22 @@ def create_app(backend_url: str, timeout: float = 300.0) -> FastAPI:
 
         is_stream_intercept = False
         original_stream_options = None
-
-        if (
+        is_chat_completion = (
             path in ("v1/chat/completions", "v1/completions")
             and request.method == "POST"
             and body
-        ):
+        )
+
+        data = None
+        if is_chat_completion:
             try:
                 data = json.loads(body)
+                _clean_request(data)
                 if data.get("stream", False):
                     is_stream_intercept = True
                     original_stream_options = data.pop("stream_options", None)
                     data["stream"] = False
-                    body = json.dumps(data).encode()
+                body = json.dumps(data).encode()
             except (json.JSONDecodeError, KeyError):
                 pass
 
@@ -75,16 +133,30 @@ def create_app(backend_url: str, timeout: float = 300.0) -> FastAPI:
         if request.url.query:
             url = f"{url}?{request.url.query}"
 
-        async with httpx.AsyncClient(timeout=httpx.Timeout(timeout)) as client:
-            resp = await client.request(
-                method=request.method,
-                url=url,
-                content=body,
-                headers=fwd_headers,
-            )
+        max_attempts = MAX_RETRIES if is_chat_completion else 1
+        resp: httpx.Response | None = None
+        retry_body = body
+        for attempt in range(max_attempts):
+            async with httpx.AsyncClient(timeout=httpx.Timeout(timeout)) as client:
+                resp = await client.request(
+                    method=request.method,
+                    url=url,
+                    content=retry_body,
+                    headers=fwd_headers,
+                )
+            if not _is_harmony_error(resp):
+                break
+            print(f"[proxy] harmony error on attempt {attempt + 1}/{max_attempts}, retrying with truncated history...")
+            if data is not None:
+                retry_data = copy.deepcopy(data)
+                _truncate_history(retry_data, drop_pairs=attempt + 1)
+                retry_body = json.dumps(retry_data).encode()
+            await asyncio.sleep(0.5)
+
+        assert resp is not None
 
         if is_stream_intercept and resp.status_code == 200:
-            completion = resp.json()
+            completion = _clean_response(resp.json())
             include_usage = bool(
                 original_stream_options
                 and original_stream_options.get("include_usage", False)
@@ -93,6 +165,19 @@ def create_app(backend_url: str, timeout: float = 300.0) -> FastAPI:
                 completion_to_sse(completion, include_usage=include_usage),
                 media_type="text/event-stream",
                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+            )
+
+        if is_chat_completion and resp.status_code == 200:
+            completion = _clean_response(resp.json())
+            resp_headers = {
+                k: v
+                for k, v in resp.headers.items()
+                if k.lower() not in HOP_BY_HOP
+            }
+            return Response(
+                content=json.dumps(completion).encode(),
+                status_code=resp.status_code,
+                headers=resp_headers,
             )
 
         # Passthrough
@@ -297,8 +382,105 @@ def _run_tests():
         print("  PASS")
         passed += 1
 
-        # --- Test 6: integration with mock backend ---
-        print("Test 6: integration — proxy with mock backend")
+        # --- Test 6: _clean_func_name ---
+        print("Test 6: _clean_func_name strips harmony tokens")
+        assert _clean_func_name("pods_get") == "pods_get"
+        assert _clean_func_name("pods_get<|channel|>commentary") == "pods_get"
+        assert _clean_func_name("resources_get<|channel|>json") == "resources_get"
+        assert _clean_func_name("events_list<|channel|>") == "events_list"
+        assert _clean_func_name("events_list<|channel|>analysis") == "events_list"
+        assert _clean_func_name("configmaps_get>commentary") == "configmaps_get>commentary"
+        print("  PASS")
+        passed += 1
+
+        # --- Test 7: _clean_response ---
+        print("Test 7: _clean_response cleans tool call function names")
+        dirty_resp = {
+            "choices": [{
+                "message": {
+                    "role": "assistant",
+                    "tool_calls": [
+                        {"function": {"name": "pods_get<|channel|>commentary", "arguments": "{}"}},
+                        {"function": {"name": "events_list<|channel|>analysis", "arguments": "{}"}},
+                    ],
+                },
+            }],
+        }
+        _clean_response(dirty_resp)
+        assert dirty_resp["choices"][0]["message"]["tool_calls"][0]["function"]["name"] == "pods_get"
+        assert dirty_resp["choices"][0]["message"]["tool_calls"][1]["function"]["name"] == "events_list"
+        print("  PASS")
+        passed += 1
+
+        # --- Test 8: _clean_request ---
+        print("Test 8: _clean_request cleans conversation history")
+        dirty_req = {
+            "messages": [
+                {"role": "system", "content": "You are helpful."},
+                {"role": "user", "content": "List pods"},
+                {"role": "assistant", "tool_calls": [
+                    {"function": {"name": "pods_list<|channel|>commentary", "arguments": "{}"}}
+                ]},
+                {"role": "tool", "name": "pods_list<|channel|>commentary", "content": "pod1, pod2"},
+                {"role": "assistant", "content": "Found pods<|end|><|start|>assistant"},
+            ],
+        }
+        _clean_request(dirty_req)
+        assert dirty_req["messages"][2]["tool_calls"][0]["function"]["name"] == "pods_list"
+        assert dirty_req["messages"][3]["name"] == "pods_list"
+        assert "<|" not in dirty_req["messages"][4]["content"]
+        print("  PASS")
+        passed += 1
+
+        # --- Test 9: _truncate_history ---
+        print("Test 9: _truncate_history drops oldest non-system messages")
+        hist = {
+            "messages": [
+                {"role": "system", "content": "sys"},
+                {"role": "user", "content": "q1"},
+                {"role": "assistant", "content": "a1"},
+                {"role": "user", "content": "q2"},
+                {"role": "assistant", "content": "a2"},
+                {"role": "user", "content": "q3"},
+                {"role": "assistant", "content": "a3"},
+            ],
+        }
+        t1 = _truncate_history(copy.deepcopy(hist), drop_pairs=1)
+        assert len(t1["messages"]) == 5
+        assert t1["messages"][0]["role"] == "system"
+        assert t1["messages"][1]["content"] == "q2"
+        t2 = _truncate_history(copy.deepcopy(hist), drop_pairs=2)
+        assert len(t2["messages"]) == 3
+        assert t2["messages"][1]["content"] == "q3"
+        t3 = _truncate_history(copy.deepcopy(hist), drop_pairs=10)
+        assert len(t3["messages"]) == 3
+        print("  PASS")
+        passed += 1
+
+        # --- Test 10: SSE with cleaned leaked names ---
+        print("Test 10: completion_to_sse with cleaned leaked names")
+        leaked_completion = {
+            "id": "chatcmpl-leaked", "object": "chat.completion",
+            "created": 1700000000, "model": "test-model",
+            "choices": [{
+                "index": 0,
+                "message": {
+                    "role": "assistant", "content": None,
+                    "tool_calls": [{"id": "call_x", "type": "function",
+                        "function": {"name": "pods_get<|channel|>commentary", "arguments": '{}'}}],
+                },
+                "finish_reason": "tool_calls",
+            }],
+        }
+        cleaned_lc = _clean_response(copy.deepcopy(leaked_completion))
+        chunks = [c async for c in completion_to_sse(cleaned_lc)]
+        assert '"pods_get"' in chunks[1]
+        assert "<|channel|>" not in chunks[1]
+        print("  PASS")
+        passed += 1
+
+        # --- Test 11: integration with mock backend ---
+        print("Test 11: integration — proxy with mock backend")
 
         mock_app = FastAPI()
 
