@@ -1,6 +1,6 @@
 .env
 .openai_key
-.work/
+.work
 *.log
 __pycache__/
 *.pyc
