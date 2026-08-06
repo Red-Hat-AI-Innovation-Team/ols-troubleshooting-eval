@@ -78,16 +78,19 @@ class NemotronVLLMThinkingClient(OpenAIClient):
             return _parse_response(response)
 
         # ── Step 1: reasoning trace (capped at thinking_budget tokens) ───
-        step1_response = self._client.chat.completions.create(
+        step1_kwargs: dict[str, Any] = dict(
             model=model,
             messages=oai_messages,
             max_completion_tokens=thinking_budget,
         )
+        if tools:
+            step1_kwargs["tools"] = _to_openai_tools(tools)
+        step1_response = self._client.chat.completions.create(**step1_kwargs)
         step1_choice = step1_response.choices[0]
         content = step1_choice.message.content or ""
 
         # Complete response (thinking + answer) fit within budget.
-        if step1_choice.finish_reason == "stop":
+        if step1_choice.finish_reason in ("stop", "tool_calls"):
             return _parse_response(step1_response)
 
         # ── Step 2: close reasoning, get answer via completions API ──────
@@ -107,17 +110,29 @@ class NemotronVLLMThinkingClient(OpenAIClient):
         extended = list(oai_messages) + [
             {"role": "assistant", "content": reasoning_content},
         ]
-        prompt = self.tokenizer.apply_chat_template(
-            extended, tokenize=False, continue_final_message=True,
-        )
 
-        step2_response = self._client.completions.create(
-            model=model, prompt=prompt, max_tokens=remaining_tokens,
+        # (rohan): instead of completions endpoint, use chat completions
+        kwargs = dict(
+            model=model, messages=extended, max_tokens=remaining_tokens,
+            extra_body={"chat_template_kwargs": {"enable_thinking": False}},
         )
-        answer_text = step2_response.choices[0].text
-
-        # Parse qwen3_coder tool calls from raw text
-        tool_calls, clean_content = _parse_tool_calls_from_text(answer_text)
+        if tools: kwargs['tools'] = _to_openai_tools(tools)
+        step2_response = self._client.chat.completions.create(**kwargs)
+        step2_parsed = _parse_response(step2_response)
+        clean_content = step2_parsed.content or ""
+        tool_calls = step2_parsed.tool_calls
+        #
+        # prompt = self.tokenizer.apply_chat_template(
+        #     extended, tokenize=False, continue_final_message=True,
+        # )
+        #
+        # step2_response = self._client.completions.create(
+        #     model=model, prompt=prompt, max_tokens=remaining_tokens,
+        # )
+        # answer_text = step2_response.choices[0].text
+        #
+        # # Parse qwen3_coder tool calls from raw text
+        # tool_calls, clean_content = _parse_tool_calls_from_text(answer_text)
 
         # Strip <think> tags from reasoning
         clean_reasoning = (
