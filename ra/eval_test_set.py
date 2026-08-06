@@ -25,7 +25,7 @@ from pathlib import Path
 
 import db
 from agent import Agent
-from llm import AnthropicVertexClient, OpenAIClient
+from llm import AnthropicVertexClient, NemotronVLLMThinkingClient, OpenAIClient
 from llm.base import LLMClient
 from llm.config.anthropic_vertex import AnthropicVertexConfig
 from llm.config.openai import OpenAIConfig
@@ -197,6 +197,10 @@ def main() -> None:
     parser.add_argument("--concurrency", type=int, default=10)
     parser.add_argument("--model-url", type=str, help="OpenAI-compatible base URL for troubleshooter model")
     parser.add_argument("--model-name", type=str, default="model", help="Model name for troubleshooter (default: model)")
+    parser.add_argument("--client-type", type=str, choices=["openai", "nemotron"], default="openai",
+                        help="LLM client type for troubleshooter (default: openai)")
+    parser.add_argument("--tokenizer", type=str, default="nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+                        help="Tokenizer for Nemotron client (default: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16)")
     args = parser.parse_args()
 
     # Load metadata and reference root causes
@@ -218,11 +222,15 @@ def main() -> None:
 
     # Troubleshooter client
     if args.model_url:
-        troubleshooter_client: LLMClient = OpenAIClient(
-            OpenAIConfig(api_key="not-needed", base_url=args.model_url)
-        )
+        oai_config = OpenAIConfig(api_key="not-needed", base_url=args.model_url)
+        if args.client_type == "nemotron":
+            troubleshooter_client: LLMClient = NemotronVLLMThinkingClient(
+                oai_config, tokenizer_name_or_path=args.tokenizer,
+            )
+        else:
+            troubleshooter_client = OpenAIClient(oai_config)
         troubleshooter_model = args.model_name
-        print(f"Troubleshooter: {troubleshooter_model} @ {args.model_url}")
+        print(f"Troubleshooter: {troubleshooter_model} @ {args.model_url} (client={args.client_type})")
     else:
         troubleshooter_client = judge_client
         troubleshooter_model = "claude-haiku-4-5@20251001"

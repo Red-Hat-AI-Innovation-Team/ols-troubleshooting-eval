@@ -25,7 +25,7 @@ import psycopg2.errors
 
 import db
 from generate_scenario_based_data import generate_seed_data
-from llm import LLMClient, AnthropicVertexClient, OpenAIClient
+from llm import LLMClient, AnthropicVertexClient, NemotronVLLMThinkingClient, OpenAIClient
 from llm.config import AnthropicVertexConfig, OpenAIConfig
 from run_agent import run
 
@@ -106,6 +106,8 @@ def stage_run(
     model_url: str | None = None,
     model_name: str = "claude-haiku-4-5@20251001",
     concurrency: int = 50,
+    client_type: str = "openai",
+    tokenizer: str = "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
 ) -> None:
     print(f"\n{'=' * 70}")
     print(f"STAGE 2: AGENT RUNS ({len(scenarios)} scenarios × {n_seeds} seeds × {n_runs} runs)")
@@ -116,10 +118,14 @@ def stage_run(
     llm_client: LLMClient = AnthropicVertexClient(config)
 
     if model_url:
-        troubleshooter_client: LLMClient = OpenAIClient(
-            OpenAIConfig(api_key="not-needed", base_url=model_url, max_concurrency=concurrency)
-        )
-        print(f"Troubleshooter: {model_name} @ {model_url}")
+        oai_config = OpenAIConfig(api_key="not-needed", base_url=model_url, max_concurrency=concurrency)
+        if client_type == "nemotron":
+            troubleshooter_client: LLMClient = NemotronVLLMThinkingClient(
+                oai_config, tokenizer_name_or_path=tokenizer,
+            )
+        else:
+            troubleshooter_client = OpenAIClient(oai_config)
+        print(f"Troubleshooter: {model_name} @ {model_url} (client={client_type})")
     else:
         troubleshooter_client = llm_client
         print(f"Troubleshooter: {model_name} (Anthropic Vertex)")
@@ -204,6 +210,10 @@ def main():
     parser.add_argument("--model-url", type=str, help="OpenAI-compatible base URL for troubleshooter")
     parser.add_argument("--model-name", type=str, default="claude-haiku-4-5@20251001", help="Troubleshooter model name")
     parser.add_argument("--concurrency", type=int, default=50)
+    parser.add_argument("--client-type", type=str, choices=["openai", "nemotron"], default="openai",
+                        help="LLM client type for troubleshooter (default: openai)")
+    parser.add_argument("--tokenizer", type=str, default="nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B-BF16",
+                        help="Tokenizer for Nemotron client")
     args = parser.parse_args()
 
     scenarios = load_scenarios()
@@ -219,6 +229,8 @@ def main():
             model_url=args.model_url,
             model_name=args.model_name,
             concurrency=args.concurrency,
+            client_type=args.client_type,
+            tokenizer=args.tokenizer,
         )
 
     print("\nDone.")
