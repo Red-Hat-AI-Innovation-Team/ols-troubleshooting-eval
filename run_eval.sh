@@ -19,12 +19,19 @@ set -euo pipefail
 #   TRACING        Enable Langfuse tracing: "on" or "off" (default: off)
 #   OLS_DIR        Path to lightspeed-service (default: ./lightspeed-service)
 #   EVAL_CLI       Path to lightspeed-eval binary (auto-detected)
+#   ITS_BUDGET     Inference-time scaling budget (default: unset = no ITS)
+#   ITS_ALGORITHM  ITS algorithm: self-consistency, best-of-n (default: self-consistency)
+#   ITS_TOOL_VOTE  ITS voting strategy: tool_hierarchical, tool_flat_all (default: tool_hierarchical)
+#   MCP_EVALS      Run MCP evals instead of scenario evals (default: unset)
+#                  Deploys payments/demo6, starts obs-mcp + port-forwards, runs mcp_evals.yaml
 #
 # Examples:
 #   ./run_eval.sh gpt5mini_run1 https://api.openai.com/v1 gpt-5-mini 1
 #   ./run_eval.sh nemotron_base http://localhost:8234/v1 openshift-expert 3
 #   TRACING=on ./run_eval.sh nemotron_sft http://localhost:8250/v1 nemotron-gpt55-sft 5
 #   JUDGE_MODEL=gpt-4.1 ./run_eval.sh gpt5mini_41judge https://api.openai.com/v1 gpt-5-mini 3
+#   ITS_BUDGET=4 ./run_eval.sh gpt5mini_its4 https://api.openai.com/v1 gpt-5-mini 3
+#   MCP_EVALS=1 ./run_eval.sh gpt5mini_mcp https://api.openai.com/v1 gpt-5-mini 1
 
 MODEL_LABEL="${1:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
 MODEL_URL="${2:?Usage: $0 <run_name> <model_url> <model_name> [iterations]}"
@@ -34,6 +41,13 @@ ITERATIONS="${4:-${ITERATIONS:-3}}"
 ITER_OFFSET="${ITER_OFFSET:-0}"
 JUDGE_MODEL="${JUDGE_MODEL:-gpt-5-mini}"
 TRACING="${TRACING:-off}"
+ITS_BUDGET="${ITS_BUDGET:-}"
+ITS_ALGORITHM="${ITS_ALGORITHM:-self-consistency}"
+ITS_TOOL_VOTE="${ITS_TOOL_VOTE:-tool_hierarchical}"
+ITS_TEMPERATURE="${ITS_TEMPERATURE:-}"
+ITS_PORT=8100
+CONTEXT_WINDOW="${CONTEXT_WINDOW:-128000}"
+MCP_EVALS="${MCP_EVALS:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 OLS_DIR="${OLS_DIR:-$SCRIPT_DIR/lightspeed-service}"
@@ -57,21 +71,38 @@ fi
 
 if [[ "$MODEL_URL" == *"openai.com"* ]]; then PROVIDER_TYPE="openai"; else PROVIDER_TYPE="rhoai_vllm"; fi
 
+# When ITS is enabled, OLS talks to the ITS gateway instead of the LLM directly
+if [ -n "$ITS_BUDGET" ]; then
+    OLS_LLM_URL="http://127.0.0.1:${ITS_PORT}/v1"
+    OLS_PROVIDER_TYPE="rhoai_vllm"
+else
+    OLS_LLM_URL="${MODEL_URL}"
+    OLS_PROVIDER_TYPE="${PROVIDER_TYPE}"
+fi
+
 mkdir -p "$WORK_DIR"
 
 cat > "$WORK_DIR/olsconfig.yaml" << EOF
 llm_providers:
   - name: my_openai
-    type: ${PROVIDER_TYPE}
-    url: "${MODEL_URL}"
+    type: ${OLS_PROVIDER_TYPE}
+    url: "${OLS_LLM_URL}"
     credentials_path: ${SCRIPT_DIR}/.openai_key
     models:
       - name: ${MODEL_NAME}
-        context_window_size: 32768
-
+        context_window_size: ${CONTEXT_WINDOW:-32768}
+        
 mcp_servers:
+$(if [ -n "$MCP_EVALS" ]; then cat << 'MCP_BLOCK'
+  - name: obs-mcp
+    url: 'http://127.0.0.1:9100/mcp'
+    headers:
+      kubernetes-authorization: kubernetes
+    timeout: 5
+MCP_BLOCK
+fi)
   - name: openshift-mcp-server
-    url: 'http://127.0.0.1:8089/mcp'
+    url: 'http://127.0.0.1:8085/mcp'
     headers:
       Authorization: kubernetes
     timeout: 30
@@ -99,7 +130,7 @@ dev_config:
 EOF
 
 sed "s|model: \"openshift-expert\"|model: \"${MODEL_NAME}\"|; s|model: \"gpt-5-mini\"|model: \"${JUDGE_MODEL}\"|" \
-    "$EVAL_DIR/system_qwen35_9b.yaml" > "$WORK_DIR/system.yaml"
+    "$EVAL_DIR/system_template.yaml" > "$WORK_DIR/system.yaml"
 
 if [ ! -f "$SCRIPT_DIR/.openai_key" ] && [ -n "${OPENAI_API_KEY:-}" ]; then
     echo "$OPENAI_API_KEY" > "$SCRIPT_DIR/.openai_key"
@@ -107,9 +138,54 @@ fi
 
 OUTPUT_BASE="$EVAL_DIR/results/traced_${MODEL_LABEL}"
 
-pkill -f "kubernetes-mcp-server" 2>/dev/null || true; sleep 2
-NODE_OPTIONS="" npx kubernetes-mcp-server@latest --port 8089 --read-only > "$WORK_DIR/mcp.log" 2>&1 &
+MCP_SERVER="${MCP_SERVER:-$SCRIPT_DIR/.work/openshift-mcp-server}"
+MCP_CONFIG="${MCP_CONFIG:-$SCRIPT_DIR/mcp_config.toml}"
+pkill -f "openshift-mcp-server" 2>/dev/null || true; sleep 2
+"$MCP_SERVER" --port 8085 ${MCP_CONFIG:+--config "$MCP_CONFIG"} > "$WORK_DIR/mcp.log" 2>&1 &
 sleep 3
+
+# Start ITS gateway if budget is set
+if [ -n "$ITS_BUDGET" ]; then
+    pkill -f "iaas" 2>/dev/null || true; sleep 1
+    cd "$OLS_DIR"
+    uv run python -m its_hub.integration.iaas --port "$ITS_PORT" > "$WORK_DIR/its.log" 2>&1 &
+    sleep 3
+    # Configure the gateway
+    ITS_API_KEY=$(cat "$SCRIPT_DIR/.openai_key" 2>/dev/null || echo "")
+    ITS_CONFIG="{
+            \"endpoint\": \"${MODEL_URL}\",
+            \"api_key\": \"${ITS_API_KEY}\",
+            \"model\": \"${MODEL_NAME}\",
+            \"alg\": \"${ITS_ALGORITHM}\",
+            \"tool_vote\": \"${ITS_TOOL_VOTE}\",
+            \"budget\": ${ITS_BUDGET}
+            ${ITS_TEMPERATURE:+,\"temperature\": ${ITS_TEMPERATURE}}
+        }"
+    curl -sf -X POST "http://127.0.0.1:${ITS_PORT}/configure" \
+        -H "Content-Type: application/json" \
+        -d "$ITS_CONFIG" > /dev/null && echo "ITS gateway configured: budget=${ITS_BUDGET}, alg=${ITS_ALGORITHM}${ITS_TEMPERATURE:+, temp=${ITS_TEMPERATURE}}" || echo "ERROR: ITS gateway configuration failed"
+fi
+
+# Start obs-mcp + port-forwards for MCP evals
+if [ -n "$MCP_EVALS" ]; then
+    pkill -f "port-forward.*prometheus-operated" 2>/dev/null || true
+    pkill -f "port-forward.*alertmanager-operated" 2>/dev/null || true
+    pkill -f "obs-mcp" 2>/dev/null || true
+    sleep 1
+
+    oc port-forward svc/prometheus-operated 9090:9090 \
+        -n openshift-monitoring > "$WORK_DIR/pf-prom.log" 2>&1 &
+    oc port-forward svc/alertmanager-operated 9093:9093 \
+        -n openshift-monitoring > "$WORK_DIR/pf-alert.log" 2>&1 &
+    sleep 3
+
+    OBS_MCP="${OBS_MCP_SERVER:-$SCRIPT_DIR/.work/obs-mcp}"
+    PROMETHEUS_URL=http://localhost:9090 ALERTMANAGER_URL=http://localhost:9093 \
+        "$OBS_MCP" -listen 127.0.0.1:9100 -auth-mode header \
+        > "$WORK_DIR/obs-mcp.log" 2>&1 &
+    sleep 3
+    echo "obs-mcp started on port 9100"
+fi
 
 cd "$OLS_DIR"
 pkill -f "runner.py" 2>/dev/null || true; sleep 2
@@ -126,33 +202,75 @@ done
 
 mkdir -p "$OUTPUT_BASE"
 
-TAGS=(envvar_missing batch_failure storage_binding namespace_pod_count \
-      scheduled_outage_detection periodic_failure_window \
-      readiness_probe_diagnosis ingress_rule_mismatch oom wrong_networkpolicy \
-      config_drift_analysis)
+PAYMENTS_DIR="$SCRIPT_DIR/scenarios/payments"
 
 echo "========================================="
 echo "  Model:      $MODEL_NAME @ $MODEL_URL"
 echo "  Label:      $MODEL_LABEL"
 echo "  Judge:      $JUDGE_MODEL"
+echo "  Mode:       ${MCP_EVALS:+mcp}${MCP_EVALS:-scenario}"
 echo "  Iterations: $ITERATIONS (offset $ITER_OFFSET)"
 echo "  Tracing:    $TRACING"
 echo "  Results:    $OUTPUT_BASE"
 echo "  $(date)"
 echo "========================================="
 
-for iter in $(seq 1 $ITERATIONS); do
-    actual_iter=$((iter + ITER_OFFSET))
-    echo ""
-    echo "=== Iteration $actual_iter (run $iter/$ITERATIONS) ==="
+if [ -n "$MCP_EVALS" ]; then
+    # --- MCP eval mode: deploy payments scenario, run open-ended evals ---
 
-    for tag in "${TAGS[@]}"; do
-        echo "--- $tag ---"
-        printf "scenario=%s\niteration=%s\ncheckpoint=%s\n" "$tag" "$actual_iter" "$MODEL_LABEL" > /tmp/eval_context.txt
+    echo "Deploying payments scenario..."
+    (cd "$PAYMENTS_DIR" && bash scripts/deploy.sh)
+    echo "Breaking payments scenario (waiting for alerts -- ~3 min)..."
+    (cd "$PAYMENTS_DIR" && bash scripts/break.sh)
 
-        scenario_dir="$EVAL_DIR/scenarios/$tag"
+    for iter in $(seq 1 $ITERATIONS); do
+        actual_iter=$((iter + ITER_OFFSET))
+        echo ""
+        echo "=== MCP Iteration $actual_iter (run $iter/$ITERATIONS) ==="
 
-        if [ "$tag" != "config_drift_analysis" ]; then
+        ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/mcp"
+        mkdir -p "$ITER_DIR"
+
+        cd "$OLS_DIR"
+        API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
+            --system-config "$WORK_DIR/system.yaml" \
+            --eval-data "$EVAL_DIR/mcp_evals.yaml" \
+            --output-dir "$ITER_DIR" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
+
+        echo "MCP iteration $actual_iter complete"
+
+        if [ "$iter" -lt "$ITERATIONS" ]; then
+            echo "Resetting cluster state for next iteration..."
+            (cd "$PAYMENTS_DIR" && bash scripts/cleanup.sh) 2>/dev/null || true
+            (cd "$PAYMENTS_DIR" && bash scripts/delete-history.sh) 2>/dev/null || true
+            sleep 10
+            (cd "$PAYMENTS_DIR" && bash scripts/deploy.sh)
+            (cd "$PAYMENTS_DIR" && bash scripts/break.sh)
+        fi
+    done
+
+    echo "Cleaning up payments scenario..."
+    (cd "$PAYMENTS_DIR" && bash scripts/cleanup.sh) 2>/dev/null || true
+
+else
+    # --- Scenario eval mode: per-scenario setup/eval/cleanup ---
+
+    TAGS=(envvar_missing batch_failure storage_binding namespace_pod_count \
+          scheduled_outage_detection periodic_failure_window \
+          readiness_probe_diagnosis ingress_rule_mismatch oom wrong_networkpolicy \
+          config_drift_analysis)
+
+    for iter in $(seq 1 $ITERATIONS); do
+        actual_iter=$((iter + ITER_OFFSET))
+        echo ""
+        echo "=== Iteration $actual_iter (run $iter/$ITERATIONS) ==="
+
+        for tag in "${TAGS[@]}"; do
+            echo "--- $tag ---"
+            printf "scenario=%s\niteration=%s\ncheckpoint=%s\n" "$tag" "$actual_iter" "$MODEL_LABEL" > /tmp/eval_context.txt
+
+            scenario_dir="$EVAL_DIR/scenarios/$tag"
+
             [ -f "$scenario_dir/cleanup.sh" ] && bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
             sleep 3
 
@@ -170,50 +288,62 @@ for iter in $(seq 1 $ITERATIONS); do
             done
 
             [ -f "$scenario_dir/setup.sh" ] && bash "$scenario_dir/setup.sh" 2>&1 | tail -1 || echo "WARN: setup"
-        fi
 
-        ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/$tag"
-        mkdir -p "$ITER_DIR"
+            ITER_DIR="$OUTPUT_BASE/iter_$(printf '%02d' $actual_iter)/$tag"
+            mkdir -p "$ITER_DIR"
 
-        cd "$OLS_DIR"
-        API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
-            --system-config "$WORK_DIR/system.yaml" \
-            --eval-data "$EVAL_DIR/evals.yaml" \
-            --output-dir "$ITER_DIR" \
-            --tags "$tag" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
+            cd "$OLS_DIR"
+            API_KEY=$(oc whoami -t) uv run $EVAL_CLI \
+                --system-config "$WORK_DIR/system.yaml" \
+                --eval-data "$EVAL_DIR/evals.yaml" \
+                --output-dir "$ITER_DIR" \
+                --tags "$tag" 2>&1 | grep -E "Pass|Fail|Error|Complete" || true
 
-        if [ "$tag" != "config_drift_analysis" ] && [ -f "$scenario_dir/cleanup.sh" ]; then
-            bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
-        fi
-        sleep 3
-        echo "Done: $tag"
+            if [ -f "$scenario_dir/cleanup.sh" ]; then
+                bash "$scenario_dir/cleanup.sh" 2>/dev/null || true
+            fi
+            sleep 3
+            echo "Done: $tag"
+        done
+        echo "Iteration $actual_iter complete"
     done
-    echo "Iteration $actual_iter complete"
-done
+fi
 
 echo ""
 echo "========================================="
-echo "  Eval complete: $MODEL_LABEL"
+echo "  Eval complete: $MODEL_LABEL${ITS_BUDGET:+ (ITS budget=${ITS_BUDGET}, ${ITS_ALGORITHM})}${MCP_EVALS:+ (MCP evals)}"
 echo "  $(date)"
 echo "========================================="
 
 python3 -c "
 import csv, glob
 path = '$OUTPUT_BASE'
-total_all = p_all = 0
+p_all = f_all = e_all = 0
 for i in range(1, 100):
-    t = p = 0
-    for f in sorted(glob.glob(f'{path}/iter_{i:02d}/*/*detailed*.csv')):
-        for row in csv.DictReader(open(f)):
-            t += 1
-            if row.get('result') == 'PASS': p += 1
-    if t > 0:
-        total_all += t; p_all += p
-        print(f'iter_{i:02d}: {p}/{t} = {p/t*100:.1f}%')
+    p = f = e = 0
+    for fp in sorted(glob.glob(f'{path}/iter_{i:02d}/*/*detailed*.csv')):
+        for row in csv.DictReader(open(fp)):
+            r = row.get('result', '')
+            if r == 'PASS': p += 1
+            elif r == 'FAIL': f += 1
+            elif r == 'ERROR': e += 1
+    judged = p + f
+    if judged + e > 0:
+        p_all += p; f_all += f; e_all += e
+        parts = [f'{p}/{judged} = {p/judged*100:.1f}%' if judged else '0/0']
+        if e: parts.append(f'{e} errors')
+        print(f'iter_{i:02d}: {\"  \".join(parts)}')
     else: break
-if total_all > 0:
-    print(f'TOTAL: {p_all}/{total_all} = {p_all/total_all*100:.1f}%')
+judged_all = p_all + f_all
+if judged_all > 0:
+    parts = [f'{p_all}/{judged_all} = {p_all/judged_all*100:.1f}%']
+    if e_all: parts.append(f'{e_all} errors')
+    print(f'TOTAL: {\"  \".join(parts)}')
 "
 
 pkill -f "runner.py" 2>/dev/null || true
-pkill -f "kubernetes-mcp-server" 2>/dev/null || true
+pkill -f "openshift-mcp-server" 2>/dev/null || true
+pkill -f "iaas.py" 2>/dev/null || true
+pkill -f "obs-mcp" 2>/dev/null || true
+pkill -f "port-forward.*prometheus-operated" 2>/dev/null || true
+pkill -f "port-forward.*alertmanager-operated" 2>/dev/null || true
